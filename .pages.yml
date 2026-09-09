@@ -1,0 +1,121 @@
+# Optional hosted content editor. Open an editorial branch, never the live-output
+# branch. This configuration does not activate authentication or publishing.
+media:
+  - name: images
+    label: Website images
+    input: public/images
+    output: /images
+    extensions: [png, jpg, jpeg, webp]
+    rename: safe
+
+content:
+  - name: site
+    label: Ruslitiki website
+    type: file
+    path: content/site.json
+    format: json
+    operations:
+      create: false
+      rename: false
+      delete: false
+    fields:
+      - name: heading
+        label: Main heading
+        type: string
+        required: true
+        options: { maxlength: 100 }
+      - name: description
+        label: Club description
+        type: string
+        required: true
+        options: { maxlength: 180 }
+      - name: introduction
+        label: Introduction
+        type: text
+        required: true
+        options: { maxlength: 400 }
+      - name: status
+        label: Membership state
+        type: select
+        options:
+          values:
+            - { name: coming-soon, label: Coming soon — show the waitlist }
+            - { name: membership-open, label: Membership open — link to Patreon }
+            - { name: reading, label: Reading together — link to Patreon }
+      - name: openingDate
+        label: Membership opens
+        type: date
+        required: true
+        options: { time: false, format: yyyy-MM-dd }
+      - name: readingDate
+        label: Reading starts
+        type: date
+        required: true
+        options: { time: false, format: yyyy-MM-dd }
+      - name: waitlistUrl
+        label: Waitlist link
+        type: string
+        required: true
+        pattern: { regex: '^https://[^\s]+$', message: Paste a complete HTTPS link. }
+      - name: patreonUrl
+        label: Patreon link — leave empty until ready
+        type: string
+      - name: email
+        label: Contact email — leave empty until the mailbox works
+        type: string
+      - name: instagramUrl
+        label: Instagram link
+        type: string
+        required: true
+      - name: logo
+        label: Wordmark image
+        type: image
+        options: { media: images }
+      - name: logoPresentation
+        label: Wordmark presentation
+        type: select
+        options:
+          values:
+            - { name: original-banner, label: Original Ruslitiki banner }
+            - { name: image, label: A different uploaded image }
+      - name: book
+        label: First book
+        type: object
+        fields:
+          - { name: title, label: Book title, type: string, required: true }
+          - { name: author, label: Author, type: string, required: true }
+          - { name: note, label: Short invitation, type: text, required: true }
+      - name: sections
+        label: Additional sections
+        type: block
+        blockKey: type
+        list:
+          max: 6
+          collapsible: { collapsed: true, summary: '{heading}' }
+        blocks:
+          - name: text
+            label: Note
+            fields:
+              - { name: heading, label: Heading, type: string, required: true }
+              - { name: body, label: Text, type: text, required: true }
+              - { name: visible, label: Show on page, type: boolean, default: true }
+          - name: faq
+            label: Question and answer
+            fields:
+              - { name: heading, label: Question, type: string, required: true }
+              - { name: body, label: Answer, type: text, required: true }
+              - { name: visible, label: Show on page, type: boolean, default: true }
+      - name: seo
+        label: Search listing
+        type: object
+        fields:
+          - { name: title, label: Page title, type: string, required: true }
+          - { name: description, label: Description, type: text, required: true }
+
+settings:
+  hide: true
+  content: { merge: true }
+  commit:
+    identity: app
+    templates:
+      update: 'content: update {name}'

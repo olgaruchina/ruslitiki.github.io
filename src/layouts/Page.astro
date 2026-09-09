@@ -1,0 +1,32 @@
+---
+import '@fontsource/literata/latin-400.css';
+import '@fontsource/literata/latin-400-italic.css';
+import '@fontsource/golos-text/latin-400.css';
+import '@fontsource/golos-text/latin-500.css';
+import '../styles/site.css';
+const { title, description, path = '/', noindex = false } = Astro.props;
+const canonical = new URL(path, Astro.site);
+const isPreview = process.env.RUSLITIKI_PREVIEW === '1';
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#B4CDF6" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Ruslitiki" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {(isPreview || noindex) && <meta name="robots" content="noindex, nofollow" />}
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <slot />
+  </body>
+</html>

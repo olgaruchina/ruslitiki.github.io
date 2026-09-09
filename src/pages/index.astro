@@ -1,0 +1,63 @@
+---
+import Page from '../layouts/Page.astro';
+import { readContent, ctaFor, formatDate } from '../lib/content.mjs';
+const content = readContent();
+const action = ctaFor(content);
+const status = { 'coming-soon': 'Coming soon', 'membership-open': 'Membership is open', reading: 'Reading together' }[content.status];
+const sections = content.sections.filter(section => section.visible);
+const structuredData = {
+  '@context':'https://schema.org',
+  '@type':'Organization',
+  name:content.brand,
+  url:Astro.site?.href,
+  description:content.description,
+  sameAs:[content.instagramUrl],
+  ...(content.email ? {email:content.email} : {}),
+};
+---
+<Page title={content.seo.title} description={content.seo.description}>
+  <div class="landing">
+    <header class="masthead" aria-label={content.brand}>
+      <div class:list={['wordmark', {'wordmark-original': content.logoPresentation === 'original-banner'}]}>
+        <img src={content.logo} alt={content.brand} width="2500" height="1000" fetchpriority="high" />
+      </div>
+      <div class="masthead-meta">
+        <p>{content.description}</p>
+        <p class="status">{status}<span aria-hidden="true"> ↗</span></p>
+      </div>
+    </header>
+    <main id="main">
+      <div class="opening">
+        <div class="invitation">
+          <h1>{content.heading}</h1>
+          <p class="introduction">{content.introduction}</p>
+          <a class="join-button" href={action.url}>{action.label}<span aria-hidden="true">↗</span></a>
+        </div>
+        <aside class="first-book" aria-labelledby="first-book-title">
+          <p class="book-label">Our first book</p>
+          <h2 id="first-book-title"><i>{content.book.title}</i></h2>
+          <p class="author">by {content.book.author}</p>
+          <p class="book-note">{content.book.note}</p>
+          <dl class="dates">
+            <div><dt>Membership opens</dt><dd><time datetime={content.openingDate}>{formatDate(content.openingDate)}</time></dd></div>
+            <div><dt>We start reading</dt><dd><time datetime={content.readingDate}>{formatDate(content.readingDate)}</time></dd></div>
+          </dl>
+        </aside>
+      </div>
+      {sections.length > 0 && <div class="extra-sections">{sections.map(section => section.type === 'faq' ? (
+        <details><summary>{section.heading}</summary><p>{section.body}</p></details>
+      ) : (
+        <section><h2>{section.heading}</h2><p>{section.body}</p></section>
+      ))}</div>}
+    </main>
+    <footer class="footer">
+      <p>Read. Think. Question. Disagree.</p>
+      <nav aria-label="Contact and information">
+        <a href={content.instagramUrl}>Instagram<span class="sr-only"> — Ruslitiki</span></a>
+        {content.email && <a href={`mailto:${content.email}`}>Contact Olga</a>}
+        <a href="/privacy/">Privacy</a>
+      </nav>
+    </footer>
+  </div>
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g,'\\u003c')} />
+</Page>

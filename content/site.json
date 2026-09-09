@@ -1,0 +1,25 @@
+{
+  "brand": "Ruslitiki",
+  "status": "coming-soon",
+  "heading": "Russian literature, but make it fun.",
+  "description": "An online Russian literature book club with Olga.",
+  "introduction": "Read the classics with context, conversation, and a guide to what gets lost in translation.",
+  "openingDate": "2026-09-24",
+  "readingDate": "2026-10-01",
+  "waitlistUrl": "https://docs.google.com/forms/d/e/1FAIpQLScbILxeZ4MsRmY1j3cjs4xb7IHHTZ8JVqLj2ReB1a2jeK31oQ/viewform",
+  "patreonUrl": "",
+  "email": "",
+  "instagramUrl": "https://www.instagram.com/ruslitiki/",
+  "logo": "/images/ruslitiki-original.png",
+  "logoPresentation": "original-banner",
+  "book": {
+    "title": "Eugene Onegin",
+    "author": "Alexander Pushkin",
+    "note": "Love, friendship, and missed chances. Our first read, beginning this October."
+  },
+  "sections": [],
+  "seo": {
+    "title": "Ruslitiki | Online Russian Literature Book Club",
+    "description": "Read Russian classics with Olga. Explore the context, characters and translations. Join the Ruslitiki waitlist; reading begins 1 October 2026."
+  }
+}

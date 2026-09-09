@@ -1,0 +1,22 @@
+---
+import Page from '../layouts/Page.astro';
+import { readContent } from '../lib/content.mjs';
+const content = readContent();
+---
+<Page title="Privacy | Ruslitiki" description="How the Ruslitiki website and waitlist use information you choose to share." path="/privacy/">
+  <div class="reading-page">
+    <header><a class="back-link" href="/">← Ruslitiki</a></header>
+    <main id="main">
+      <h1>Privacy</h1>
+      <p>This website introduces Ruslitiki and links to our waitlist. It does not have a signup form of its own, advertising trackers, or site analytics.</p>
+      <h2>The waitlist</h2>
+      <p>The waitlist opens in Google Forms. The form asks for an email address and timezone, with additional questions about reading experience and interests. Olga uses this information to plan the club and contact the waitlist when membership opens.</p>
+      <p>Please share only what you are comfortable providing. Optional survey answers help shape the reading programme. They are not published as testimonials or shared on this website.</p>
+      <p>Google processes information when you use its form. Read <a href="https://policies.google.com/privacy">Google’s privacy policy</a> for details about its service.</p>
+      <h2>Questions or removal</h2>
+      <p>If you want to ask about your response or request its removal, {content.email ? <a href={`mailto:${content.email}`}>contact Olga by email</a> : <a href={content.instagramUrl}>contact Olga through the Ruslitiki Instagram account</a>}.</p>
+      <h2>Other services</h2>
+      <p>Our hosting provider processes technical request information to deliver and secure the website. Instagram, Google Forms and, when available, Patreon have their own privacy practices when you visit them.</p>
+    </main>
+  </div>
+</Page>
