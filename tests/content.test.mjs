@@ -66,6 +66,7 @@ test('publishing fails closed until configured, and cannot target another reposi
   assert.throws(()=>validatePublishing(null),/not connected/);
   assert.throws(()=>validatePublishing({enabled:true,repository:'someone/else',branch:'main',liveUrl:'https://example.com'}),/configured Ruslitiki/);
   assert.throws(()=>validatePublishing({enabled:true,repository:'olgaruchina/ruslitiki.github.io',branch:'site-live',liveUrl:'http://127.0.0.1/'}),/HTTPS/);
+  assert.throws(()=>validatePublishing({enabled:true,repository:'olgaruchina/ruslitiki.github.io',branch:'site-live',liveUrl:'https://ruslitiki.com/'}),/canonical/);
 });
 test('uploads cannot smuggle executable SVG content',()=>{
   assert.throws(()=>safeImage(Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(1)</script></svg>')),/not a supported/);

@@ -4,8 +4,8 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { readContent, validateContent, selectedImagePaths } from '../src/lib/content.mjs';
-import { atomicJson, json, digest, fileMap, rendererDigest, checkRevision, saveDraft, safeImage } from './studio-store.mjs';
-import { run, publishRelease, validatePublishing, verifyArtifact } from './publish-release.mjs';
+import { atomicJson, json, digest, fileMap, rendererDigest, checkRevision, saveDraft, savePublication, safeImage } from './studio-store.mjs';
+import { run, publishRelease, validatePublishing, verifyArtifact, checkPublishingConnection, EDITOR_PUBLISHING } from './publish-release.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const STORAGE=path.join(ROOT,'.studio');
@@ -63,7 +63,8 @@ async function state() {
   try{validatePublishing(await publishingConfig());configured=true;}catch{}
   const current=preview ? preview.contentHash===digest(content) && preview.rendererHash===await rendererDigest(ROOT) && preview.sourceHash===digest(await fs.readFile(path.join(ROOT,'content/site.json'))) : false;
   const canRestore=await fs.access(path.join(STORAGE,'previous-publication.json')).then(()=>true,()=>false);
-  return {content,revision:digest(content),busy,message,preview:preview ? {id:preview.id,url:preview.url,createdAt:preview.createdAt,current} : null,publication,configured,canRestore};
+  const connection=await json(path.join(STORAGE,'connection.json')).catch(()=>null);
+  return {content,revision:digest(content),busy,message,preview:preview ? {id:preview.id,url:preview.url,createdAt:preview.createdAt,current} : null,publication,configured,connection,canRestore};
 }
 async function buildPreview() {
   const content=await json(path.join(STORAGE,'draft.json'));
@@ -118,7 +119,13 @@ const server=http.createServer(async(req,res)=>{
       if(busy){send(res,409,{error:'Please wait for the current action to finish.'});return;}
       busy=true;
       try{
-        if(url.pathname==='/api/save'){
+        if(url.pathname==='/api/connect-publishing'){
+          message='Checking the GitHub publishing connection…';
+          const connection=await checkPublishingConnection();
+          await atomicJson(path.join(STORAGE,'connection.json'),connection);
+          await atomicJson(path.join(STORAGE,'publishing.json'),{...EDITOR_PUBLISHING,enabled:connection.ready});
+          message=connection.ready?'Publishing is connected. Prepare and review your preview, then choose Publish website.':'The publishing check found settings that need attention. Your draft and preview are safe.';
+        }else if(url.pathname==='/api/save'){
           await saveDraft(STORAGE,data.content,data.revision);
           message='Draft saved on this laptop. The public website has not changed.';
         }else if(url.pathname==='/api/upload'){
@@ -145,10 +152,8 @@ const server=http.createServer(async(req,res)=>{
           if(!(await state()).preview.current)throw new Error('The draft or website design changed. Prepare and review a fresh preview.');
           const config=await publishingConfig();
           const published=await publishRelease(preview,config,STORAGE,value=>message=value);
-          const old=await json(path.join(STORAGE,'publication.json')).catch(()=>null);
-          if(old)await atomicJson(path.join(STORAGE,'previous-publication.json'),old);
           publication={...published,content:preview.content};
-          await atomicJson(path.join(STORAGE,'publication.json'),publication);
+          await savePublication(STORAGE,publication);
           for(const image of selectedImagePaths(preview.content))await fs.copyFile(path.join(preview.directory,image.slice(1)),path.join(ROOT,'public',image.slice(1)));
           // Keep the source of this published content easy to back up and commit.
           await atomicJson(path.join(ROOT,'content/site.json'),preview.content);

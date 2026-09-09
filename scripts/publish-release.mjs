@@ -3,6 +3,54 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { fileMap, digest, atomicJson, json } from './studio-store.mjs';
 
+export const EDITOR_PUBLISHING = {enabled:true,repository:'olgaruchina/ruslitiki.github.io',branch:'site-live',liveUrl:'https://www.ruslitiki.com/'};
+const REPOSITORY_URL='https://github.com/'+EDITOR_PUBLISHING.repository;
+
+// Read remote prerequisites without modifying GitHub settings or sending a release.
+export async function checkPublishingConnection(execute=run) {
+  const checks=[];
+  const add=(id,label,ready,detail,url)=>checks.push({id,label,ready,detail,...(url?{url}:{})});
+  const result=()=>({ready:checks.every(check=>check.ready),checkedAt:new Date().toISOString(),checks});
+  const api=async endpoint=>JSON.parse(await execute('gh',['api',`repos/${EDITOR_PUBLISHING.repository}${endpoint}`],{timeout:15000}));
+  try{
+    await execute('git',['--version'],{timeout:15000});
+    const repository=await api('');
+    add('account','GitHub connection',repository.permissions?.push===true,repository.permissions?.push ? 'This laptop can send updates to the Ruslitiki repository.' : 'Sign in to GitHub CLI on this laptop with access to update the Ruslitiki repository.');
+  }catch{
+    add('account','GitHub connection',false,'The maintainer needs to install Git and sign in to GitHub CLI on this laptop.');
+    return result();
+  }
+  const [pagesResult,modeResult,environmentResult]=await Promise.allSettled([
+    api('/pages'),api('/actions/variables/RUSLITIKI_PUBLISH_SOURCE'),api('/environments/github-pages'),
+  ]);
+  const pages=pagesResult.status==='fulfilled'?pagesResult.value:null;
+  add('pages','GitHub Pages publishing',pages?.build_type==='workflow',pages?.build_type==='workflow'?'GitHub Actions is the publishing source.':'The repository owner must select GitHub Actions under Pages → Build and deployment → Source.',REPOSITORY_URL+'/settings/pages');
+  let canonical=false;
+  try{canonical=new URL(pages.html_url).href===EDITOR_PUBLISHING.liveUrl && pages.https_enforced===true;}catch{}
+  add('domain','Website address',canonical,canonical?'Publications will appear at https://www.ruslitiki.com/.':'The owner must check the custom domain www.ruslitiki.com and enable HTTPS in Pages settings.',REPOSITORY_URL+'/settings/pages');
+  const editorMode=modeResult.status==='fulfilled' && modeResult.value.value==='editor';
+  add('mode','Editor publishing mode',editorMode,editorMode?'GitHub Actions accepts the page reviewed in this editor.':'After pending production runs finish, set repository variable RUSLITIKI_PUBLISH_SOURCE to editor. This setting could not be confirmed.',REPOSITORY_URL+'/settings/variables/actions');
+  const environment=environmentResult.status==='fulfilled'?environmentResult.value:null;
+  let allowed=false;
+  let environmentDetail='The owner must allow the site-live branch under Deployment branches and tags in the github-pages environment.';
+  if(environment){
+    const policy=environment.deployment_branch_policy;
+    allowed=policy===null;
+    if(policy?.custom_branch_policies){
+      try{
+        const rules=await api('/environments/github-pages/deployment-branch-policies?per_page=100');
+        allowed=rules.branch_policies.some(rule=>rule.type==='branch' && (rule.name==='site-live' || rule.name==='*'));
+      }catch{}
+    }
+    // Other rules may require a person or service to approve every publication.
+    if((environment.protection_rules || []).some(rule=>rule.type!=='branch_policy')){
+      allowed=false;environmentDetail='The github-pages environment has additional deployment rules. The owner must review those rules before automatic publishing can be confirmed.';
+    }
+  }
+  add('environment','Permission to publish',allowed,allowed?'The site-live branch can publish without a separate approval.':environmentDetail,REPOSITORY_URL+'/settings/environments');
+  return result();
+}
+
 export function run(command, args, options = {}) {
   return new Promise((resolve,reject)=>{
     const child=spawn(command,args,{...options,stdio:['ignore','pipe','pipe']});
@@ -18,7 +66,7 @@ export function validatePublishing(config) {
   if (!config?.enabled) throw new Error('Public publishing is not connected yet. The page can still be edited, saved and previewed.');
   if (config.repository !== 'olgaruchina/ruslitiki.github.io' || config.branch !== 'site-live') throw new Error('Publishing must use the configured Ruslitiki repository and site-live branch.');
   const url = new URL(config.liveUrl);
-  if (url.protocol !== 'https:' || url.username || url.password || url.port || url.pathname !== '/' || url.search || url.hash || !['www.ruslitiki.com','ruslitiki.com'].includes(url.hostname)) throw new Error('Use the Ruslitiki HTTPS website address for publication.');
+  if (url.href !== EDITOR_PUBLISHING.liveUrl) throw new Error('Use the canonical Ruslitiki HTTPS website address: https://www.ruslitiki.com/.');
   return url;
 }
 
@@ -45,9 +93,8 @@ export async function publishRelease(preview, config, workingRoot, onStatus) {
   const liveUrl = validatePublishing(config);
   await verifyArtifact(preview);
   const remote=`https://github.com/${config.repository}.git`;
-  await run('gh',['auth','status']);
-  const source=await run('gh',['api',`repos/${config.repository}/actions/variables/RUSLITIKI_PUBLISH_SOURCE`,'--jq','.value']).catch(()=>null);
-  if(source!=='editor')throw new Error('The GitHub publishing connection is not set to editor mode. Ask the maintainer to finish the one-time setup; your draft and preview are safe.');
+  const connection=await checkPublishingConnection();
+  if(!connection.ready)throw new Error(connection.checks.filter(check=>!check.ready).map(check=>check.detail).join('\n'));
   const work=path.join(workingRoot,`publish-${preview.id}`);
   const pendingFile=path.join(workingRoot,`pending-${preview.id}.json`);
   const pending=await json(pendingFile).catch(()=>null);

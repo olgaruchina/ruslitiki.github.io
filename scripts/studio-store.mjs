@@ -42,6 +42,11 @@ export async function saveDraft(directory, content, expectedHash) {
   await atomicJson(path.join(directory,'draft.json'),content);
   return digest(content);
 }
+export async function savePublication(directory, publication) {
+  const current=await json(path.join(directory,'publication.json')).catch(()=>null);
+  if(current && current.id!==publication.id)await atomicJson(path.join(directory,'previous-publication.json'),current);
+  await atomicJson(path.join(directory,'publication.json'),publication);
+}
 export function safeImage(buffer) {
   if (buffer.length > 2*1024*1024 || buffer.length < 16) throw new Error('Choose a PNG, JPEG or WebP image smaller than 2 MB.');
   if (buffer.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))) return 'png';

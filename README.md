@@ -18,9 +18,9 @@ The local editor is the supported workflow and has no recurring editor subscript
 
 The original GitHub Pages configuration serves `main` from the repository root. Development remains on a separate branch. Nothing should be merged to `main` solely to publish this Astro source: the old Pages setup would not build it correctly.
 
-GitHub Actions is configured to test and build code pushes and automatically publish successful `main` builds once the owner changes the Pages source to GitHub Actions and this branch is merged. Development branches and pull requests only run checks. No additional hosting service or deployment secret is needed.
+The chosen publishing route is the local editor's **Publish website** button. GitHub Actions tests/builds source pushes and publishes the reviewed public files sent by the editor. No additional hosting service or deployment secret is needed.
 
-The local editor can use the same workflow in a separate editor publishing mode: it pushes the reviewed static files under `dist/` plus the workflow to `site-live`, then waits for `https://www.ruslitiki.com/release.json` to confirm that exact release. A repository variable selects either automatic `main` publishing or editor publishing, preventing stale source from overwriting the owner's live edits. The editor remains disabled until configured, and live deployment has not been exercised. Follow [hosting setup](docs/HOSTING_SETUP.md).
+The editor pushes the reviewed static files under `dist/` plus the workflow to `site-live`, then waits for `https://www.ruslitiki.com/release.json` to confirm that exact release. The repository variable is set to editor mode, preventing stale main source from overwriting the owner's live edits. **Check publishing connection** shows the remaining owner settings and enables the local connection when ready. A main merge is unnecessary for this route. Live publication remains disabled until Pages uses Actions and the environment permits site-live; it has not yet been exercised. Follow [hosting setup](docs/HOSTING_SETUP.md).
 
 `.openai/hosting.json` identifies the separate owner-private Sites review deployment. That deployment is for reviewing the public page, not Olga's permanent editing service. Never put private research or the response CSV in this repository or its published output.
 

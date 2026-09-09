@@ -9,7 +9,7 @@ After the maintainer has installed the editor once, double-click **Ruslitiki Edi
 
 The public coming-soon page stays available while you edit. If you change a draft after previewing it, prepare another preview before publishing. If another window has changed your saved draft, the editor asks you to reload rather than overwriting it.
 
-After setup, **Publish website** sends your reviewed page to GitHub, and GitHub Actions updates the public website automatically. You do not need to open GitHub or run commands. The maintainer selects editor publishing mode once during setup; until that connection is complete, saving and previewing remain available.
+After setup, **Publish website** sends your reviewed page to GitHub, and GitHub Actions updates the public website automatically. You do not need to open GitHub or run commands for routine updates. Use **Check publishing connection** during the one-time setup: it shows any owner settings still needed, with links, and enables publication when ready. Checking the connection preserves your draft and does not publish it. Until setup is complete, saving and previewing remain available.
 
 **Dates & links:** leave the email empty until the mailbox actually works. Only switch from Coming soon when the real Patreon link is available. Dates never activate a paid membership button automatically.
 

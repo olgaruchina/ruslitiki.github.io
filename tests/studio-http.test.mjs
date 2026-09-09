@@ -14,12 +14,14 @@ test('local editor keeps drafts private, validates requests and builds the exact
   try{
     for(const entry of ['src','scripts','studio','public','content','package.json','package-lock.json','astro.config.mjs'])await fs.cp(path.resolve(entry),path.join(root,entry),{recursive:true});
     await fs.symlink(path.resolve('node_modules'),path.join(root,'node_modules'),'dir');
+    const bin=path.join(root,'test-bin');await fs.mkdir(bin);
+    await fs.writeFile(path.join(bin,'gh'),`#!${process.execPath}\nprocess.stderr.write('GitHub is not connected in this isolated test.');process.exit(1);\n`,{mode:0o700});
     const reservation=net.createServer();
     await new Promise(resolve=>reservation.listen(0,'127.0.0.1',resolve));
     const port=reservation.address().port;
     await new Promise(resolve=>reservation.close(resolve));
     const origin=`http://127.0.0.1:${port}`;
-    child=spawn(process.execPath,['scripts/studio.mjs'],{cwd:root,env:{...process.env,RUSLITIKI_STUDIO_PORT:String(port)},stdio:['ignore','pipe','pipe']});
+    child=spawn(process.execPath,['scripts/studio.mjs'],{cwd:root,env:{...process.env,PATH:bin+path.delimiter+process.env.PATH,RUSLITIKI_STUDIO_PORT:String(port)},stdio:['ignore','pipe','pipe']});
     let log='';child.stderr.on('data',data=>log+=data);child.stdout.on('data',data=>log+=data);
     let ready=false;
     for(let i=0;i<100;i++){
@@ -36,6 +38,11 @@ test('local editor keeps drafts private, validates requests and builds the exact
     };
     const initial=await (await fetch(origin+'/api/state')).json();
     const sourceBefore=await fs.readFile(path.join(root,'content/site.json'),'utf8');
+    assert.equal((await api('/api/connect-publishing',{}, {'X-Studio-Token':'wrong'})).status,403);
+    const connection=await api('/api/connect-publishing',{});
+    assert.equal(connection.status,200);assert.equal(connection.data.configured,false);
+    assert.equal(connection.data.connection.ready,false);assert.equal(connection.data.revision,initial.revision);
+    assert.equal(JSON.parse(await fs.readFile(path.join(root,'.studio/publishing.json'))).enabled,false);
     assert.equal((await api('/api/save',{},{Origin:'https://another-site.example'})).status,403);
     assert.equal((await api('/api/save',{}, {'X-Studio-Token':'wrong'})).status,403);
     const reboundStatus=await new Promise((resolve,reject)=>{const req=http.get(origin+'/api/state',{headers:{Host:'rebound.example'}},res=>{res.resume();resolve(res.statusCode);});req.on('error',reject);});

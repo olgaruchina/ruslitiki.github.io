@@ -47,7 +47,10 @@ function update(){
   $('#preview').textContent=busy ? 'Please wait…' : 'Prepare preview';
   $('#publish').disabled=busy || dirty || !state.configured || !state.preview?.current;
   $('#restore').disabled=busy || !state.canRestore;
-  $('#connection-note').hidden=state.configured;
+  $('#connect-publishing').disabled=busy;
+  $('#connect-publishing').textContent=busy?'Please wait…':'Check publishing connection';
+  $('#connection-title').textContent=state.configured?'Publishing is connected':'Connect the Publish button';
+  renderConnection();
   $('#status-message').textContent=state.message;
   if(state.preview){
     const current=state.preview.current && !dirty;
@@ -86,6 +89,13 @@ $('#editor').addEventListener('input',event=>{
   }
 });
 $('#save').addEventListener('click',()=>operation(save));
+$('#connect-publishing').addEventListener('click',()=>operation(async()=>{
+  const result=await request('/api/connect-publishing',{});
+  // Checking the connection must preserve local edits and their conflict revision.
+  state={...state,configured:result.configured,connection:result.connection,message:result.message,busy:result.busy};
+  if(result.revision!==state.revision && state.preview)state.preview={...state.preview,current:false};
+  update();
+}));
 $('#preview').addEventListener('click',()=>operation(async()=>{if(dirty)await save();state=await request('/api/preview',{revision:state.revision});update();}));
 $('#publish').addEventListener('click',()=>$('#publish-dialog').showModal());
 $('#cancel-publish').addEventListener('click',()=>$('#publish-dialog').close());
@@ -130,6 +140,21 @@ $('#logo-upload').addEventListener('change',event=>{
 });
 $('#original-logo').addEventListener('click',()=>{draft.logo='/images/ruslitiki-original.png';draft.logoPresentation='original-banner';changed();$('#image-status').textContent='Original wordmark selected.';});
 function element(tag,text){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;}
+let renderedConnection=null;
+function renderConnection(){
+  const connection=state.connection;
+  if(connection===renderedConnection)return;
+  renderedConnection=connection;
+  const list=$('#connection-checks');list.replaceChildren();list.hidden=!connection;
+  if(!connection)return;
+  for(const check of connection.checks){
+    const item=element('li');item.className=check.ready?'connection-ready':'connection-action';
+    item.append(element('strong',(check.ready?'Ready: ':'Action needed: ')+check.label),element('p',check.detail));
+    if(!check.ready && check.url){const link=element('a','Open GitHub settings ↗');link.href=check.url;link.target='_blank';link.rel='noopener';item.append(link);}
+    list.append(item);
+  }
+  $('#connection-time').textContent='Last checked '+new Date(connection.checkedAt).toLocaleString()+'. Check again after changing settings.';
+}
 function selectControl(key,label,choices,value,onChange){
   const wrapper=element('label',label);const select=element('select');
   if(key)select.name=key;
