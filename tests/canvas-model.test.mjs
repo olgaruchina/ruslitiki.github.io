@@ -33,7 +33,8 @@ test('unfinished sections can be saved privately but cannot enter a publishing p
   const folder=await fs.mkdtemp(path.join(os.tmpdir(),'ruslitiki-canvas-draft-'));
   try{
     const original=readContent();await atomicJson(path.join(folder,'draft.json'),original);
-    const draft=editableContent(original);insertSection(draft,'image');insertSection(draft,'button');
+    const draft=editableContent(original);draft.sections=[];draft.design.blockOrder=['opening'];
+    insertSection(draft,'image');insertSection(draft,'button');
     assert.deepEqual(validateContent(draft,{draft:true}),[]);assert.ok(validateContent(draft).length);
     await saveDraft(folder,draft,digest(original));assert.deepEqual(await json(path.join(folder,'draft.json')),draft);
   }finally{await fs.rm(folder,{recursive:true,force:true});}

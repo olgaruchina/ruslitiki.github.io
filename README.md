@@ -14,7 +14,7 @@ For ordinary editing on this Mac, double-click **Ruslitiki Editor.app** after th
 
 The editing canvas uses a separate loopback-only Astro service with isolated per-tab snapshots. It shares homepage components with production; its controls and unsaved snapshots never enter the public build. **Saved preview** remains an immutable reviewed artifact, separate from the changing editing canvas.
 
-The waitlist page includes seven expandable FAQs. A hidden YouTube introduction block is ready for the owner’s video link; it can be enabled in the editor when available. Video embeds use privacy-enhanced mode, load lazily and do not autoplay.
+The waitlist page explains the weekly reading materials, monthly guided discussion and advance calendar, lists the standard ($14.99 USD/month) and early-bird ($9.99 USD/month) prices, and includes seven expandable FAQs. A hidden YouTube introduction block is ready for the owner’s video link; it can be enabled in the editor when available. Video embeds use privacy-enhanced mode, load lazily and do not autoplay.
 
 The local editor is the supported workflow and has no recurring editor subscription. The earlier `.pages.yml` configuration is retained as an inactive reference; it does not cover the expanded layout/block schema. Do not activate it without reconciling those fields and deciding how remote drafts and publishing would work.
 
