@@ -1,0 +1,9 @@
+---
+import Invitation from './Invitation.astro';
+import BookFeature from './BookFeature.astro';
+const {content,design}=Astro.props;
+---
+<div class:list={['opening',`composition-${design.composition}`]} data-block-id="opening">
+  {design.composition==='book-left' ? <BookFeature content={content} design={design} /> : <Invitation content={content} />}
+  {design.composition==='book-left' ? <Invitation content={content} /> : <BookFeature content={content} design={design} />}
+</div>

@@ -8,20 +8,22 @@
 - Historical Eugene Onegin garden illustration by Elena Samokish-Sudkovskaya (1908), with source credit, descriptive alternative text and responsive WebP images. The editor can hide it; changing the first book removes this specific artwork. See [artwork provenance](ARTWORK.md).
 - Confirmed waitlist link, membership opening 24 September and reading start 1 October, first read *Eugene Onegin*, optional working email and future Patreon states.
 - Privacy page, 404, canonical metadata, sitemap, robots, organization data, accessible headings and controls; no public client JavaScript or analytics.
-- Private local editing UI: text, dates, links, logo upload/reset, optional note/FAQ blocks, ordering and visibility, search listing.
+- Private local editing UI: text, dates, links, logo upload/reset and search listing, plus four page compositions, width/spacing/typography controls, custom colours with contrast validation, button shapes and Onegin artwork placement/size.
+- Up to 12 text, FAQ, image-and-text and quote blocks, with drag ordering and keyboard buttons, duplication, visibility, width/alignment/background controls, text columns and image placement/crops. Undo/Redo tracks 40 changes in the current tab; style reset preserves content and ordering.
 - Draft save with stale-window conflict detection; exact saved previews; phone/desktop preview sizes; private upload staging; previous-content recovery mechanism.
 - Public publishing adapter: validates a reviewed artifact, sends generated output to a dedicated branch, reconciles a pending retry and checks the live release marker. Disabled pending real host connection.
 - GitHub Actions workflow: checks source pushes/pull requests and deploys successful `main` builds after Pages activation. Optional editor mode deploys the exact reviewed `dist/` artifact from `site-live`; its push includes the workflow. Only one mode can publish, preventing stale source from overwriting editor content.
-- Optional Pages CMS field configuration and a Mac application launcher; neither hosted authentication nor the native launcher has been exercised yet.
+- Earlier Pages CMS field configuration retained as an inactive reference; it does not cover the expanded block/layout model. A Mac application launcher is supplied but has not been exercised yet.
 
 ## Checked
 
 - Dependency installation completed; npm reported zero vulnerabilities at installation.
-- Eleven automated tests passed, including an isolated local HTTP/editor integration test with real Astro preview builds and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
+- Fifteen automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
 - Tested: stale draft save, invalid URL/calendar/email inputs, image path restrictions, malformed upload type, rejected foreign origin/Host/token, missing image, artifact modification/symlink, private unselected upload, selected image rendering route, and disabled public publishing.
 - Production build and built-page checks passed: confirmed copy/dates, canonical origin, working local references, no editor/private files in output and no public client scripts.
 - The local page returned HTTP 200 before its preview was opened.
-- Source review identified and corrected private upload leakage, lock ownership, preview validation, artifact copying and pending publication retry issues.
+- Tests also cover old-draft compatibility, exact block ordering, theme validation, strict setting types, image descriptions/dimensions, selected block image staging and readable preset colours. Generated HTML checks confirm that the book-left composition changes reading order along with its visual placement.
+- Source review identified and corrected private upload leakage, lock ownership, preview validation, artifact copying, pending publication retry, dark-theme skip-link contrast, narrow text columns and second-tab build-state recovery.
 
 These are programmatic checks. They are not a completed browser visual/accessibility audit, a successful public release, or owner acceptance.
 

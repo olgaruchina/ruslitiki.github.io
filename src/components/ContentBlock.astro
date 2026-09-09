@@ -1,0 +1,14 @@
+---
+import SectionImage from './SectionImage.astro';
+const {section}=Astro.props;
+const imageLayout=section.imageLayout || 'left';
+---
+<section class:list={['content-block',`block-${section.type}`,`block-width-${section.width}`,`block-align-${section.align}`,`block-tone-${section.tone}`,`block-layout-${section.layout}`]} data-block-id={section.id}>
+  {section.type==='faq' ? <details><summary>{section.heading}</summary><p class="block-copy">{section.body}</p></details> : section.type==='quote' ? <>
+    <h2>{section.heading}</h2><blockquote><p>{section.body}</p>{section.attribution && <cite>{section.attribution}</cite>}</blockquote>
+  </> : section.type==='image' ? <div class:list={['image-block',`image-${imageLayout}`]}>
+    {imageLayout!=='right' && <SectionImage section={section} />}
+    <div><h2>{section.heading}</h2>{section.body && <p class="block-copy">{section.body}</p>}</div>
+    {imageLayout==='right' && <SectionImage section={section} />}
+  </div> : <><h2>{section.heading}</h2><p class="block-copy">{section.body}</p></>}
+</section>

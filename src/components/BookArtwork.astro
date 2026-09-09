@@ -1,0 +1,8 @@
+---
+import { Image } from 'astro:assets';
+import artwork from '../assets/onegin-and-tatyana-1908.jpg';
+---
+<figure class="book-artwork">
+  <Image src={artwork} alt="Onegin speaks to Tatyana beside a white bench in a flowering garden." widths={[480,800,1047]} sizes="(min-width: 701px) 45vw, calc(100vw - 3rem)" format="webp" quality={85} loading="eager" decoding="async" />
+  <figcaption>Onegin and Tatyana. <a href="https://commons.wikimedia.org/wiki/File:Onegin_and_Tatyana.jpg">Elena Samokish-Sudkovskaya, 1908</a>.</figcaption>
+</figure>

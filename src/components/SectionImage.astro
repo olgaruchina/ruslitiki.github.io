@@ -1,0 +1,7 @@
+---
+const {section}=Astro.props;
+---
+<figure class:list={['section-image',`ratio-${section.imageRatio || 'auto'}`]}>
+  <img src={section.image} alt={section.imageAlt} width={section.imageWidth} height={section.imageHeight} loading="lazy" decoding="async" />
+  {(section.caption || section.sourceUrl) && <figcaption>{section.caption}{section.sourceUrl && <> <a href={section.sourceUrl}>Image source</a></>}</figcaption>}
+</figure>

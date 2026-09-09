@@ -1,5 +1,7 @@
-# Optional hosted content editor. Open an editorial branch, never the live-output
-# branch. This configuration does not activate authentication or publishing.
+# Inactive reference from the original content-only editor. It does not cover
+# the expanded layout/block schema; reconcile that model before activating.
+# Use the local editor for supported editing, previewing and publication.
+# Any future hosted editor must use an editorial branch, never live output.
 media:
   - name: images
     label: Website images

@@ -3,7 +3,7 @@ import { promises as fs } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { randomBytes, randomUUID } from 'node:crypto';
-import { readContent, validateContent } from '../src/lib/content.mjs';
+import { readContent, validateContent, selectedImagePaths } from '../src/lib/content.mjs';
 import { atomicJson, json, digest, fileMap, rendererDigest, checkRevision, saveDraft, safeImage } from './studio-store.mjs';
 import { run, publishRelease, validatePublishing, verifyArtifact } from './publish-release.mjs';
 
@@ -76,8 +76,10 @@ async function buildPreview() {
   await atomicJson(path.join(folder,'content.json'),content);
   const publicDir=path.join(folder,'public');
   await fs.cp(path.join(ROOT,'public'),publicDir,{recursive:true});
-  const stagedImage=path.join(STORAGE,'uploads',path.basename(content.logo));
-  try{await fs.copyFile(stagedImage,path.join(publicDir,content.logo.slice(1)));}catch(error){if(error.code!=='ENOENT')throw error;}
+  for(const image of selectedImagePaths(content)){
+    const stagedImage=path.join(STORAGE,'uploads',path.basename(image));
+    try{await fs.copyFile(stagedImage,path.join(publicDir,image.slice(1)));}catch(error){if(error.code!=='ENOENT')throw error;}
+  }
   const buildEnv={...process.env,RUSLITIKI_CONTENT_FILE:path.join(folder,'content.json'),RUSLITIKI_PUBLIC_DIR:publicDir,RUSLITIKI_PREVIEW:'0'};
   message='Preparing your saved draft…';
   await run(process.execPath,[path.join(ROOT,'scripts/check-content.mjs')],{cwd:ROOT,env:buildEnv});
@@ -147,7 +149,7 @@ const server=http.createServer(async(req,res)=>{
           if(old)await atomicJson(path.join(STORAGE,'previous-publication.json'),old);
           publication={...published,content:preview.content};
           await atomicJson(path.join(STORAGE,'publication.json'),publication);
-          await fs.copyFile(path.join(preview.directory,preview.content.logo.slice(1)),path.join(ROOT,'public',preview.content.logo.slice(1)));
+          for(const image of selectedImagePaths(preview.content))await fs.copyFile(path.join(preview.directory,image.slice(1)),path.join(ROOT,'public',image.slice(1)));
           // Keep the source of this published content easy to back up and commit.
           await atomicJson(path.join(ROOT,'content/site.json'),preview.content);
           preview.sourceHash=digest(await fs.readFile(path.join(ROOT,'content/site.json')));
@@ -161,6 +163,16 @@ const server=http.createServer(async(req,res)=>{
     if(url.pathname==='/'){
       const html=(await fs.readFile(path.join(UI,'index.html'),'utf8')).replace('STUDIO_TOKEN',TOKEN);
       res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});res.end(html);return;
+    }
+    if(url.pathname==='/design.mjs'){
+      res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','Cache-Control':'no-store'});
+      res.end(await fs.readFile(path.join(ROOT,'src/lib/design.mjs')));return;
+    }
+    if(/^\/media\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(url.pathname)){
+      const filename=path.basename(url.pathname);
+      const staged=path.join(STORAGE,'uploads');
+      const root=await fs.access(path.join(staged,filename)).then(()=>staged,()=>path.join(ROOT,'public/images'));
+      await staticFile(res,root,'/'+filename);return;
     }
     await staticFile(res,UI,url.pathname);
   }catch(error){if(!busy)message=error.message;send(res,error.status || 400,{error:error.message});}

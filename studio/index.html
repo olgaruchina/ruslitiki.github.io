@@ -7,21 +7,23 @@
   <meta name="studio-token" content="STUDIO_TOKEN">
   <title>Ruslitiki — Website editor</title>
   <link rel="stylesheet" href="/studio.css">
-  <script src="/studio.js" defer></script>
+  <link rel="stylesheet" href="/layout-controls.css">
+  <script src="/studio.js" type="module"></script>
 </head>
 <body>
   <header class="topbar">
     <a href="/" class="brand" aria-label="Ruslitiki website editor">Ruslitiki <span>Website editor</span></a>
-    <div class="top-actions"><span id="save-state">Loading…</span><button id="save" type="button" disabled>Save draft</button></div>
+    <div class="top-actions"><button id="undo" type="button" disabled>Undo</button><button id="redo" type="button" disabled>Redo</button><span id="save-state">Loading…</span><button id="save" type="button" disabled>Save draft</button></div>
   </header>
   <main class="workspace">
     <section class="editing" aria-labelledby="edit-heading">
-      <div class="edit-intro"><p class="eyebrow">Your website</p><h1 id="edit-heading">Make it yours.</h1><p>Change the words and details here. Preview your saved draft before it goes live.</p></div>
+      <div class="edit-intro"><p class="eyebrow">Your website</p><h1 id="edit-heading">Make it yours.</h1><p>Edit the words, arrange the page, and make the design your own. Preview your changes before publishing.</p></div>
       <div class="tabs" role="tablist" aria-label="Editing section">
         <button role="tab" aria-selected="true" aria-controls="panel-home" id="tab-home" data-tab="home">Introduction</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-design" id="tab-design" data-tab="design" tabindex="-1">Layout &amp; style</button>
         <button role="tab" aria-selected="false" aria-controls="panel-book" id="tab-book" data-tab="book" tabindex="-1">First book</button>
         <button role="tab" aria-selected="false" aria-controls="panel-details" id="tab-details" data-tab="details" tabindex="-1">Dates & links</button>
-        <button role="tab" aria-selected="false" aria-controls="panel-sections" id="tab-sections" data-tab="sections" tabindex="-1">Extra sections</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-sections" id="tab-sections" data-tab="sections" tabindex="-1">Page blocks</button>
         <button role="tab" aria-selected="false" aria-controls="panel-search" id="tab-search" data-tab="search" tabindex="-1">Search listing</button>
       </div>
       <form id="editor" novalidate>
@@ -30,6 +32,14 @@
           <label>Club description<input name="description" maxlength="180" required><small>One clear line explaining what Ruslitiki is.</small></label>
           <label>Introduction<textarea name="introduction" rows="4" maxlength="400" required></textarea></label>
           <fieldset class="logo-field"><legend>Wordmark</legend><p>The original Ruslitiki artwork is already in place.</p><label class="file-label">Choose a different image<input id="logo-upload" type="file" accept="image/png,image/jpeg,image/webp"></label><small>PNG, JPEG or WebP, up to 2 MB. Choose an image intended for the public website.</small><button id="original-logo" class="text-button" type="button">Use the original wordmark</button><p id="image-status" role="status"></p></fieldset>
+        </div>
+        <div role="tabpanel" id="panel-design" aria-labelledby="tab-design" hidden>
+          <fieldset class="design-group"><legend>Page composition</legend><div id="layout-choices" class="layout-choices"></div></fieldset>
+          <fieldset class="design-group"><legend>Size &amp; spacing</legend><div id="size-controls" class="design-controls"></div></fieldset>
+          <fieldset class="design-group"><legend>Typography</legend><div id="type-controls" class="design-controls"></div><label>Paragraph size <output id="body-size-value">18px</output><input type="range" min="16" max="22" step="1" name="design.bodySize"></label></fieldset>
+          <fieldset class="design-group"><legend>Colours</legend><div id="palette-choices" class="palette-choices"></div><div id="colour-controls"></div><p id="contrast-status" class="panel-help" role="status"></p></fieldset>
+          <fieldset class="design-group"><legend>Book illustration &amp; button</legend><div id="art-controls" class="design-controls"></div></fieldset>
+          <button id="reset-design" type="button">Reset page style</button><p class="panel-help reset-help">Restore the original style. Your text, images and block order stay in place. Undo is available.</p>
         </div>
         <div role="tabpanel" id="panel-book" aria-labelledby="tab-book" hidden>
           <label>Book title<input name="book.title" maxlength="120" required></label>
@@ -47,9 +57,12 @@
           <label>Instagram link<input type="url" name="instagramUrl" required></label>
         </div>
         <div role="tabpanel" id="panel-sections" aria-labelledby="tab-sections" hidden>
-          <p class="panel-help">The coming-soon page is intentionally short. Add a useful note or question when you need one. Up to six sections.</p>
+          <p class="panel-help">Drag blocks to arrange the page, or use Move up and Move down. The introduction includes the first book; change its composition in Layout &amp; style.</p>
+          <ol id="page-order" class="page-order" aria-label="Page order"></ol>
+          <p id="block-status" class="panel-help" role="status"></p>
+          <div class="section-actions" id="add-block-controls"></div>
+          <p class="panel-help">Add up to 12 blocks. Hidden blocks stay in your draft.</p>
           <div id="sections"></div>
-          <div class="section-actions"><button id="add-text" type="button">Add a note</button><button id="add-faq" type="button">Add a question</button></div>
         </div>
         <div role="tabpanel" id="panel-search" aria-labelledby="tab-search" hidden>
           <p class="panel-help">These describe the page in search results and shared links. Keep them specific to the club.</p>

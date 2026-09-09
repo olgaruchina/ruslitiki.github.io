@@ -10,9 +10,9 @@ For ordinary editing on this Mac, double-click **Ruslitiki Editor.app** after th
 
 ## Content and design
 
-`content/site.json` holds shared public copy, links, dates, the first book and optional text/FAQ blocks. The site validates it before building. The frontend renders plain text, never editor-supplied HTML or executable Markdown. The existing source banner is retained without modifying the original image; CSS fits its wordmark region. Literata and Golos Text are self-hosted through pinned OFL packages.
+`content/site.json` holds shared public copy, links, dates, the first book, optional text/FAQ/image/quote blocks and layout/style settings. The local editor can reorder, duplicate, hide and restyle blocks, change page composition, choose typography and colours, and undo changes without editing code. Validation enforces supported layouts, safe image paths and readable colour contrast before building. Older content receives default design settings without rewriting its saved revision. The frontend renders plain text, never editor-supplied HTML or executable Markdown. The existing source banner is retained without modifying the original image; CSS fits its wordmark region. Literata and Golos Text are self-hosted through pinned OFL packages.
 
-Native Pages CMS field configuration is supplied in `.pages.yml` as an optional hosted route. No hosted CMS account, collaborator invitation or remote draft/publish workflow is activated. Its standard actions did not provide the integrated preview/status experience required here, so this first prototype uses a local editor.
+The local editor is the supported workflow and has no recurring editor subscription. The earlier `.pages.yml` configuration is retained as an inactive reference; it does not cover the expanded layout/block schema. Do not activate it without reconciling those fields and deciding how remote drafts and publishing would work.
 
 ## Publishing status
 

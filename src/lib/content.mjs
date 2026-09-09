@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { validateDesign, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, normalizedSections } from './design.mjs';
 
 export const LIMITS = { heading: 100, description: 180, introduction: 400, bookNote: 300 };
 const own = (o, key) => Object.hasOwn(o, key);
@@ -18,13 +19,14 @@ export function validateContent(data) {
     return true;
   };
   const https = (value, label, required = true, hosts = []) => {
-    if (!value && !required) return;
+    if ((value === undefined || value === '') && !required) return;
     try {
+      if (typeof value !== 'string') throw new Error();
       const url = new URL(value);
       if (url.protocol !== 'https:' || url.username || url.password || (hosts.length && !hosts.includes(url.hostname))) throw new Error();
     } catch { errors.push(`${label}: enter a valid HTTPS link${hosts.length ? ` on ${hosts.join(' or ')}` : ''}.`); }
   };
-  if (!keys(data, ['brand','status','heading','description','introduction','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo'], 'Website')) return errors;
+  if (!keys(data, ['brand','status','heading','description','introduction','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design'], 'Website')) return errors;
   string(data.brand, 'Club name', 40);
   string(data.heading, 'Main heading', LIMITS.heading);
   string(data.description, 'Club description', LIMITS.description);
@@ -48,20 +50,39 @@ export function validateContent(data) {
     string(data.book.note, 'Book note', LIMITS.bookNote);
     if (own(data.book,'showArtwork') && typeof data.book.showArtwork !== 'boolean') errors.push('Book illustration: visibility must be on or off.');
   }
-  if (!Array.isArray(data.sections) || data.sections.length > 6) errors.push('Use at most six additional sections.');
+  if (!Array.isArray(data.sections) || data.sections.length > MAX_SECTIONS) errors.push(`Use at most ${MAX_SECTIONS} additional sections.`);
   else data.sections.forEach((section, i) => {
     const label = `Section ${i+1}`;
-    if (!keys(section, ['type','heading','body','visible'], label)) return;
-    if (!['text','faq'].includes(section.type)) errors.push(`${label}: choose Text or Question and answer.`);
+    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution'], label)) return;
+    if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
+    if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || section.id==='opening')) errors.push(`${label}: invalid block identifier.`);
     string(section.heading, `${label} heading`, 150);
-    string(section.body, `${label} text`, 1400);
+    string(section.body, `${label} text`, 1400, section.type!=='image');
     if (typeof section.visible !== 'boolean') errors.push(`${label}: visibility must be on or off.`);
+    for(const [key,choices] of Object.entries(SECTION_OPTIONS))if(own(section,key) && (typeof section[key]!=='string' || !Object.hasOwn(choices,section[key])))errors.push(`${label}: choose a supported ${key}.`);
+    if(section.type==='image'){
+      if(typeof section.image!=='string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(section.image))errors.push(`${label}: upload a PNG, JPEG or WebP image.`);
+      string(section.imageAlt,`${label} image description`,300);
+      for(const key of ['imageWidth','imageHeight'])if(!Number.isInteger(section[key]) || section[key]<1 || section[key]>12000)errors.push(`${label}: choose an image no larger than 12,000 pixels on either side.`);
+      string(section.caption??'',`${label} caption`,300,false);
+      https(section.sourceUrl,`${label} image source`,false);
+    }
+    if(section.type==='quote')string(section.attribution??'',`${label} attribution`,150,false);
   });
+  if(Array.isArray(data.sections) && data.sections.every(record)){
+    const ids=normalizedSections(data.sections).map(section=>section.id);
+    if(new Set(ids).size!==ids.length)errors.push('Each content block needs a unique identifier.');
+    errors.push(...validateDesign(data));
+  }
   if (keys(data.seo, ['title','description'], 'Search listing')) {
     string(data.seo.title, 'Search title', 100);
     string(data.seo.description, 'Search description', 240);
   }
   return errors;
+}
+
+export function selectedImagePaths(data) {
+  return [...new Set([data.logo,...data.sections.filter(section=>section.type==='image' && section.visible).map(section=>section.image)])];
 }
 
 export function readContent(file = process.env.RUSLITIKI_CONTENT_FILE || resolve('content/site.json')) {

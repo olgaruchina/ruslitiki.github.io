@@ -4,18 +4,22 @@ import '@fontsource/literata/latin-400-italic.css';
 import '@fontsource/golos-text/latin-400.css';
 import '@fontsource/golos-text/latin-500.css';
 import '../styles/site.css';
+import '../styles/customization.css';
+import { readContent } from '../lib/content.mjs';
+import { designFor, designVariables } from '../lib/design.mjs';
 const { title, description, path = '/', noindex = false } = Astro.props;
+const design=designFor(Astro.props.content || readContent());
 const canonical = new URL(path, Astro.site);
 const isPreview = process.env.RUSLITIKI_PREVIEW === '1';
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" style={designVariables(design)} data-button-style={design.buttonStyle}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="theme-color" content="#B4CDF6" />
+    <meta name="theme-color" content={design.background} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <meta property="og:type" content="website" />

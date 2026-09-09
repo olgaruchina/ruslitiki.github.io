@@ -1,0 +1,10 @@
+---
+import { ctaFor } from '../lib/content.mjs';
+const {content}=Astro.props;
+const action=ctaFor(content);
+---
+<div class="invitation" data-part="introduction">
+  <h1>{content.heading}</h1>
+  <p class="introduction">{content.introduction}</p>
+  <a class="join-button" href={action.url}>{action.label}<span aria-hidden="true">↗</span></a>
+</div>

@@ -6,6 +6,7 @@ import os from 'node:os';
 import net from 'node:net';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
+import { designFor, PALETTES } from '../src/lib/design.mjs';
 
 test('local editor keeps drafts private, validates requests and builds the exact selected preview', {timeout:60000}, async()=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'ruslitiki-http-'));
@@ -70,6 +71,34 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(selectedPreview.status,200,JSON.stringify(selectedPreview.data));
     assert.ok(!(await (await fetch(selectedPreview.data.preview.url)).text()).includes('Onegin speaks to Tatyana'),'The editor can hide the book illustration.');
     assert.equal((await fetch(new URL(stagedPath,selectedPreview.data.preview.url))).status,200,'The selected upload must appear in its reviewed release.');
+    const customized=structuredClone(content);
+    customized.sections=[
+      {id:'quote-first',type:'quote',heading:'A reading invitation',body:'A supplied quotation.',attribution:'Club notes',visible:true,tone:'accent',align:'center',width:'full'},
+      {id:'reader-image',type:'image',heading:'Our library',body:'Reading together.',visible:true,image:stagedPath,imageAlt:'The supplied Ruslitiki wordmark.',imageWidth:2500,imageHeight:1000,imageLayout:'right',imageRatio:'square'},
+    ];
+    customized.design={...designFor(customized),background:PALETTES.night.background,ink:PALETTES.night.ink,accent:PALETTES.night.accent,buttonStyle:'outline',width:'compact',spacing:'airy',headingFont:'golos',bodySize:20,blockOrder:['quote-first','opening','reader-image']};
+    let revision=savedSelected.data.revision;
+    for(const composition of ['book-left','stacked','centered','split']){
+      customized.design.composition=composition;
+      const next=await api('/api/save',{content:customized,revision});
+      assert.equal(next.status,200,JSON.stringify(next.data));revision=next.data.revision;
+      assert.equal(next.data.preview.current,false,'A layout change invalidates the reviewed preview.');
+      assert.equal(await fs.readFile(path.join(root,'content/site.json'),'utf8'),sourceBefore);
+      const result=await api('/api/preview',{revision});assert.equal(result.status,200,JSON.stringify(result.data));
+      const html=await (await fetch(result.data.preview.url)).text();
+      assert.ok(html.includes(`composition-${composition}`));
+      assert.ok(html.includes('--page-bg:#161b2c') && html.includes('data-button-style="outline"'));
+      assert.ok(html.indexOf('data-block-id="quote-first"')<html.indexOf('data-block-id="opening"'),'Custom blocks can appear before the introduction.');
+      assert.equal(html.indexOf('data-part="book"')<html.indexOf('data-part="introduction"'),composition==='book-left','Visual and document reading order agree.');
+      assert.equal((await fetch(new URL(stagedPath,result.data.preview.url))).status,customized.sections[1].visible?200:404,'Only visible block images are included when the logo uses the original asset.');
+      customized.sections[1].visible=false;
+    }
+    const rejected={...customized,design:{...customized.design,background:'#ffffff',ink:'#eeeeee'}};
+    assert.equal((await api('/api/save',{content:rejected,revision})).status,422,'Unreadable colours cannot overwrite a saved draft.');
+    assert.equal((await (await fetch(origin+'/api/state')).json()).revision,revision);
+    assert.match((await fetch(origin+'/design.mjs')).headers.get('content-type'),/javascript/);
+    const layoutStyles=await fetch(origin+'/layout-controls.css');
+    assert.equal(layoutStyles.status,200);assert.match(layoutStyles.headers.get('content-type'),/css/);
     const current=await (await fetch(origin+'/api/state')).json();
     const missing={...current.content,logo:'/images/missing.png'};
     const savedMissing=await api('/api/save',{content:missing,revision:current.revision});
