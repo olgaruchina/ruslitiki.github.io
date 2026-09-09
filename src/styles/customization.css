@@ -1,6 +1,21 @@
 :root{--rule:color-mix(in srgb,var(--ink) 35%,var(--page-bg));background:var(--page-bg);font-family:var(--body-font)}
-.skip-link{background:var(--page-bg);color:var(--ink)}
+.skip-link{background:var(--page-bg);color:var(--ink);z-index:100}
 .landing{max-width:var(--page-width)}
+.section-nav{background:var(--page-bg);border-bottom:1px solid var(--rule);padding:.5rem 0;z-index:20}
+.section-nav ul{display:flex;flex-wrap:wrap;gap:.25rem clamp(.75rem,3vw,2.5rem);list-style:none;padding:0;margin:0}
+.section-nav li{min-width:0;max-width:100%}
+.section-nav a{display:inline-flex;align-items:center;min-height:44px;max-width:100%;overflow-wrap:anywhere;padding:.45rem .15rem;font:500 1rem/1.5 var(--sans);text-decoration:none;color:var(--indigo)}
+.section-nav a:hover{text-decoration:underline;text-underline-offset:.35em}
+.section-nav a:focus-visible{outline-offset:-2px}
+.content-block,#first-book-title{scroll-margin-top:1.5rem}
+.content-block:focus-visible,#first-book-title:focus-visible{outline:2px solid var(--indigo);outline-offset:8px}
+@media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+@media(min-width:701px) and (min-height:600px){
+  .section-nav{position:sticky;top:0}
+  .section-nav ul{flex-wrap:nowrap;overflow-x:auto}
+  .section-nav li{flex:none}
+  .content-block,#first-book-title{scroll-margin-top:6rem}
+}
 .wordmark{max-width:var(--logo-width)}
 .wordmark-original{background:var(--blue)}
 .opening{padding-block:var(--section-space);align-items:start}

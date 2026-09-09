@@ -64,6 +64,19 @@ export function designFor(content) {
   for(const id of valid)if(!order.includes(id))order.push(id);
   return {...DESIGN_DEFAULTS,...content.design,blockOrder:order};
 }
+const DEFAULT_MENU_LABELS={'meet-ruslitiki':'Meet Olga','how-the-club-works':'How it works',membership:'Membership',faq:'FAQs'};
+export function navigationLabel(section) {
+  return (section.navLabel??DEFAULT_MENU_LABELS[section.id]??'').trim();
+}
+export function pageNavigation(content) {
+  const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
+  return designFor(content).blockOrder.flatMap(id=>{
+    if(id==='opening')return [{id:'first-book-title',label:'First book'}];
+    const section=sections.get(id);
+    const label=section?.visible?navigationLabel(section):'';
+    return label?[{id,label}]:[];
+  });
+}
 export function editableContent(content) {
   const draft=structuredClone(content);
   draft.sections=normalizedSections(draft.sections);

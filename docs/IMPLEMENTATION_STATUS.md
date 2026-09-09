@@ -11,6 +11,7 @@
 - Seven expandable FAQs explain the audience, translation, weekly offering, launch, discussion preparation, timezones and waitlist/membership distinction. Early-bird eligibility/duration, exact session times and replay arrangements remain unconfirmed.
 - Editable YouTube blocks accept video links and produce responsive, lazy-loaded privacy-enhanced players with no autoplay. The club introduction block is hidden until the owner provides the video later in the week; no placeholder player appears publicly. Player interaction is reserved for Saved preview; the editing canvas opens video settings.
 - Privacy page, 404, canonical metadata, sitemap, robots, organization data, accessible headings and controls; no public client JavaScript or analytics.
+- Section navigation links to the first book and labelled visible blocks. Links follow page order, exclude hidden/removed sections, and support editable labels. Native anchors need no public script; the larger-screen sticky bar has scroll offsets, keyboard focus targets and reduced-motion support. Mobile navigation wraps in normal flow.
 - Private local editing UI: text, dates, links, logo upload/reset and search listing, plus four page compositions, width/spacing/typography controls, custom colours with contrast validation, button shapes and Onegin artwork placement/size.
 - Visual editing canvas renders the shared homepage components, with direct text editing, section move handles, drag-to-insert palette, insertion controls and arrow-button alternatives. Section options remain available in the inspector. The local canvas uses isolated per-tab snapshots and is excluded from production output.
 - Up to 12 text, FAQ, image-and-text, button and quote blocks, with optional buttons in any block, duplication, visibility, width/alignment/background controls, text columns and image placement/crops. Undo/Redo tracks 40 changes in the current tab and groups inline typing; style reset preserves content and ordering. Unfinished blocks can be saved privately but must be completed or hidden before preparing a public preview.
@@ -23,7 +24,7 @@
 ## Checked
 
 - Dependency installation completed; npm reported zero vulnerabilities at installation.
-- Twenty-seven automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
+- Twenty-eight automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
 - Tested: stale draft save, invalid URL/calendar/email inputs, image path restrictions, malformed upload type, rejected foreign origin/Host/token, missing image, artifact modification/symlink, private unselected upload, selected image rendering route, and disabled public publishing.
 - Production build and built-page checks passed: confirmed copy/dates, canonical origin, working local references, no editor/private files in output and no public client scripts.
 - The local page returned HTTP 200 before its preview was opened.

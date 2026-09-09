@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readContent, validateContent, selectedImagePaths } from '../src/lib/content.mjs';
-import { DESIGN_DEFAULTS, PALETTES, designFor, editableContent } from '../src/lib/design.mjs';
+import { DESIGN_DEFAULTS, PALETTES, designFor, editableContent, pageNavigation } from '../src/lib/design.mjs';
 
 test('legacy content receives stable layout defaults without changing saved data',()=>{
   const content=readContent();delete content.design;
@@ -42,6 +42,22 @@ test('page ordering cannot lose or duplicate content blocks',()=>{
   assert.ok(validateContent(content).some(error=>error.startsWith('Page order')));
   content.design.blockOrder=['opening'];
   assert.ok(validateContent(content).some(error=>error.startsWith('Page order')));
+});
+
+test('section navigation follows visible block order and preserves explicit menu choices',()=>{
+  const content=editableContent(readContent());
+  content.sections=[
+    {id:'membership',type:'text',heading:'Membership',body:'Details.',visible:true},
+    {id:'faq',type:'text',heading:'Questions',body:'Answers.',visible:false},
+    {id:'custom',type:'text',heading:'A new section',body:'More.',visible:true,navLabel:'New reading'},
+  ];
+  content.design.blockOrder=['membership','opening','custom','faq'];
+  assert.deepEqual(pageNavigation(content),[{id:'membership',label:'Membership'},{id:'first-book-title',label:'First book'},{id:'custom',label:'New reading'}]);
+  content.sections[0].navLabel='';content.sections[1].visible=true;
+  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','custom','faq']);
+  content.sections[2].navLabel={};assert.ok(validateContent(content).some(error=>error.includes('menu label')));
+  content.sections[2].navLabel='Custom';content.sections[2].id='first-book-title';
+  assert.ok(validateContent(content).some(error=>error.includes('invalid block identifier')));
 });
 
 test('block images require safe paths, descriptions and dimensions; hidden images stay private',()=>{

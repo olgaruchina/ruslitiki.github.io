@@ -1,4 +1,4 @@
-import { DESIGN_DEFAULTS, DESIGN_OPTIONS, PALETTES, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, editableContent, contrast } from '/design.mjs';
+import { DESIGN_DEFAULTS, DESIGN_OPTIONS, PALETTES, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, editableContent, contrast, navigationLabel } from '/design.mjs';
 import { insertSection, moveSectionBefore, setCanvasText, editableField } from '/canvas-model.mjs';
 import { VisualCanvas } from '/visual-canvas.js';
 const $ = selector => document.querySelector(selector);
@@ -326,11 +326,13 @@ function renderSections(){
     const wrapper=element('details');wrapper.className='section-item block-editor';wrapper.id='edit-'+id;wrapper.dataset.sectionId=id;wrapper.open=open.has(id) || activeBlockId===id;
     wrapper.append(element('summary',SECTION_TYPES[section.type]+' · '+(section.heading || 'New block')));
     const fields=element('div');fields.className='block-fields';
-    const textField=(key,label,tag='input',max=150)=>{
-      const field=element('label',label);const input=element(tag);input.value=section[key]??'';input.maxLength=max;if(tag==='textarea')input.rows=4;
+    const textField=(key,label,tag='input',max=150,fallback='')=>{
+      const field=element('label',label);const input=element(tag);input.value=section[key]??fallback;input.maxLength=max;if(tag==='textarea')input.rows=4;
       input.addEventListener('input',()=>{section[key]=input.value;changed();if(key==='heading'){name.textContent=section.heading || SECTION_TYPES[section.type];wrapper.querySelector('summary').textContent=SECTION_TYPES[section.type]+' · '+(section.heading || 'New block');}});field.append(input);fields.append(field);
     };
     textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
+    textField('navLabel','Menu label (optional)','input',32,navigationLabel(section));
+    fields.append(element('small','Add a short label to link to this section from the menu. Clear it to leave the section out of the menu. Hidden sections never appear in the menu.'));
     textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':['image','video','button'].includes(section.type)?'Text (optional)':'Text','textarea',1400);
     if(section.type==='quote')textField('attribution','Attribution (optional)');
     if(section.type==='video'){

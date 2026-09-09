@@ -94,6 +94,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(previewHtml.includes('Read the classics together.'));
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
     assert.ok(previewHtml.includes('Frequently asked questions') && previewHtml.includes('Do I need to read Russian?'));
+    const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
+    for(const id of ['first-book-title','how-the-club-works','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
+    assert.ok(!menu.includes('#meet-ruslitiki'),'Hidden video sections stay out of the menu.');
     assert.ok(!previewHtml.includes('youtube-nocookie.com/embed/'),'The pending video must not publish a broken player.');
     assert.equal((await fetch(new URL(stagedPath,built.data.preview.url))).status,404,'Unselected upload must not be included in a release.');
     const manifest=JSON.parse(await fs.readFile(path.join(root,'.studio/previews',built.data.preview.id,'manifest.json')));
@@ -126,6 +129,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
       assert.ok(html.includes(`composition-${composition}`));
       assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
       assert.ok(html.includes('src="https://www.youtube-nocookie.com/embed/M7lc1UVf-VE"') && html.includes('referrerpolicy="strict-origin-when-cross-origin"') && html.includes('title="Video fixture"'));
+      const customMenu=html.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
+      assert.ok(!customMenu.includes('#membership') && !customMenu.includes('#faq'),'Removed sections leave no broken menu links.');
       assert.ok(!html.includes('autoplay=1') && !html.includes('canvas-video-control'));
       assert.ok(html.includes('--page-bg:#161b2c') && html.includes('data-button-style="outline"'));
       assert.ok(html.indexOf('data-block-id="quote-first"')<html.indexOf('data-block-id="opening"'),'Custom blocks can appear before the introduction.');

@@ -53,9 +53,10 @@ export function validateContent(data, {draft = false} = {}) {
   if (!Array.isArray(data.sections) || data.sections.length > MAX_SECTIONS) errors.push(`Use at most ${MAX_SECTIONS} additional sections.`);
   else data.sections.forEach((section, i) => {
     const label = `Section ${i+1}`;
-    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl'], label)) return;
+    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
     if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
-    if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || section.id==='opening')) errors.push(`${label}: invalid block identifier.`);
+    if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
+    if(own(section,'navLabel'))string(section.navLabel,`${label} menu label`,32,false);
     string(section.heading, `${label} heading`, 150, !draft && section.type!=='button');
     string(section.body, `${label} text`, 1400, !draft && !['image','video','button'].includes(section.type));
     if (typeof section.visible !== 'boolean') errors.push(`${label}: visibility must be on or off.`);

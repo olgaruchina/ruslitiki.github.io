@@ -2,10 +2,11 @@
 import Page from '../layouts/Page.astro';
 import Opening from './Opening.astro';
 import ContentBlock from './ContentBlock.astro';
-import { designFor, normalizedSections } from '../lib/design.mjs';
+import { designFor, normalizedSections, pageNavigation } from '../lib/design.mjs';
 const {content,visualEditing=false}=Astro.props;
 const design=designFor(content);
 const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
+const navigation=pageNavigation(content);
 const status={ 'coming-soon':'Coming soon','membership-open':'Membership is open',reading:'Reading together' }[content.status];
 const structuredData = {
   '@context':'https://schema.org',
@@ -28,6 +29,9 @@ const structuredData = {
         <p class="status">{status}<span aria-hidden="true"> ↗</span></p>
       </div>
     </header>
+    <nav class="section-nav" aria-label="On this page">
+      <ul>{navigation.map(item=><li><a href={`#${item.id}`}>{item.label}</a></li>)}</ul>
+    </nav>
     <main id="main">
       {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock section={sections.get(id)} visualEditing={visualEditing} />)}
     </main>

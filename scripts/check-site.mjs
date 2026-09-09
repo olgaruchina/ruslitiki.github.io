@@ -14,6 +14,11 @@ assert.ok(home.includes('https://www.ruslitiki.com/'),'Canonical origin is missi
 assert.ok(!home.includes('mailto:') || Boolean(content.email),'Do not publish an unconfigured mailbox.');
 assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must not ship on the public page.');
 assert.ok(!home.includes('googletagmanager') && !home.includes('google-analytics'),'Unexpected tracking code.');
+const menu=home.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
+assert.ok(menu,'The section menu is missing.');
+for(const [,id] of menu.matchAll(/href="#([a-z][a-z0-9-]*)"/g)){
+  assert.equal([...home.matchAll(new RegExp(`\\sid="${id}"`,'g'))].length,1,`Menu target ${id} must exist exactly once.`);
+}
 const videos=content.sections.filter(section=>section.type==='video' && section.visible);
 const frames=[...home.matchAll(/<iframe\b([^>]*)>/g)];
 assert.equal(frames.length,videos.length,'Only configured visible videos may render a player.');

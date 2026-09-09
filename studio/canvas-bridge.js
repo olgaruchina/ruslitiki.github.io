@@ -69,6 +69,12 @@
     if(event.target.closest('#canvas-tools,#canvas-add-end'))return;
     const link=event.target.closest('a');if(link)event.preventDefault();
     if(locked)return;
+    if(link?.closest('.section-nav')){
+      finishEditing();
+      const target=document.getElementById(link.getAttribute('href').slice(1));
+      if(target){target.scrollIntoView({block:'start'});target.focus({preventScroll:true});const block=target.closest('[data-block-id]');if(block)select(block.dataset.blockId,block.dataset.blockId==='opening'?'book.title':undefined);}
+      return;
+    }
     const field=event.target.closest('[data-edit-field]');if(field){if(field.closest('summary'))event.preventDefault();beginEditing(field);return;}
     finishEditing();
     const block=event.target.closest('[data-block-id]');
