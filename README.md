@@ -18,6 +18,8 @@ The waitlist page explains the weekly reading materials, monthly guided discussi
 
 The local editor is the supported workflow and has no recurring editor subscription. The earlier `.pages.yml` configuration is retained as an inactive reference; it does not cover the expanded layout/block schema. Do not activate it without reconciling those fields and deciding how remote drafts and publishing would work.
 
+`/llms.txt` provides an AI-readable overview of the club, dates, first book, visible sections and active join/contact links. It is generated from the same content snapshot as the HTML, including editor-prepared releases, so it needs no separate maintenance. Hidden blocks and inactive join links are excluded. Pages advertise it with a `describedby` link; the existing sitemap and robots rules remain in place. The [llms.txt proposal](https://llmstxt.org/) complements conventional search metadata and is not a ranking guarantee.
+
 ## Publishing status
 
 The original GitHub Pages configuration serves `main` from the repository root. Development remains on a separate branch. Nothing should be merged to `main` solely to publish this Astro source: the old Pages setup would not build it correctly.

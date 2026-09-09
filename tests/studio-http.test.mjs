@@ -92,6 +92,12 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const previewHtml=await rendered.text();
     assert.ok(!previewHtml.includes('/@vite/') && !previewHtml.includes('/__canvas/') && !previewHtml.includes('data-edit-field='),'A preview prepared after canvas startup is still a production artifact.');
     assert.ok(previewHtml.includes('Read the classics together.'));
+    const overview=await fetch(new URL('/llms.txt',built.data.preview.url));
+    assert.equal(overview.status,200);
+    assert.match(overview.headers.get('content-type'),/text\/plain/);
+    const overviewText=await overview.text();
+    assert.ok(overviewText.includes('Read the classics together.'),'The AI overview must use the reviewed draft, not public source.');
+    assert.ok(!overviewText.includes('#meet-ruslitiki'),'Hidden sections must stay out of the AI overview.');
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
     assert.ok(previewHtml.includes('Frequently asked questions') && previewHtml.includes('Do I need to read Russian?'));
     const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];

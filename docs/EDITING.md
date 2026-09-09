@@ -13,6 +13,8 @@ After setup, **Publish website** sends your reviewed page to GitHub, and GitHub 
 
 **Dates & links:** leave the email empty until the mailbox actually works. Only switch from Coming soon when the real Patreon link is available. Dates never activate a paid membership button automatically.
 
+**AI-readable overview:** the website's `llms.txt` updates automatically when you prepare and publish the page. It uses the same club details, dates, visible sections and active links. Hidden sections stay out, and there is no separate file for you to edit.
+
 **Images:** use a PNG, JPEG or WebP under 2 MB. New uploads stay in the editor's private working area. Only the selected logo and images in visible blocks are copied from that private area into the reviewed release. Previously published images may remain in the site's image library. Use the original wordmark button to return to the existing branding.
 
 **Book illustration:** under **First book**, use **Show the Eugene Onegin illustration** to show or hide the historical garden scene. Its artist credit appears with it. Changing the book title or author hides this Onegin-specific artwork automatically.

@@ -3,10 +3,17 @@ import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { readContent, ctaFor } from '../src/lib/content.mjs';
 import {youtubeVideoId} from '../src/lib/design.mjs';
+import {renderLlms} from '../src/lib/llms.mjs';
 const root=path.resolve(process.argv[2] || 'dist');
 const content=readContent();
 const home=await fs.readFile(path.join(root,'index.html'),'utf8');
 const privacy=await fs.readFile(path.join(root,'privacy/index.html'),'utf8');
+const llms=await fs.readFile(path.join(root,'llms.txt'),'utf8');
+assert.equal(llms,renderLlms(content,'https://www.ruslitiki.com/'),'The AI overview must match the content being published.');
+assert.ok(home.includes('rel="describedby" href="/llms.txt"'),'The AI overview discovery link is missing.');
+for(const [,id] of llms.matchAll(/https:\/\/www\.ruslitiki\.com\/#([a-z][a-z0-9-]*)/g)){
+  assert.equal([...home.matchAll(new RegExp(`\\sid="${id}"`,'g'))].length,1,`AI overview target ${id} must exist exactly once.`);
+}
 assert.equal((home.match(/<h1(?:\s|>)/g)||[]).length,1,'Homepage must have one H1.');
 assert.ok(home.includes(ctaFor(content).url),'The active signup link is missing.');
 assert.ok(home.includes(content.openingDate) && home.includes(content.readingDate),'The saved dates are missing.');
@@ -36,4 +43,4 @@ for(const entry of ['studio','scripts','content','.studio','.git']){
 }
 const scripts=[...home.matchAll(/<script([^>]*)>/g)].filter(match=>!match[1].includes('application/ld+json'));
 assert.equal(scripts.length,0,'The coming-soon page should not require client JavaScript.');
-console.log('Built-page checks passed: content, dates, canonical, links, assets, privacy boundary and zero client scripts.');
+console.log('Built-page checks passed: content, AI overview, dates, canonical, links, assets, privacy boundary and zero client scripts.');
