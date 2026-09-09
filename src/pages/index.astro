@@ -1,10 +1,13 @@
 ---
 import Page from '../layouts/Page.astro';
+import { Image } from 'astro:assets';
+import oneginArtwork from '../assets/onegin-and-tatyana-1908.jpg';
 import { readContent, ctaFor, formatDate } from '../lib/content.mjs';
 const content = readContent();
 const action = ctaFor(content);
 const status = { 'coming-soon': 'Coming soon', 'membership-open': 'Membership is open', reading: 'Reading together' }[content.status];
 const sections = content.sections.filter(section => section.visible);
+const showOneginArtwork = content.book.showArtwork !== false && content.book.title.trim().toLowerCase() === 'eugene onegin' && content.book.author.trim().toLowerCase() === 'alexander pushkin';
 const structuredData = {
   '@context':'https://schema.org',
   '@type':'Organization',
@@ -37,6 +40,21 @@ const structuredData = {
           <p class="book-label">Our first book</p>
           <h2 id="first-book-title"><i>{content.book.title}</i></h2>
           <p class="author">by {content.book.author}</p>
+          {showOneginArtwork && <figure class="book-artwork">
+            <Image
+              src={oneginArtwork}
+              alt="Onegin speaks to Tatyana beside a white bench in a flowering garden."
+              widths={[480, 800, 1047]}
+              sizes="(min-width: 1440px) 445px, (min-width: 701px) 38vw, calc(100vw - 3rem)"
+              format="webp"
+              quality={85}
+              loading="eager"
+              decoding="async"
+            />
+            <figcaption>
+              Onegin and Tatyana. <a href="https://commons.wikimedia.org/wiki/File:Onegin_and_Tatyana.jpg">Elena Samokish-Sudkovskaya, 1908</a>.
+            </figcaption>
+          </figure>}
           <p class="book-note">{content.book.note}</p>
           <dl class="dates">
             <div><dt>Membership opens</dt><dd><time datetime={content.openingDate}>{formatDate(content.openingDate)}</time></dd></div>

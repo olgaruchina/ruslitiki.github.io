@@ -5,6 +5,7 @@
 ## Implemented
 
 - Responsive, static Astro coming-soon page using the supplied wordmark, pale blue, Literata and Golos Text.
+- Historical Eugene Onegin garden illustration by Elena Samokish-Sudkovskaya (1908), with source credit, descriptive alternative text and responsive WebP images. The editor can hide it; changing the first book removes this specific artwork. See [artwork provenance](ARTWORK.md).
 - Confirmed waitlist link, membership opening 24 September and reading start 1 October, first read *Eugene Onegin*, optional working email and future Patreon states.
 - Privacy page, 404, canonical metadata, sitemap, robots, organization data, accessible headings and controls; no public client JavaScript or analytics.
 - Private local editing UI: text, dates, links, logo upload/reset, optional note/FAQ blocks, ordering and visibility, search listing.

@@ -15,7 +15,10 @@ async function request(path,data){
   return result;
 }
 function renderFields(){
-  for(const field of $('#editor').querySelectorAll('[name]'))field.value=get(draft,field.name);
+  for(const field of $('#editor').querySelectorAll('[name]')){
+    if(field.type==='checkbox')field.checked=get(draft,field.name)!==false;
+    else field.value=get(draft,field.name);
+  }
   renderSections();
 }
 function changed(){dirty=true;$('#error').hidden=true;update();}
@@ -58,7 +61,7 @@ async function save(){
 }
 $('#editor').addEventListener('submit',event=>event.preventDefault());
 $('#editor').addEventListener('input',event=>{
-  if(event.target.name){set(draft,event.target.name,event.target.value);changed();}
+  if(event.target.name){set(draft,event.target.name,event.target.type==='checkbox' ? event.target.checked : event.target.value);changed();}
 });
 $('#save').addEventListener('click',()=>operation(save));
 $('#preview').addEventListener('click',()=>operation(async()=>{if(dirty)await save();state=await request('/api/preview',{revision:state.revision});update();}));

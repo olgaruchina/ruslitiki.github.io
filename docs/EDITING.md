@@ -15,6 +15,8 @@ After setup, **Publish website** sends your reviewed page to GitHub, and GitHub 
 
 **Images:** use a PNG, JPEG or WebP under 2 MB. New uploads stay in the editor's private working area. Only the image selected for the reviewed page is included in its release. Use the original wordmark button to return to the existing branding.
 
+**Book illustration:** under **First book**, use **Show the Eugene Onegin illustration** to show or hide the historical garden scene. Its artist credit appears with it. Changing the book title or author hides this Onegin-specific artwork automatically.
+
 **Extra sections:** add a short note or a question and answer, then move it up/down or hide it. These are optional; the first release is intentionally brief. Typography and mobile layout are handled for you.
 
 **Recovery:** after there are two confirmed publications, Restore previous version copies the earlier content into a draft for review. Your newer draft is backed up first. Review and publish the restoration when ready. It does not silently change the live page.

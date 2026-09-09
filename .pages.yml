@@ -85,6 +85,7 @@ content:
           - { name: title, label: Book title, type: string, required: true }
           - { name: author, label: Author, type: string, required: true }
           - { name: note, label: Short invitation, type: text, required: true }
+          - { name: showArtwork, label: Show the Eugene Onegin illustration, type: boolean, default: true }
       - name: sections
         label: Additional sections
         type: block

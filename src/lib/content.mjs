@@ -42,10 +42,11 @@ export function validateContent(data) {
   if (data.email && !/^[^\s<>@\r\n]+@[^\s<>@\r\n]+\.[^\s<>@\r\n]+$/.test(data.email)) errors.push('Enter a working email address, or leave the field empty.');
   if (typeof data.logo !== 'string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(data.logo)) errors.push('Logo: choose a PNG, JPEG or WebP in the image library.');
   if (!['original-banner','image'].includes(data.logoPresentation)) errors.push('Choose the logo presentation.');
-  if (keys(data.book, ['title','author','note'], 'First book')) {
+  if (keys(data.book, ['title','author','note','showArtwork'], 'First book')) {
     string(data.book.title, 'Book title', 120);
     string(data.book.author, 'Author', 100);
     string(data.book.note, 'Book note', LIMITS.bookNote);
+    if (own(data.book,'showArtwork') && typeof data.book.showArtwork !== 'boolean') errors.push('Book illustration: visibility must be on or off.');
   }
   if (!Array.isArray(data.sections) || data.sections.length > 6) errors.push('Use at most six additional sections.');
   else data.sections.forEach((section, i) => {

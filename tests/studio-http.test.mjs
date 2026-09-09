@@ -40,6 +40,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const reboundStatus=await new Promise((resolve,reject)=>{const req=http.get(origin+'/api/state',{headers:{Host:'rebound.example'}},res=>{res.resume();resolve(res.statusCode);});req.on('error',reject);});
     assert.equal(reboundStatus,403);
     const content=structuredClone(initial.content);content.heading='Read the classics together.';
+    delete content.book.showArtwork; // Existing saved drafts predate this optional field.
     const saved=await api('/api/save',{content,revision:initial.revision});
     assert.equal(saved.status,200);
     assert.equal(await fs.readFile(path.join(root,'content/site.json'),'utf8'),sourceBefore,'Saving must not touch public source.');
@@ -55,15 +56,19 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(built.data.preview.current,true);
     const rendered=await fetch(built.data.preview.url);
     assert.match(rendered.headers.get('x-robots-tag'),/noindex/);
-    assert.ok((await rendered.text()).includes('Read the classics together.'));
+    const previewHtml=await rendered.text();
+    assert.ok(previewHtml.includes('Read the classics together.'));
+    assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
     assert.equal((await fetch(new URL(stagedPath,built.data.preview.url))).status,404,'Unselected upload must not be included in a release.');
     const manifest=JSON.parse(await fs.readFile(path.join(root,'.studio/previews',built.data.preview.id,'manifest.json')));
     assert.equal((await fetch(new URL('/favicon.svg',built.data.preview.url))).status,200);
     assert.equal((await api('/api/publish',{previewId:built.data.preview.id,confirmed:true})).status,400,'Publishing must remain disconnected until configured.');
     const selected={...content,logo:stagedPath,logoPresentation:'image'};
+    selected.book={...content.book,showArtwork:false};
     const savedSelected=await api('/api/save',{content:selected,revision:saved.data.revision});
     const selectedPreview=await api('/api/preview',{revision:savedSelected.data.revision});
     assert.equal(selectedPreview.status,200,JSON.stringify(selectedPreview.data));
+    assert.ok(!(await (await fetch(selectedPreview.data.preview.url)).text()).includes('Onegin speaks to Tatyana'),'The editor can hide the book illustration.');
     assert.equal((await fetch(new URL(stagedPath,selectedPreview.data.preview.url))).status,200,'The selected upload must appear in its reviewed release.');
     const current=await (await fetch(origin+'/api/state')).json();
     const missing={...current.content,logo:'/images/missing.png'};

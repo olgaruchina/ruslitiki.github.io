@@ -35,6 +35,7 @@
           <label>Book title<input name="book.title" maxlength="120" required></label>
           <label>Author<input name="book.author" maxlength="100" required></label>
           <label>A short invitation to this book<textarea name="book.note" rows="5" maxlength="300" required></textarea></label>
+          <label class="artwork-toggle"><input name="book.showArtwork" type="checkbox"> Show the Eugene Onegin illustration<small>The illustration is hidden automatically when you change the first book.</small></label>
         </div>
         <div role="tabpanel" id="panel-details" aria-labelledby="tab-details" hidden>
           <label>Membership state<select name="status"><option value="coming-soon">Coming soon — show the waitlist</option><option value="membership-open">Membership open — link to Patreon</option><option value="reading">Reading together — link to Patreon</option></select><small>Change this when the membership link is ready. It does not switch automatically.</small></label>

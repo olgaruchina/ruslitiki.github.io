@@ -15,7 +15,8 @@
   "book": {
     "title": "Eugene Onegin",
     "author": "Alexander Pushkin",
-    "note": "Love, friendship, and missed chances. Our first read, beginning this October."
+    "note": "Love, friendship, and missed chances. Our first read, beginning this October.",
+    "showArtwork": true
   },
   "sections": [],
   "seo": {
