@@ -39,6 +39,12 @@
 .content-block blockquote{margin:0}
 .content-block blockquote p{font:400 clamp(1.5rem,3vw,2.4rem)/1.45 var(--heading-font);white-space:pre-line}
 .content-block cite{display:block;font:400 1rem/1.6 var(--body-font);margin-top:1rem}
+.section-button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;margin-top:1.4rem;padding:.75rem 1.25rem;font:500 1rem/1.4 var(--sans);border:1px solid var(--indigo);border-radius:6px;text-decoration:none;background:var(--indigo);color:var(--button-ink)}
+.section-button-outline{background:transparent;color:var(--indigo)}.section-button-text{background:transparent;border-color:transparent;color:inherit;padding-inline:0;text-decoration:underline;text-underline-offset:.2em}
+.section-button:hover{background:var(--ink);border-color:var(--ink);color:var(--page-bg)}.section-button-text:hover{background:transparent;color:inherit;border-color:transparent;text-decoration-thickness:2px}
+.block-button .section-button{margin-top:0}.block-tone-accent .section-button{background:var(--button-ink);color:var(--indigo);border-color:var(--button-ink)}
+.block-tone-accent .section-button-outline,.block-tone-accent .section-button-text{background:transparent;color:var(--button-ink)}
+[data-button-style=square] .section-button{border-radius:0}[data-button-style=pill] .section-button{border-radius:999px}
 .image-block{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(1.5rem,4vw,3rem);align-items:center}
 .image-above{grid-template-columns:minmax(0,1fr)}
 .section-image{margin:0;min-width:0}

@@ -27,9 +27,17 @@ export const SECTION_OPTIONS = {
   layout:{single:'One column',columns:'Two text columns'},
   imageLayout:{left:'Image on the left',right:'Image on the right',above:'Image above text'},
   imageRatio:{auto:'Original proportions',landscape:'Landscape crop',square:'Square crop',portrait:'Portrait crop'},
+  buttonKind:{primary:'Filled',outline:'Outline',text:'Text link'},
 };
-export const SECTION_TYPES = {text:'Text',faq:'Question and answer',image:'Image and text',quote:'Quote'};
+export const SECTION_TYPES = {text:'Text',image:'Image and text',button:'Button',faq:'Question and answer',quote:'Quote'};
 export const MAX_SECTIONS = 12;
+
+export function safeButtonUrl(value) {
+  if(typeof value!=='string' || !value || value.length>2000 || /[\s<>\r\n]/.test(value))return false;
+  if(/^#[a-z][a-z0-9-]*$/i.test(value) || /^\/(?:[a-z0-9_-]+\/)*$/i.test(value))return true;
+  if(/^mailto:[^\s<>@?\r\n]+@[^\s<>@?\r\n]+\.[^\s<>@?\r\n]+$/i.test(value))return !/%/.test(value);
+  try{const url=new URL(value);return url.protocol==='https:' && !url.username && !url.password;}catch{return false;}
+}
 
 export function normalizedSections(sections=[]) {
   return sections.map((section,index)=>({width:'reading',align:'left',tone:'plain',layout:'single',...section,id:section.id || `section-${index+1}`}));

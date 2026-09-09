@@ -1,4 +1,6 @@
 import { DESIGN_DEFAULTS, DESIGN_OPTIONS, PALETTES, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, editableContent, contrast } from '/design.mjs';
+import { insertSection, moveSectionBefore, setCanvasText, editableField } from '/canvas-model.mjs';
+import { VisualCanvas } from '/visual-canvas.js';
 const $ = selector => document.querySelector(selector);
 const token = $('meta[name="studio-token"]').content;
 let state=null;
@@ -7,6 +9,9 @@ let dirty=false;
 let working=false;
 let previewUrl='';
 let past=[],future=[],lastSnapshot='';
+let lastHistoryGroup=null;
+let inspectorBusy=false;
+const canvas=new VisualCanvas({frame:$('#canvas-frame'),status:$('#canvas-status'),request,onIntent:canvasIntent});
 const get=(object,key)=>key.split('.').reduce((value,part)=>value[part],object);
 const set=(object,key,value)=>{const parts=key.split('.');const last=parts.pop();parts.reduce((item,part)=>item[part],object)[last]=value;};
 function failure(error){$('#error').textContent=error.message;$('#error').hidden=false;}
@@ -25,21 +30,33 @@ function renderFields(){
   renderSections();
   renderDesignState();
 }
-function changed(){
+function changed(historyGroup=null,{deferCanvas=false}={}){
   const snapshot=JSON.stringify(draft);
-  if(lastSnapshot && snapshot!==lastSnapshot){past.push(JSON.parse(lastSnapshot));if(past.length>40)past.shift();future=[];}
+  if(lastSnapshot && snapshot!==lastSnapshot){if(!historyGroup || historyGroup!==lastHistoryGroup){past.push(JSON.parse(lastSnapshot));if(past.length>40)past.shift();}future=[];}
+  lastHistoryGroup=historyGroup;
   lastSnapshot=snapshot;dirty=snapshot!==JSON.stringify(editableContent(state.content));$('#error').hidden=true;renderDesignState();update();
+  canvas.schedule(draft,{defer:deferCanvas});
 }
-function historyMove(from,to){
+async function historyMove(from,to){
+  if(working || state?.busy || !from.length)return;
+  try{await canvas.flush();}catch(error){failure(error);return;}
   if(working || state?.busy || !from.length)return;
   to.push(structuredClone(draft));draft=from.pop();lastSnapshot=JSON.stringify(draft);
-  dirty=lastSnapshot!==JSON.stringify(editableContent(state.content));$('#error').hidden=true;renderFields();update();
+  lastHistoryGroup=null;dirty=lastSnapshot!==JSON.stringify(editableContent(state.content));$('#error').hidden=true;renderFields();update();canvas.schedule(draft);
 }
 $('#undo').addEventListener('click',()=>historyMove(past,future));
 $('#redo').addEventListener('click',()=>historyMove(future,past));
 function update(){
   if(!state)return;
   const busy=working || state.busy;
+  if(inspectorBusy!==busy){
+    inspectorBusy=busy;
+    for(const control of $('#editor').querySelectorAll('input,textarea,select,button'))control.disabled=busy;
+    renderSections();
+  }
+  if(!working)canvas.setLocked(state.busy);
+  $('#add-at-selection').disabled=busy || draft.sections.length>=MAX_SECTIONS;
+  for(const button of document.querySelectorAll('#canvas-palette button,#insert-options button'))button.disabled=busy || draft.sections.length>=MAX_SECTIONS;
   $('#undo').disabled=busy || !past.length;$('#redo').disabled=busy || !future.length;
   $('#save-state').textContent=busy ? 'Working…' : dirty ? 'Unsaved changes' : 'Draft saved';
   $('#save').disabled=busy || !dirty;
@@ -67,7 +84,7 @@ async function operation(fn){
   working=true;$('#error').hidden=true;update();
   // Prevent editing fields while a saved snapshot is being submitted.
   for(const control of $('#editor').querySelectorAll('input,textarea,select,button'))control.disabled=true;
-  try{await fn();}catch(error){failure(error);}finally{
+  try{await canvas.flush();canvas.setLocked(true);await fn();}catch(error){failure(error);}finally{
     working=false;
     for(const control of $('#editor').querySelectorAll('input,textarea,select,button'))control.disabled=false;
     renderSections();
@@ -76,7 +93,7 @@ async function operation(fn){
 }
 async function save(){
   state=await request('/api/save',{content:draft,revision:state.revision});
-  draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);dirty=false;update();
+  draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);lastHistoryGroup=null;dirty=false;update();
 }
 $('#editor').addEventListener('submit',event=>event.preventDefault());
 $('#editor').addEventListener('input',event=>{
@@ -96,8 +113,8 @@ $('#connect-publishing').addEventListener('click',()=>operation(async()=>{
   if(result.revision!==state.revision && state.preview)state.preview={...state.preview,current:false};
   update();
 }));
-$('#preview').addEventListener('click',()=>operation(async()=>{if(dirty)await save();state=await request('/api/preview',{revision:state.revision});update();}));
-$('#publish').addEventListener('click',()=>$('#publish-dialog').showModal());
+$('#preview').addEventListener('click',()=>operation(async()=>{if(dirty)await save();state=await request('/api/preview',{revision:state.revision});showSurface('preview');update();}));
+$('#publish').addEventListener('click',()=>{showSurface('preview');$('#publish-dialog').showModal();});
 $('#cancel-publish').addEventListener('click',()=>$('#publish-dialog').close());
 $('#confirm-publish').addEventListener('click',()=>{
   $('#publish-dialog').close();
@@ -107,7 +124,7 @@ $('#restore').addEventListener('click',()=>$('#restore-dialog').showModal());
 $('#cancel-restore').addEventListener('click',()=>$('#restore-dialog').close());
 $('#confirm-restore').addEventListener('click',()=>{
   $('#restore-dialog').close();
-    operation(async()=>{if(dirty)await save();state=await request('/api/restore',{revision:state.revision});draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);past=[];future=[];dirty=false;renderFields();update();});
+    operation(async()=>{if(dirty)await save();state=await request('/api/restore',{revision:state.revision});draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);past=[];future=[];lastHistoryGroup=null;dirty=false;renderFields();update();canvas.schedule(draft);showSurface('preview');});
 });
 function activateTab(button){
   for(const tab of document.querySelectorAll('[role="tab"]')){
@@ -128,8 +145,14 @@ for(const button of document.querySelectorAll('[role="tab"]')){
   });
 }
 for(const [id,phone] of [['desktop',false],['mobile',true]])$('#'+id).addEventListener('click',()=>{
-  $('#preview-stage').classList.toggle('phone',phone);$('#desktop').setAttribute('aria-pressed',String(!phone));$('#mobile').setAttribute('aria-pressed',String(phone));
+  $('#preview-stage').classList.toggle('phone',phone);$('#canvas-stage').classList.toggle('phone',phone);$('#desktop').setAttribute('aria-pressed',String(!phone));$('#mobile').setAttribute('aria-pressed',String(phone));
 });
+function showSurface(mode){
+  const editing=mode==='edit';$('#canvas-stage').hidden=!editing;$('#canvas-palette').hidden=!editing;$('#canvas-status').hidden=!editing;$('#preview-stage').hidden=editing;
+  $('#edit-page').setAttribute('aria-pressed',String(editing));$('#saved-page').setAttribute('aria-pressed',String(!editing));
+}
+$('#edit-page').addEventListener('click',()=>showSurface('edit'));
+$('#saved-page').addEventListener('click',async()=>{try{await canvas.flush();showSurface('preview');}catch(error){failure(error);}});
 $('#logo-upload').addEventListener('change',event=>{
   const file=event.target.files[0];if(!file)return;
   operation(async()=>{
@@ -189,6 +212,10 @@ function buildDesignControls(){
   for(const [type,label] of Object.entries(SECTION_TYPES)){
     const button=element('button','Add '+label.toLowerCase());button.type='button';button.dataset.addType=type;
     button.addEventListener('click',()=>addSection(type));$('#add-block-controls').append(button);
+    const tile=element('button',label);tile.type='button';tile.draggable=true;tile.title='Drag onto the page, or click to add';
+    tile.addEventListener('dragstart',event=>{event.dataTransfer.setData('text/plain','ruslitiki-add:'+type);event.dataTransfer.effectAllowed='copy';});
+    tile.addEventListener('click',()=>addSection(type,nextAfterSelection()));$('#canvas-palette').append(tile);
+    const option=element('button',label);option.type='button';option.addEventListener('click',()=>{$('#insert-dialog').close();addSection(type,insertionBefore);});$('#insert-options').append(option);
   }
 }
 function renderDesignState(){
@@ -201,13 +228,61 @@ function renderDesignState(){
 }
 $('#reset-design').addEventListener('click',()=>{draft.design={...DESIGN_DEFAULTS,blockOrder:[...draft.design.blockOrder]};changed();renderFields();});
 let activeBlockId=null;
-function addSection(type){
-  if(draft.sections.length>=MAX_SECTIONS)return;
-  const section={id:'section-'+crypto.randomUUID(),type,heading:'',body:'',visible:true,width:'reading',align:'left',tone:'plain',layout:'single'};
-  if(type==='quote')section.attribution='';
-  if(type==='image')Object.assign(section,{image:'',imageAlt:'',imageWidth:0,imageHeight:0,caption:'',sourceUrl:'',imageLayout:'left',imageRatio:'auto'});
-  draft.sections.push(section);draft.design.blockOrder.push(section.id);activeBlockId=section.id;changed();renderSections();
-  document.getElementById('edit-'+section.id).querySelector('input').focus();
+let insertionBefore=null;
+const nextAfterSelection=()=>{
+  const index=draft.design.blockOrder.indexOf(activeBlockId);
+  return index<0?null:draft.design.blockOrder[index+1] || null;
+};
+function openInsert(before=null){if(working || state?.busy)return;insertionBefore=before;$('#insert-dialog').showModal();}
+$('#add-at-selection').addEventListener('click',()=>openInsert(activeBlockId?nextAfterSelection():null));
+$('#close-insert').addEventListener('click',()=>$('#insert-dialog').close());
+function addSection(type,before=null){
+  if(working || state?.busy)return;
+  const section=insertSection(draft,type,before);if(!section)return;
+  activeBlockId=section.id;changed();renderSections();selectSection(section.id);showSurface('edit');
+  document.getElementById('edit-'+section.id).querySelector('input,textarea').focus();
+}
+function selectSection(id,field){
+  activeBlockId=id;
+  if(id==='brand'){activateTab($('#tab-home'));return;}
+  if(id==='opening'){activateTab($(field?.startsWith('book.')?'#tab-book':field?'#tab-home':'#tab-design'));return;}
+  const card=document.getElementById('edit-'+id);if(!card)return;
+  activateTab($('#tab-sections'));card.open=true;card.scrollIntoView({block:'nearest'});
+}
+function duplicateSection(id){
+  const section=draft.sections.find(item=>item.id===id);if(!section || draft.sections.length>=MAX_SECTIONS)return;
+  const copy=structuredClone(section);copy.id='section-'+crypto.randomUUID();draft.sections.push(copy);draft.design.blockOrder.splice(draft.design.blockOrder.indexOf(id)+1,0,copy.id);activeBlockId=copy.id;changed();renderSections();
+}
+function removeSection(id){draft.sections=draft.sections.filter(item=>item.id!==id);draft.design.blockOrder=draft.design.blockOrder.filter(item=>item!==id);changed();renderSections();}
+function canvasIntent(intent){
+  if(!draft)return;
+  const {id,type}=intent;
+  if(type==='text'){
+    const target=typeof intent.field==='string'?editableField(draft,id,intent.field):null;
+    const current=target?(target.object[target.key]??''):null;
+    const accepted=!!target && typeof intent.value==='string' && typeof intent.transaction==='string' && intent.transaction.length<80 && (current===intent.previousValue || current===intent.value) && (!(working || state?.busy) || canvas.flushing);
+    if(accepted && setCanvasText(draft,id,intent.field,intent.value)){
+      changed(intent.transaction,{deferCanvas:true});renderFields();
+    }
+    if(!accepted && current!==intent.value)$('#canvas-status').textContent='This text also changed in the settings. The settings value was kept; review it before publishing.';
+    canvas.post('text-ack',{transaction:intent.transaction,textSequence:intent.textSequence,generation:canvas.generation,accepted});
+    return;
+  }
+  if(type==='edit-end'){lastHistoryGroup=null;canvas.schedule(draft);return;}
+  if(working || state?.busy)return;
+  if(type==='insert-end'){openInsert(null);return;}
+  if(type==='add'){addSection(intent.blockType,intent.before);return;}
+  if(type==='select' && id==='brand'){selectSection(id,intent.field);return;}
+  if(!draft.design.blockOrder.includes(id))return;
+  if(type==='select' || type==='options'){selectSection(id,intent.field);return;}
+  if(type==='insert-before'){openInsert(id);return;}
+  if(type==='insert-after'){openInsert(draft.design.blockOrder[draft.design.blockOrder.indexOf(id)+1] || null);return;}
+  if(type==='move'){if(moveSectionBefore(draft,id,intent.before)){activeBlockId=id;changed();renderSections();}return;}
+  if(type==='up' || type==='down'){moveBlock(id,draft.design.blockOrder.indexOf(id)+(type==='up'?-1:1));return;}
+  if(id==='opening')return;
+  if(type==='duplicate')duplicateSection(id);
+  if(type==='remove')removeSection(id);
+  if(type==='hide'){draft.sections.find(section=>section.id===id).visible=false;changed();renderSections();}
 }
 function moveBlock(id,position){
   if(working || state?.busy)return;
@@ -241,7 +316,7 @@ function renderSections(){
     }
     const edit=element('button','Edit');edit.type='button';edit.addEventListener('click',()=>{
       if(id==='opening'){activateTab($('#tab-design'));$('#tab-design').focus();return;}
-      activeBlockId=id;const card=document.getElementById('edit-'+id);card.open=true;card.scrollIntoView({block:'nearest'});card.querySelector('input').focus();
+      activeBlockId=id;const card=document.getElementById('edit-'+id);card.open=true;card.scrollIntoView({block:'nearest'});card.querySelector('input').focus();canvas.select(id);
     });controls.append(edit);row.append(controls);
     row.addEventListener('dragstart',event=>{event.dataTransfer.setData('text/plain',id);event.dataTransfer.effectAllowed='move';});
     row.addEventListener('dragover',event=>{event.preventDefault();event.dataTransfer.dropEffect='move';});
@@ -255,8 +330,8 @@ function renderSections(){
       const field=element('label',label);const input=element(tag);input.value=section[key]??'';input.maxLength=max;if(tag==='textarea')input.rows=4;
       input.addEventListener('input',()=>{section[key]=input.value;changed();if(key==='heading'){name.textContent=section.heading || SECTION_TYPES[section.type];wrapper.querySelector('summary').textContent=SECTION_TYPES[section.type]+' · '+(section.heading || 'New block');}});field.append(input);fields.append(field);
     };
-    textField('heading',section.type==='faq'?'Question':'Heading');
-    textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':section.type==='image'?'Text (optional)':'Text','textarea',1400);
+    textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
+    textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':['image','button'].includes(section.type)?'Text (optional)':'Text','textarea',1400);
     if(section.type==='quote')textField('attribution','Attribution (optional)');
     if(section.type==='image'){
       if(section.image){const thumbnail=element('img');thumbnail.src='/media/'+section.image.split('/').pop();thumbnail.alt=section.imageAlt || 'Selected image';thumbnail.className='block-image-preview';fields.append(thumbnail);}
@@ -265,6 +340,13 @@ function renderSections(){
       textField('imageAlt','Describe the image','textarea',300);textField('caption','Caption (optional)','input',300);textField('sourceUrl','Image source link (optional)','input',1000);
       for(const [key,label] of [['imageLayout','Image placement'],['imageRatio','Image proportions']])fields.append(selectControl('',label,SECTION_OPTIONS[key],section[key] || (key==='imageLayout'?'left':'auto'),value=>{section[key]=value;changed();}));
     }
+    const buttons=element('fieldset');buttons.className='button-fields';buttons.append(element('legend',section.type==='button'?'Button':'Button (optional)'));
+    for(const [key,label,max] of [['buttonLabel','Button label',70],['buttonUrl','Button link',2000]]){
+      const wrapper=element('label',label);const input=element('input');input.value=section[key] || '';input.maxLength=max;
+      if(key==='buttonUrl')input.placeholder='https://… or mailto:…';
+      input.addEventListener('input',()=>{section[key]=input.value;changed();});wrapper.append(input);buttons.append(wrapper);
+    }
+    buttons.append(selectControl('','Button appearance',SECTION_OPTIONS.buttonKind,section.buttonKind || 'primary',value=>{section.buttonKind=value;changed();}));fields.append(buttons);
     const appearance=element('div');appearance.className='design-controls';
     for(const [key,label] of [['width','Block width'],['align','Alignment'],['tone','Background'],...(section.type==='text'?[['layout','Text columns']]:[])])appearance.append(selectControl('',label,SECTION_OPTIONS[key],section[key],value=>{section[key]=value;changed();}));
     fields.append(appearance);
@@ -272,13 +354,14 @@ function renderSections(){
     const visibility=element('label');const checkbox=element('input');checkbox.type='checkbox';checkbox.checked=section.visible;
     checkbox.addEventListener('change',()=>{section.visible=checkbox.checked;changed();name.textContent=(section.heading || SECTION_TYPES[section.type])+(section.visible?'':' (hidden)');});visibility.append(checkbox,document.createTextNode('Show on page'));controls2.append(visibility);
     const duplicate=element('button','Duplicate');duplicate.type='button';duplicate.disabled=draft.sections.length>=MAX_SECTIONS;
-    duplicate.addEventListener('click',()=>{if(draft.sections.length>=MAX_SECTIONS)return;const copy=structuredClone(section);copy.id='section-'+crypto.randomUUID();draft.sections.push(copy);draft.design.blockOrder.splice(draft.design.blockOrder.indexOf(id)+1,0,copy.id);activeBlockId=copy.id;changed();renderSections();});controls2.append(duplicate);
-    const remove=element('button','Remove');remove.type='button';remove.addEventListener('click',()=>{draft.sections=draft.sections.filter(item=>item.id!==id);draft.design.blockOrder=draft.design.blockOrder.filter(item=>item!==id);changed();renderSections();});controls2.append(remove);fields.append(controls2);wrapper.append(fields);$('#sections').append(wrapper);
+    duplicate.addEventListener('click',()=>duplicateSection(id));controls2.append(duplicate);
+    const remove=element('button','Remove');remove.type='button';remove.addEventListener('click',()=>removeSection(id));controls2.append(remove);fields.append(controls2);wrapper.append(fields);$('#sections').append(wrapper);
   }
   for(const button of $('#add-block-controls').querySelectorAll('button'))button.disabled=draft.sections.length>=MAX_SECTIONS;
+  if(working || state?.busy)for(const control of $('#editor').querySelectorAll('input,textarea,select,button'))control.disabled=true;
 }
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
-async function initialize(){try{state=await request('/api/state');draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);renderFields();update();}catch(error){failure(error);}}
+async function initialize(){try{state=await request('/api/state');draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);renderFields();update();canvas.schedule(draft);}catch(error){failure(error);}}
 buildDesignControls();
 initialize();
 let polling=false;
@@ -293,7 +376,7 @@ setInterval(async()=>{
     if(!working && state?.busy){
       if(!dirty){
         if(latest.revision!==state.revision){
-          draft=editableContent(latest.content);lastSnapshot=JSON.stringify(draft);past=[];future=[];renderFields();
+          draft=editableContent(latest.content);lastSnapshot=JSON.stringify(draft);past=[];future=[];renderFields();canvas.schedule(draft);
         }
         state=latest;
       }else{

@@ -37,7 +37,7 @@ export function checkRevision(expected, actual) {
 export async function saveDraft(directory, content, expectedHash) {
   const current = await json(path.join(directory,'draft.json'));
   checkRevision(expectedHash, digest(current));
-  const errors = validateContent(content);
+  const errors = validateContent(content,{draft:true});
   if (errors.length) { const error = new Error(errors.join('\n')); error.status=422; throw error; }
   await atomicJson(path.join(directory,'draft.json'),content);
   return digest(content);

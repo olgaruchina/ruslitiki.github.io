@@ -1,0 +1,4 @@
+---
+const {section,visualEditing=false}=Astro.props;
+---
+<a class:list={['section-button',`section-button-${section.buttonKind || 'primary'}`]} href={section.buttonUrl || undefined} data-edit-field={visualEditing?'buttonLabel':undefined} data-placeholder={visualEditing?'Button label':undefined}>{section.buttonLabel}</a>

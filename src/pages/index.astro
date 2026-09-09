@@ -1,45 +1,6 @@
 ---
-import Page from '../layouts/Page.astro';
-import Opening from '../components/Opening.astro';
-import ContentBlock from '../components/ContentBlock.astro';
+import Homepage from '../components/Homepage.astro';
 import { readContent } from '../lib/content.mjs';
-import { designFor, normalizedSections } from '../lib/design.mjs';
 const content=readContent();
-const design=designFor(content);
-const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
-const status={ 'coming-soon':'Coming soon','membership-open':'Membership is open',reading:'Reading together' }[content.status];
-const structuredData = {
-  '@context':'https://schema.org',
-  '@type':'Organization',
-  name:content.brand,
-  url:Astro.site?.href,
-  description:content.description,
-  sameAs:[content.instagramUrl],
-  ...(content.email ? {email:content.email} : {}),
-};
 ---
-<Page title={content.seo.title} description={content.seo.description} content={content}>
-  <div class="landing">
-    <header class="masthead" aria-label={content.brand}>
-      <div class:list={['wordmark', {'wordmark-original': content.logoPresentation === 'original-banner'}]}>
-        <img src={content.logo} alt={content.brand} width="2500" height="1000" fetchpriority="high" />
-      </div>
-      <div class="masthead-meta">
-        <p>{content.description}</p>
-        <p class="status">{status}<span aria-hidden="true"> ↗</span></p>
-      </div>
-    </header>
-    <main id="main">
-      {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} /> : sections.get(id)?.visible && <ContentBlock section={sections.get(id)} />)}
-    </main>
-    <footer class="footer">
-      <p>Read. Think. Question. Disagree.</p>
-      <nav aria-label="Contact and information">
-        <a href={content.instagramUrl}>Instagram<span class="sr-only"> — Ruslitiki</span></a>
-        {content.email && <a href={`mailto:${content.email}`}>Contact Olga</a>}
-        <a href="/privacy/">Privacy</a>
-      </nav>
-    </footer>
-  </div>
-  <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g,'\\u003c')} />
-</Page>
+<Homepage content={content} />

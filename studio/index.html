@@ -8,6 +8,7 @@
   <title>Ruslitiki — Website editor</title>
   <link rel="stylesheet" href="/studio.css">
   <link rel="stylesheet" href="/layout-controls.css">
+  <link rel="stylesheet" href="/visual-canvas.css">
   <script src="/studio.js" type="module"></script>
 </head>
 <body>
@@ -17,7 +18,7 @@
   </header>
   <main class="workspace">
     <section class="editing" aria-labelledby="edit-heading">
-      <div class="edit-intro"><p class="eyebrow">Your website</p><h1 id="edit-heading">Make it yours.</h1><p>Edit the words, arrange the page, and make the design your own. Preview your changes before publishing.</p></div>
+      <div class="edit-intro"><h1 id="edit-heading">Page settings</h1><p>Select something on the page to edit it here, or click its text and type.</p></div>
       <div class="tabs" role="tablist" aria-label="Editing section">
         <button role="tab" aria-selected="true" aria-controls="panel-home" id="tab-home" data-tab="home">Introduction</button>
         <button role="tab" aria-selected="false" aria-controls="panel-design" id="tab-design" data-tab="design" tabindex="-1">Layout &amp; style</button>
@@ -73,15 +74,20 @@
       <div id="error" role="alert" hidden></div>
     </section>
     <section class="preview-area" aria-labelledby="preview-heading">
-      <div class="preview-toolbar"><div><h2 id="preview-heading">Your saved preview</h2><p id="preview-state">Prepare a preview to see the page.</p></div><button id="preview" class="primary" type="button" disabled>Prepare preview</button></div>
+      <div class="preview-toolbar"><div><h2 id="preview-heading">Your page</h2><p id="preview-state">Prepare a saved preview before publishing.</p></div><button id="preview" class="primary" type="button" disabled>Prepare preview</button></div>
+      <div class="canvas-mode-controls"><div role="group" aria-label="Page view"><button id="edit-page" type="button" aria-pressed="true">Edit page</button><button id="saved-page" type="button" aria-pressed="false">Saved preview</button></div><button id="add-at-selection" type="button">+ Add section</button></div>
+      <div id="canvas-palette" class="canvas-palette" aria-label="Drag or add content"></div>
+      <p id="canvas-status" class="canvas-status" role="status">Opening the visual editor…</p>
       <div class="view-controls"><div role="group" aria-label="Preview size"><button id="desktop" aria-pressed="true" type="button">Desktop</button><button id="mobile" aria-pressed="false" type="button">Phone</button></div><a id="open-preview" target="_blank" rel="noopener" hidden>Open preview ↗</a></div>
-      <div class="preview-stage" id="preview-stage"><div id="preview-empty"><span aria-hidden="true">R</span><p>Your words, in place.</p><small>Prepare a preview after saving your changes.</small></div><iframe id="preview-frame" title="Saved Ruslitiki page preview" hidden></iframe></div>
+      <div class="preview-stage canvas-stage" id="canvas-stage"><iframe id="canvas-frame" title="Editable Ruslitiki page" sandbox="allow-scripts allow-same-origin" hidden></iframe></div>
+      <div class="preview-stage" id="preview-stage" hidden><div id="preview-empty"><span aria-hidden="true">R</span><p>Your words, in place.</p><small>Prepare a preview after saving your changes.</small></div><iframe id="preview-frame" title="Saved Ruslitiki page preview" hidden></iframe></div>
       <div class="publish-panel"><div><h2>Ready to go live?</h2><p id="publish-help">The public website changes only when you publish a reviewed preview.</p></div><button id="publish" class="primary" type="button" disabled>Publish website</button></div>
       <div id="connection-note" class="connection-note"><strong id="connection-title">Connect the Publish button</strong><p>Check this laptop’s connection to GitHub and the website. The check keeps your draft in place and does not publish it.</p><button id="connect-publishing" type="button" disabled>Check publishing connection</button><ul id="connection-checks" class="connection-checks" aria-label="Publishing connection results" hidden></ul><p id="connection-time" class="panel-help"></p></div>
       <div class="bottom-links"><button id="restore" class="text-button" type="button" disabled>Restore previous version</button><a id="live-link" target="_blank" rel="noopener" hidden>View live website ↗</a></div>
       <p id="status-message" class="status-message" role="status" aria-live="polite"></p>
     </section>
   </main>
+  <dialog id="insert-dialog" aria-labelledby="insert-title"><h2 id="insert-title">Add content here</h2><p>Choose a section to insert at this spot.</p><div id="insert-options" class="insert-options"></div><button id="close-insert" type="button">Cancel</button></dialog>
   <dialog id="publish-dialog" aria-labelledby="publish-title"><h2 id="publish-title">Publish this version?</h2><p>The saved preview you reviewed will replace the public website.</p><div><button id="cancel-publish" type="button">Keep editing</button><button id="confirm-publish" class="primary" type="button">Publish website</button></div></dialog>
   <dialog id="restore-dialog" aria-labelledby="restore-title"><h2 id="restore-title">Restore the previous version?</h2><p>It will open as a new draft for review. Your current draft will be kept as a backup on this laptop.</p><div><button id="cancel-restore" type="button">Keep editing</button><button id="confirm-restore" class="primary" type="button">Restore draft</button></div></dialog>
 </body>

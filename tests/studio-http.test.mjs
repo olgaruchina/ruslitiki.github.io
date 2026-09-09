@@ -43,6 +43,31 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(connection.status,200);assert.equal(connection.data.configured,false);
     assert.equal(connection.data.connection.ready,false);assert.equal(connection.data.revision,initial.revision);
     assert.equal(JSON.parse(await fs.readFile(path.join(root,'.studio/publishing.json'))).enabled,false);
+    const canvasOne=await api('/api/canvas',{sequence:1,generation:1,content:initial.content});
+    assert.equal(canvasOne.status,200,JSON.stringify(canvasOne.data));
+    const firstCanvas=await fetch(canvasOne.data.url);assert.equal(firstCanvas.status,200);
+    const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
+    const tabTwo={...initial.content,heading:'A different unsaved tab'};
+    const canvasTwo=await api('/api/canvas',{sequence:1,generation:1,content:tabTwo});assert.equal(canvasTwo.status,200);
+    assert.notEqual(canvasTwo.data.session,canvasOne.data.session);
+    assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('A different unsaved tab'));
+    assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));
+    const badNonce=new URL(canvasOne.data.url);badNonce.searchParams.set('nonce','wrong');
+    assert.equal((await fetch(badNonce)).status,403);
+    assert.equal((await fetch(canvasOne.data.url,{headers:{Origin:'https://another-site.example'}})).status,403);
+    const privateSnapshot='/@fs/'+path.join(root,'.studio/canvas-sessions',canvasOne.data.session+'.json');
+    assert.ok([403,404].includes((await fetch(new URL(privateSnapshot,canvasOne.data.origin))).status),'Vite must not expose per-tab drafts.');
+    const canvasHostStatus=await new Promise((resolve,reject)=>{const req=http.get(canvasOne.data.url,{headers:{Host:'rebound.example'}},res=>{res.resume();resolve(res.statusCode);});req.on('error',reject);});
+    assert.equal(canvasHostStatus,403);
+    assert.equal((await api('/api/canvas',{sequence:2,generation:2,session:canvasOne.data.session,nonce:'wrong',content:initial.content})).status,400);
+    const newer=await api('/api/canvas',{sequence:3,generation:3,session:canvasOne.data.session,nonce:canvasOne.data.nonce,content:tabTwo});assert.equal(newer.status,200);
+    assert.equal((await api('/api/canvas',{sequence:2,generation:2,session:canvasOne.data.session,nonce:canvasOne.data.nonce,content:initial.content})).status,409);
+    assert.equal((await (await fetch(origin+'/api/state')).json()).revision,initial.revision,'Visual edits never change the saved draft.');
+    const unfinished={...initial.content,sections:[{id:'empty-button',type:'button',heading:'',body:'',visible:true,buttonLabel:'',buttonUrl:''},{id:'empty-image',type:'image',heading:'',body:'',visible:true,image:'',imageAlt:'',imageWidth:0,imageHeight:0}]};delete unfinished.design;
+    const unfinishedCanvas=await api('/api/canvas',{sequence:2,generation:2,session:canvasTwo.data.session,nonce:canvasTwo.data.nonce,content:unfinished});
+    assert.equal(unfinishedCanvas.status,200,JSON.stringify(unfinishedCanvas.data));
+    const unfinishedHtml=await (await fetch(unfinishedCanvas.data.url)).text();
+    assert.ok(unfinishedHtml.includes('data-edit-field="buttonLabel"') && unfinishedHtml.includes('Choose an image'));
     assert.equal((await api('/api/save',{},{Origin:'https://another-site.example'})).status,403);
     assert.equal((await api('/api/save',{}, {'X-Studio-Token':'wrong'})).status,403);
     const reboundStatus=await new Promise((resolve,reject)=>{const req=http.get(origin+'/api/state',{headers:{Host:'rebound.example'}},res=>{res.resume();resolve(res.statusCode);});req.on('error',reject);});
@@ -65,6 +90,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const rendered=await fetch(built.data.preview.url);
     assert.match(rendered.headers.get('x-robots-tag'),/noindex/);
     const previewHtml=await rendered.text();
+    assert.ok(!previewHtml.includes('/@vite/') && !previewHtml.includes('/__canvas/') && !previewHtml.includes('data-edit-field='),'A preview prepared after canvas startup is still a production artifact.');
     assert.ok(previewHtml.includes('Read the classics together.'));
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
     assert.equal((await fetch(new URL(stagedPath,built.data.preview.url))).status,404,'Unselected upload must not be included in a release.');
@@ -82,8 +108,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     customized.sections=[
       {id:'quote-first',type:'quote',heading:'A reading invitation',body:'A supplied quotation.',attribution:'Club notes',visible:true,tone:'accent',align:'center',width:'full'},
       {id:'reader-image',type:'image',heading:'Our library',body:'Reading together.',visible:true,image:stagedPath,imageAlt:'The supplied Ruslitiki wordmark.',imageWidth:2500,imageHeight:1000,imageLayout:'right',imageRatio:'square'},
+      {id:'custom-button',type:'button',heading:'',body:'',visible:true,buttonLabel:'Read with Ruslitiki',buttonUrl:content.waitlistUrl,buttonKind:'outline'},
     ];
-    customized.design={...designFor(customized),background:PALETTES.night.background,ink:PALETTES.night.ink,accent:PALETTES.night.accent,buttonStyle:'outline',width:'compact',spacing:'airy',headingFont:'golos',bodySize:20,blockOrder:['quote-first','opening','reader-image']};
+    customized.design={...designFor(customized),background:PALETTES.night.background,ink:PALETTES.night.ink,accent:PALETTES.night.accent,buttonStyle:'outline',width:'compact',spacing:'airy',headingFont:'golos',bodySize:20,blockOrder:['quote-first','opening','reader-image','custom-button']};
     let revision=savedSelected.data.revision;
     for(const composition of ['book-left','stacked','centered','split']){
       customized.design.composition=composition;
@@ -94,6 +121,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
       const result=await api('/api/preview',{revision});assert.equal(result.status,200,JSON.stringify(result.data));
       const html=await (await fetch(result.data.preview.url)).text();
       assert.ok(html.includes(`composition-${composition}`));
+      assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
       assert.ok(html.includes('--page-bg:#161b2c') && html.includes('data-button-style="outline"'));
       assert.ok(html.indexOf('data-block-id="quote-first"')<html.indexOf('data-block-id="opening"'),'Custom blocks can appear before the introduction.');
       assert.equal(html.indexOf('data-part="book"')<html.indexOf('data-part="introduction"'),composition==='book-left','Visual and document reading order agree.');

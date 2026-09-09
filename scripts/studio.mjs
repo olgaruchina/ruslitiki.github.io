@@ -6,6 +6,7 @@ import { randomBytes, randomUUID } from 'node:crypto';
 import { readContent, validateContent, selectedImagePaths } from '../src/lib/content.mjs';
 import { atomicJson, json, digest, fileMap, rendererDigest, checkRevision, saveDraft, savePublication, safeImage } from './studio-store.mjs';
 import { run, publishRelease, validatePublishing, verifyArtifact, checkPublishingConnection, EDITOR_PUBLISHING } from './publish-release.mjs';
+import { createCanvasService } from './studio-canvas.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const STORAGE=path.join(ROOT,'.studio');
@@ -13,6 +14,7 @@ const PORT=Number(process.env.RUSLITIKI_STUDIO_PORT || 4310);
 const ORIGIN=`http://127.0.0.1:${PORT}`;
 const TOKEN=randomBytes(32).toString('hex');
 const UI=path.join(ROOT,'studio');
+const canvas=createCanvasService(ROOT,ORIGIN);
 const previewServers=new Map();
 let busy=false;
 let message='Your changes stay private until you publish.';
@@ -81,7 +83,7 @@ async function buildPreview() {
     const stagedImage=path.join(STORAGE,'uploads',path.basename(image));
     try{await fs.copyFile(stagedImage,path.join(publicDir,image.slice(1)));}catch(error){if(error.code!=='ENOENT')throw error;}
   }
-  const buildEnv={...process.env,RUSLITIKI_CONTENT_FILE:path.join(folder,'content.json'),RUSLITIKI_PUBLIC_DIR:publicDir,RUSLITIKI_PREVIEW:'0'};
+  const buildEnv={...process.env,NODE_ENV:'production',RUSLITIKI_CONTENT_FILE:path.join(folder,'content.json'),RUSLITIKI_PUBLIC_DIR:publicDir,RUSLITIKI_PREVIEW:'0'};
   message='Preparing your saved draft…';
   await run(process.execPath,[path.join(ROOT,'scripts/check-content.mjs')],{cwd:ROOT,env:buildEnv});
   await run(process.execPath,[path.join(ROOT,'node_modules/astro/bin/astro.mjs'),'build','--outDir',directory],{cwd:ROOT,env:buildEnv});
@@ -114,6 +116,9 @@ const server=http.createServer(async(req,res)=>{
       if(req.method==='GET' && url.pathname==='/api/state'){send(res,200,await state());return;}
       if(req.method!=='POST'){send(res,405,{error:'This action is not available.'});return;}
       if(req.headers.origin!==ORIGIN || req.headers['x-studio-token']!==TOKEN){send(res,403,{error:'Reload the editor before making changes.'});return;}
+      if(url.pathname==='/api/canvas'){
+        const data=await body(req);send(res,200,await canvas.update(data));return;
+      }
       if(busy){send(res,409,{error:'Please wait for the current action to finish.'});return;}
       const data=await body(req);
       if(busy){send(res,409,{error:'Please wait for the current action to finish.'});return;}
@@ -173,6 +178,10 @@ const server=http.createServer(async(req,res)=>{
       res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','Cache-Control':'no-store'});
       res.end(await fs.readFile(path.join(ROOT,'src/lib/design.mjs')));return;
     }
+    if(url.pathname==='/canvas-model.mjs'){
+      res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','Cache-Control':'no-store'});
+      res.end(await fs.readFile(path.join(ROOT,'src/lib/canvas-model.mjs')));return;
+    }
     if(/^\/media\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(url.pathname)){
       const filename=path.basename(url.pathname);
       const staged=path.join(STORAGE,'uploads');
@@ -184,4 +193,4 @@ const server=http.createServer(async(req,res)=>{
 });
 server.on('error',error=>{console.error(error.code==='EADDRINUSE' ? `The editor may already be open: ${ORIGIN}` : error.message);process.exitCode=1;for(const s of previewServers.values())s.close();});
 server.listen(PORT,'127.0.0.1',()=>console.log(`Ruslitiki Studio: ${ORIGIN}\nPrivate drafts stay on this laptop. Keep this window open while editing.`));
-for(const signal of ['SIGINT','SIGTERM'])process.on(signal,()=>{for(const s of previewServers.values())s.close();server.close(()=>process.exit(0));});
+for(const signal of ['SIGINT','SIGTERM'])process.on(signal,async()=>{for(const s of previewServers.values())s.close();await canvas.stop().catch(()=>{});server.close(()=>process.exit(0));});

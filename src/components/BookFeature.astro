@@ -1,16 +1,16 @@
 ---
 import BookArtwork from './BookArtwork.astro';
 import { formatDate } from '../lib/content.mjs';
-const {content,design}=Astro.props;
+const {content,design,visualEditing=false}=Astro.props;
 const showArtwork=content.book.showArtwork!==false && content.book.title.trim().toLowerCase()==='eugene onegin' && content.book.author.trim().toLowerCase()==='alexander pushkin';
 ---
 <aside class="first-book" aria-labelledby="first-book-title" data-part="book">
   {showArtwork && design.artworkPlacement==='above-title' && <BookArtwork />}
   <p class="book-label">Our first book</p>
-  <h2 id="first-book-title"><i>{content.book.title}</i></h2>
-  <p class="author">by {content.book.author}</p>
+  <h2 id="first-book-title"><i data-edit-field={visualEditing?'book.title':undefined}>{content.book.title}</i></h2>
+  <p class="author">by <span data-edit-field={visualEditing?'book.author':undefined}>{content.book.author}</span></p>
   {showArtwork && design.artworkPlacement==='below-title' && <BookArtwork />}
-  <p class="book-note">{content.book.note}</p>
+  <p class="book-note" data-edit-field={visualEditing?'book.note':undefined}>{content.book.note}</p>
   {showArtwork && design.artworkPlacement==='below-note' && <BookArtwork />}
   <dl class="dates">
     <div><dt>Membership opens</dt><dd><time datetime={content.openingDate}>{formatDate(content.openingDate)}</time></dd></div>

@@ -1,9 +1,9 @@
 ---
 import Invitation from './Invitation.astro';
 import BookFeature from './BookFeature.astro';
-const {content,design}=Astro.props;
+const {content,design,visualEditing=false}=Astro.props;
 ---
 <div class:list={['opening',`composition-${design.composition}`]} data-block-id="opening">
-  {design.composition==='book-left' ? <BookFeature content={content} design={design} /> : <Invitation content={content} />}
-  {design.composition==='book-left' ? <Invitation content={content} /> : <BookFeature content={content} design={design} />}
+  {design.composition==='book-left' ? <BookFeature content={content} design={design} visualEditing={visualEditing} /> : <Invitation content={content} visualEditing={visualEditing} />}
+  {design.composition==='book-left' ? <Invitation content={content} visualEditing={visualEditing} /> : <BookFeature content={content} design={design} visualEditing={visualEditing} />}
 </div>
