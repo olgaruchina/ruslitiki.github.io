@@ -3,10 +3,26 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readContent, validateContent, ctaFor } from '../src/lib/content.mjs';
+import { readContent, validateContent, ctaFor, instagramProfile } from '../src/lib/content.mjs';
 import { atomicJson, digest, saveDraft, fileMap, safeImage } from '../scripts/studio-store.mjs';
 import { validatePublishing, verifyArtifact } from '../scripts/publish-release.mjs';
 const fresh=()=>structuredClone(readContent());
+
+test('host Instagram is optional for older drafts and only accepts safe profile links',()=>{
+  const content=fresh();delete content.hostInstagramUrl;
+  assert.deepEqual(validateContent(content),[]);
+  assert.equal(instagramProfile(content.hostInstagramUrl),null);
+  content.hostInstagramUrl='';assert.deepEqual(validateContent(content),[]);
+  assert.equal(instagramProfile(''),null);
+  content.hostInstagramUrl='https://instagram.com/books_olgaruchina/?igsh=shared';
+  assert.deepEqual(validateContent(content),[]);
+  assert.deepEqual(instagramProfile(content.hostInstagramUrl),{handle:'@books_olgaruchina',url:'https://www.instagram.com/books_olgaruchina/'});
+  for(const value of ['javascript:alert(1)','https://instagram.com.evil.example/name/','https://name@instagram.com/profile/','https://www.instagram.com/p/abc/','https://www.instagram.com/explore/',null]){
+    content.hostInstagramUrl=value;
+    assert.equal(instagramProfile(value),null);
+    assert.ok(validateContent(content).some(error=>error.startsWith('Host Instagram:')));
+  }
+});
 
 test('opening membership requires a real Patreon link; no silent broken CTA',()=>{
   const content=fresh();content.status='membership-open';

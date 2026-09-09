@@ -6,6 +6,16 @@ export const LIMITS = { heading: 100, description: 180, introduction: 400, bookN
 const own = (o, key) => Object.hasOwn(o, key);
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 
+export function instagramProfile(value) {
+  if (typeof value !== 'string' || value.length > 2000) return null;
+  try {
+    const url = new URL(value);
+    const username = url.pathname.match(/^\/([a-zA-Z0-9_.]{1,30})\/?$/)?.[1];
+    if (url.protocol !== 'https:' || !['instagram.com', 'www.instagram.com'].includes(url.hostname) || url.username || url.password || url.port || !username || ['p','reel','reels','stories','explore','accounts','direct'].includes(username.toLowerCase())) return null;
+    return { handle: `@${username}`, url: `https://www.instagram.com/${username}/` };
+  } catch { return null; }
+}
+
 export function validateContent(data, {draft = false} = {}) {
   const errors = [];
   const string = (value, label, max, required = true) => {
@@ -26,7 +36,7 @@ export function validateContent(data, {draft = false} = {}) {
       if (url.protocol !== 'https:' || url.username || url.password || (hosts.length && !hosts.includes(url.hostname))) throw new Error();
     } catch { errors.push(`${label}: enter a valid HTTPS link${hosts.length ? ` on ${hosts.join(' or ')}` : ''}.`); }
   };
-  if (!keys(data, ['brand','status','heading','description','introduction','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design'], 'Website')) return errors;
+  if (!keys(data, ['brand','status','heading','description','hostInstagramUrl','introduction','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design'], 'Website')) return errors;
   string(data.brand, 'Club name', 40);
   string(data.heading, 'Main heading', LIMITS.heading);
   string(data.description, 'Club description', LIMITS.description);
@@ -40,6 +50,7 @@ export function validateContent(data, {draft = false} = {}) {
   https(data.waitlistUrl, 'Waitlist');
   https(data.patreonUrl, 'Patreon', data.status !== 'coming-soon', ['patreon.com','www.patreon.com']);
   https(data.instagramUrl, 'Instagram', true, ['instagram.com','www.instagram.com']);
+  if (own(data, 'hostInstagramUrl') && data.hostInstagramUrl !== '' && !instagramProfile(data.hostInstagramUrl)) errors.push('Host Instagram: paste an HTTPS Instagram profile link, or leave it empty.');
   string(data.email, 'Email', 254, false);
   if (data.email && !/^[^\s<>@\r\n]+@[^\s<>@\r\n]+\.[^\s<>@\r\n]+$/.test(data.email)) errors.push('Enter a working email address, or leave the field empty.');
   if (typeof data.logo !== 'string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(data.logo)) errors.push('Logo: choose a PNG, JPEG or WebP in the image library.');

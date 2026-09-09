@@ -2,11 +2,13 @@
 import Page from '../layouts/Page.astro';
 import Opening from './Opening.astro';
 import ContentBlock from './ContentBlock.astro';
+import { instagramProfile } from '../lib/content.mjs';
 import { designFor, normalizedSections, pageNavigation } from '../lib/design.mjs';
 const {content,visualEditing=false}=Astro.props;
 const design=designFor(content);
 const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
 const navigation=pageNavigation(content);
+const hostProfile=instagramProfile(content.hostInstagramUrl);
 const status={ 'coming-soon':'Coming soon','membership-open':'Membership is open',reading:'Reading together' }[content.status];
 const structuredData = {
   '@context':'https://schema.org',
@@ -25,7 +27,7 @@ const structuredData = {
         <img src={content.logo} alt={content.brand} width="2500" height="1000" fetchpriority="high" />
       </div>
       <div class="masthead-meta">
-        <p data-edit-field={visualEditing?"description":undefined}>{content.description}</p>
+        <p><span data-edit-field={visualEditing?"description":undefined}>{content.description}</span>{hostProfile && <> (<a href={hostProfile.url}>{hostProfile.handle}</a>)</>}</p>
         <p class="status">{status}<span aria-hidden="true"> ↗</span></p>
       </div>
     </header>

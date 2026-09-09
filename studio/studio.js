@@ -25,7 +25,7 @@ function renderFields(){
   for(const field of $('#editor').querySelectorAll('[name]')){
     if(field.type==='radio')field.checked=field.value===get(draft,field.name);
     else if(field.type==='checkbox')field.checked=get(draft,field.name)!==false;
-    else field.value=get(draft,field.name);
+    else field.value=get(draft,field.name)??'';
   }
   renderSections();
   renderDesignState();

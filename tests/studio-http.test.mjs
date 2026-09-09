@@ -47,6 +47,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(canvasOne.status,200,JSON.stringify(canvasOne.data));
     const firstCanvas=await fetch(canvasOne.data.url);assert.equal(firstCanvas.status,200);
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
+    assert.match(canvasHtml,/<span\b[^>]*data-edit-field="description"[^>]*>[^<]*<\/span>/,'The editable description must not include the host link.');
+    assert.ok(canvasHtml.includes('href="https://www.instagram.com/books_olgaruchina/"'));
     const tabTwo={...initial.content,heading:'A different unsaved tab'};
     const canvasTwo=await api('/api/canvas',{sequence:1,generation:1,content:tabTwo});assert.equal(canvasTwo.status,200);
     assert.notEqual(canvasTwo.data.session,canvasOne.data.session);

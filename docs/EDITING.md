@@ -19,7 +19,7 @@ After setup, **Publish website** sends your reviewed page to GitHub, and GitHub 
 
 **Book illustration:** under **First book**, use **Show the Eugene Onegin illustration** to show or hide the historical garden scene. Its artist credit appears with it. Changing the book title or author hides this Onegin-specific artwork automatically.
 
-**Founder credit:** “Founded by Olga Ruchina” is an editable text block just after the introduction and first book. Its text link opens her book Instagram, @books_olgaruchina. Edit or move it through the usual block controls. The footer still links to the club’s own Instagram.
+**Host Instagram:** the club description is followed by a linked handle in parentheses. Change **Host Instagram profile** under the club details to update it, or leave it empty to hide it. The handle is taken from the profile URL. Edit the description separately; the footer still links to the club’s own Instagram.
 
 **Club introduction video:** a **Meet Ruslitiki** YouTube block is ready under **Page blocks**, with **Show on page** switched off until the video is available. Paste the finished video's YouTube share or watch link into **YouTube video link**, switch **Show on page** on, and prepare a preview. Check that the video plays before publishing. You can change its heading, introduction, width and position like any other section. The player uses YouTube's privacy-enhanced embed and does not autoplay. In **Edit page**, clicking the video opens its settings; use **Saved preview** to play it. You can add further video blocks from the palette.
 

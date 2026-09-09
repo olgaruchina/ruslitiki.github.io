@@ -1,4 +1,4 @@
-import { ctaFor, formatDate } from './content.mjs';
+import { ctaFor, formatDate, instagramProfile } from './content.mjs';
 import { designFor, normalizedSections, youtubeVideoId } from './design.mjs';
 
 // Editor fields are plain text. Keep their punctuation from creating Markdown links or headings.
@@ -37,6 +37,8 @@ export function renderLlms(content, site) {
   }
   const cta = ctaFor(content);
   lines.push('', '## Join and contact', '', link(cta.label, absolute(cta.url)), link('Instagram', absolute(content.instagramUrl)));
+  const hostProfile = instagramProfile(content.hostInstagramUrl);
+  if (hostProfile) lines.push(link(hostProfile.handle, hostProfile.url, 'Book club host on Instagram.'));
   if (content.email) lines.push(link('Contact Olga Ruchina', absolute(`mailto:${content.email}`)));
   lines.push('', '## Optional', '', link('Privacy', absolute('/privacy/'), 'How the website and waitlist handle personal information.'), '');
   return lines.join('\n');

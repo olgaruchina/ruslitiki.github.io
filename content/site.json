@@ -20,21 +20,6 @@
   },
   "sections": [
     {
-      "id": "founder",
-      "type": "text",
-      "heading": "Founded by Olga Ruchina",
-      "body": "Get to know the reader behind the club.",
-      "visible": true,
-      "width": "full",
-      "align": "left",
-      "tone": "plain",
-      "layout": "split",
-      "buttonLabel": "@books_olgaruchina",
-      "buttonUrl": "https://www.instagram.com/books_olgaruchina/",
-      "buttonKind": "text",
-      "navLabel": ""
-    },
-    {
       "id": "meet-ruslitiki",
       "type": "video",
       "heading": "Meet Ruslitiki",
@@ -163,5 +148,6 @@
   },
   "design": {
     "logoSize": "small"
-  }
+  },
+  "hostInstagramUrl": "https://www.instagram.com/books_olgaruchina/"
 }
