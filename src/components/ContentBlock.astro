@@ -1,6 +1,7 @@
 ---
 import SectionImage from './SectionImage.astro';
 import SectionButton from './SectionButton.astro';
+import SectionVideo from './SectionVideo.astro';
 const {section,visualEditing=false}=Astro.props;
 const imageLayout=section.imageLayout || 'left';
 const field=key=>visualEditing?key:undefined;
@@ -9,6 +10,10 @@ const hasButton=section.type==='button' || !!section.buttonLabel || !!section.bu
 <section id={section.id} class:list={['content-block',`block-${section.type}`,`block-width-${section.width}`,`block-align-${section.align}`,`block-tone-${section.tone}`,`block-layout-${section.layout}`]} data-block-id={section.id} data-block-label={visualEditing?(section.heading || section.type):undefined}>
   {section.type==='faq' ? <details open={visualEditing}><summary data-edit-field={field('heading')} data-placeholder="Question">{section.heading}</summary><p class="block-copy" data-edit-field={field('body')} data-placeholder="Write an answer">{section.body}</p></details> : section.type==='quote' ? <>
     <h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2><blockquote><p data-edit-field={field('body')} data-placeholder="Write a quote">{section.body}</p>{(section.attribution || visualEditing) && <cite data-edit-field={field('attribution')} data-placeholder="Attribution">{section.attribution}</cite>}</blockquote>
+  </> : section.type==='video' ? <>
+    <h2 data-edit-field={field('heading')} data-placeholder="Video heading">{section.heading}</h2>
+    {(section.body || visualEditing) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional introduction">{section.body}</p>}
+    <SectionVideo section={section} visualEditing={visualEditing} />
   </> : section.type==='image' ? <div class:list={['image-block',`image-${imageLayout}`]}>
     {imageLayout!=='right' && <SectionImage section={section} visualEditing={visualEditing} />}
     <div><h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2>{(section.body || visualEditing) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional text">{section.body}</p>}</div>

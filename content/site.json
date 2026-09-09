@@ -18,7 +18,108 @@
     "note": "Love, friendship, and missed chances. Our first read, beginning this October.",
     "showArtwork": true
   },
-  "sections": [],
+  "sections": [
+    {
+      "id": "meet-ruslitiki",
+      "type": "video",
+      "heading": "Meet Ruslitiki",
+      "body": "Olga introduces the club and what we’ll read together.",
+      "visible": false,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single",
+      "videoUrl": ""
+    },
+    {
+      "id": "faq",
+      "type": "text",
+      "heading": "Frequently asked questions",
+      "body": "What we’ll read, how the club will work, and what joining means.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-who-is-it-for",
+      "type": "faq",
+      "heading": "Who is Ruslitiki for?",
+      "body": "Curious readers are welcome, whether you’re new to Russian classics or returning to old favourites. You don’t need a literature degree: we’ll explore the books with context, guidance and conversation.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-read-in-translation",
+      "type": "faq",
+      "heading": "Do I need to read Russian?",
+      "body": "No. You can read in English translation. Olga draws on the Russian original to explain wordplay, cultural references and details that translations can miss.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-membership-includes",
+      "type": "faq",
+      "heading": "What will membership include?",
+      "body": "The planned membership brings together shared reading, short videos about the author and the book, character guides, live book discussions and a member chat. The club will be hosted on Patreon.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-first-read",
+      "type": "faq",
+      "heading": "What are we reading first, and when do we start?",
+      "body": "Our first book is Eugene Onegin by Alexander Pushkin. Membership opens on 24 September 2026, and we start reading on 1 October 2026.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-reading-pace",
+      "type": "faq",
+      "heading": "How much will we read?",
+      "body": "We’re planning one book each month, plus a bonus short story. Along the way, Olga’s videos and guides will help unpack the characters, context and ideas.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-live-sessions",
+      "type": "faq",
+      "heading": "What if I’m in a different timezone?",
+      "body": "The club will be online. Live-session times and replay arrangements are still being planned. The waitlist form asks for your timezone to help Olga plan the sessions.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-waitlist-and-price",
+      "type": "faq",
+      "heading": "Does joining the waitlist sign me up for a paid membership?",
+      "body": "No. The waitlist records your interest; it does not take a payment or subscribe you to Patreon. The club will have a paid membership, which you can choose to join separately. Final pricing and membership details will be available before you sign up.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    }
+  ],
   "seo": {
     "title": "Ruslitiki | Online Russian Literature Book Club",
     "description": "Read Russian classics with Olga. Explore the context, characters and translations. Join the Ruslitiki waitlist; reading begins 1 October 2026."

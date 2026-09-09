@@ -331,8 +331,12 @@ function renderSections(){
       input.addEventListener('input',()=>{section[key]=input.value;changed();if(key==='heading'){name.textContent=section.heading || SECTION_TYPES[section.type];wrapper.querySelector('summary').textContent=SECTION_TYPES[section.type]+' · '+(section.heading || 'New block');}});field.append(input);fields.append(field);
     };
     textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
-    textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':['image','button'].includes(section.type)?'Text (optional)':'Text','textarea',1400);
+    textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':['image','video','button'].includes(section.type)?'Text (optional)':'Text','textarea',1400);
     if(section.type==='quote')textField('attribution','Attribution (optional)');
+    if(section.type==='video'){
+      textField('videoUrl','YouTube video link','input',2000);
+      fields.append(element('small','Paste a YouTube watch or share link. Keep Show on page off until the video is ready. Check playback in Saved preview before publishing.'));
+    }
     if(section.type==='image'){
       if(section.image){const thumbnail=element('img');thumbnail.src='/media/'+section.image.split('/').pop();thumbnail.alt=section.imageAlt || 'Selected image';thumbnail.className='block-image-preview';fields.append(thumbnail);}
       const label=element('label',section.image?'Replace image':'Choose image');const upload=element('input');upload.type='file';upload.accept='image/png,image/jpeg,image/webp';

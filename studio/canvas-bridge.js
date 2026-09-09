@@ -73,7 +73,7 @@
     finishEditing();
     const block=event.target.closest('[data-block-id]');
     if(block)select(block.dataset.blockId);
-    if(event.target.closest('[data-select-image]'))send('options',{id:block?.dataset.blockId,field:'image'});
+    if(event.target.closest('[data-select-image],[data-select-video]'))send('options',{id:block?.dataset.blockId,field:event.target.closest('[data-select-video]')?'videoUrl':'image'});
     else if(!block && event.target.closest('[data-edit-region]'))send('select',{id:'brand'});
   },true);
   document.addEventListener('keydown',event=>{

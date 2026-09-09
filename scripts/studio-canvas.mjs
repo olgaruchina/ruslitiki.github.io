@@ -47,7 +47,7 @@ const config={studioOrigin:${JSON.stringify(studioOrigin)},session:id,nonce:snap
             if(req.headers.host!==new URL(origin).host || (req.headers.origin && req.headers.origin!==origin)){res.writeHead(403);res.end();return;}
             if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return;}
             res.setHeader('Cache-Control','no-store');res.setHeader('X-Robots-Tag','noindex, nofollow');res.setHeader('Referrer-Policy','no-referrer');
-            res.setHeader('Content-Security-Policy',`default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-ancestors ${studioOrigin}; form-action 'none'; base-uri 'self'`);
+            res.setHeader('Content-Security-Policy',`default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; frame-ancestors ${studioOrigin}; form-action 'none'; base-uri 'self'`);
             const bridges={'/__canvas/bridge.js':['canvas-bridge.js','text/javascript'],'/__canvas/bridge.css':['canvas-bridge.css','text/css']};
             try{
               const pathname=new URL(req.url,origin).pathname;

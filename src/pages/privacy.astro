@@ -8,7 +8,7 @@ const content = readContent();
     <header><a class="back-link" href="/">← Ruslitiki</a></header>
     <main id="main">
       <h1>Privacy</h1>
-      <p>This website introduces Ruslitiki and links to our waitlist. It does not have a signup form of its own, advertising trackers, or site analytics.</p>
+      <p>This website introduces Ruslitiki and links to our waitlist. It does not have a signup form of its own or site analytics.</p>
       <h2>The waitlist</h2>
       <p>The waitlist opens in Google Forms. The form asks for an email address and timezone, with additional questions about reading experience and interests. Olga uses this information to plan the club and contact the waitlist when membership opens.</p>
       <p>Please share only what you are comfortable providing. Optional survey answers help shape the reading programme. They are not published as testimonials or shared on this website.</p>
@@ -16,6 +16,7 @@ const content = readContent();
       <h2>Questions or removal</h2>
       <p>If you want to ask about your response or request its removal, {content.email ? <a href={`mailto:${content.email}`}>contact Olga by email</a> : <a href={content.instagramUrl}>contact Olga through the Ruslitiki Instagram account</a>}.</p>
       <h2>Other services</h2>
+      <p>When a YouTube video is available, the website may include a player using YouTube’s privacy-enhanced mode. Loading or playing it connects to YouTube, which processes technical information under <a href="https://policies.google.com/privacy">Google’s privacy policy</a>. The video does not play automatically.</p>
       <p>Our hosting provider processes technical request information to deliver and secure the website. Instagram, Google Forms and, when available, Patreon have their own privacy practices when you visit them.</p>
     </main>
   </div>

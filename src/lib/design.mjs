@@ -29,8 +29,22 @@ export const SECTION_OPTIONS = {
   imageRatio:{auto:'Original proportions',landscape:'Landscape crop',square:'Square crop',portrait:'Portrait crop'},
   buttonKind:{primary:'Filled',outline:'Outline',text:'Text link'},
 };
-export const SECTION_TYPES = {text:'Text',image:'Image and text',button:'Button',faq:'Question and answer',quote:'Quote'};
+export const SECTION_TYPES = {text:'Text',image:'Image and text',video:'YouTube video',button:'Button',faq:'Question and answer',quote:'Quote'};
 export const MAX_SECTIONS = 12;
+
+export function youtubeVideoId(value) {
+  if(typeof value!=='string' || value.length>2000)return null;
+  try{
+    const url=new URL(value);
+    if(url.protocol!=='https:' || url.username || url.password || url.port)return null;
+    let id;
+    if(url.hostname==='youtu.be')id=url.pathname.slice(1);
+    else if(['youtube.com','www.youtube.com','m.youtube.com'].includes(url.hostname)){
+      id=url.pathname==='/watch'?url.searchParams.get('v'):url.pathname.match(/^\/(?:embed|shorts|live)\/([^/]+)$/)?.[1];
+    }else if(url.hostname==='www.youtube-nocookie.com')id=url.pathname.match(/^\/embed\/([^/]+)$/)?.[1];
+    return /^[A-Za-z0-9_-]{11}$/.test(id || '')?id:null;
+  }catch{return null;}
+}
 
 export function safeButtonUrl(value) {
   if(typeof value!=='string' || !value || value.length>2000 || /[\s<>\r\n]/.test(value))return false;

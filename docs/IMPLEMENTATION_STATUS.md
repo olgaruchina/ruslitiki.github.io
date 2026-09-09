@@ -7,6 +7,8 @@
 - Responsive, static Astro coming-soon page using the supplied wordmark, pale blue, Literata and Golos Text.
 - Historical Eugene Onegin garden illustration by Elena Samokish-Sudkovskaya (1908), with source credit, descriptive alternative text and responsive WebP images. The editor can hide it; changing the first book removes this specific artwork. See [artwork provenance](ARTWORK.md).
 - Confirmed waitlist link, membership opening 24 September and reading start 1 October, first read *Eugene Onegin*, optional working email and future Patreon states.
+- Seven expandable FAQs explain the audience, translation, planned offering, launch, pace, timezones and waitlist/membership distinction. Unconfirmed prices, session times and replay arrangements are not presented as settled commitments.
+- Editable YouTube blocks accept video links and produce responsive, lazy-loaded privacy-enhanced players with no autoplay. The club introduction block is hidden until the owner provides the video later in the week; no placeholder player appears publicly. Player interaction is reserved for Saved preview; the editing canvas opens video settings.
 - Privacy page, 404, canonical metadata, sitemap, robots, organization data, accessible headings and controls; no public client JavaScript or analytics.
 - Private local editing UI: text, dates, links, logo upload/reset and search listing, plus four page compositions, width/spacing/typography controls, custom colours with contrast validation, button shapes and Onegin artwork placement/size.
 - Visual editing canvas renders the shared homepage components, with direct text editing, section move handles, drag-to-insert palette, insertion controls and arrow-button alternatives. Section options remain available in the inspector. The local canvas uses isolated per-tab snapshots and is excluded from production output.
@@ -20,7 +22,7 @@
 ## Checked
 
 - Dependency installation completed; npm reported zero vulnerabilities at installation.
-- Twenty-five automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
+- Twenty-seven automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
 - Tested: stale draft save, invalid URL/calendar/email inputs, image path restrictions, malformed upload type, rejected foreign origin/Host/token, missing image, artifact modification/symlink, private unselected upload, selected image rendering route, and disabled public publishing.
 - Production build and built-page checks passed: confirmed copy/dates, canonical origin, working local references, no editor/private files in output and no public client scripts.
 - The local page returned HTTP 200 before its preview was opened.
@@ -35,6 +37,7 @@ These are programmatic checks. They are not a completed browser visual/accessibi
 
 - Owner switch of the existing GitHub Pages source to GitHub Actions and permission for site-live in the github-pages environment. The repository variable is already set to editor; no main merge is required for this publishing route. Then check the editor connection and test Publish/Restore using Olga's account. The custom domain is already configured. Current GitHub access permits pushing branches but not administering Pages settings.
 - Olga's real editing walkthrough, browser/phone/keyboard/zoom checks and native Mac launcher verification.
+- The real club introduction video URL, then playback verification in Saved preview and enabling its visibility. Only a fixture embed was checked in generated HTML; actual YouTube playback has not been tested.
 - An operational public email before showing Contact Olga; approved membership terms and Patreon destination before opening membership.
 - Full homepage/reading-guide content and member-offer sections in the later planned release.
 - A synchronization model if editing from multiple laptops or enabling hosted Pages CMS. The local prototype does not auto-commit private drafts or sync them through GitHub.

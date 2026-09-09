@@ -93,6 +93,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(!previewHtml.includes('/@vite/') && !previewHtml.includes('/__canvas/') && !previewHtml.includes('data-edit-field='),'A preview prepared after canvas startup is still a production artifact.');
     assert.ok(previewHtml.includes('Read the classics together.'));
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
+    assert.ok(previewHtml.includes('Frequently asked questions') && previewHtml.includes('Do I need to read Russian?'));
+    assert.ok(!previewHtml.includes('youtube-nocookie.com/embed/'),'The pending video must not publish a broken player.');
     assert.equal((await fetch(new URL(stagedPath,built.data.preview.url))).status,404,'Unselected upload must not be included in a release.');
     const manifest=JSON.parse(await fs.readFile(path.join(root,'.studio/previews',built.data.preview.id,'manifest.json')));
     assert.equal((await fetch(new URL('/favicon.svg',built.data.preview.url))).status,200);
@@ -109,8 +111,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
       {id:'quote-first',type:'quote',heading:'A reading invitation',body:'A supplied quotation.',attribution:'Club notes',visible:true,tone:'accent',align:'center',width:'full'},
       {id:'reader-image',type:'image',heading:'Our library',body:'Reading together.',visible:true,image:stagedPath,imageAlt:'The supplied Ruslitiki wordmark.',imageWidth:2500,imageHeight:1000,imageLayout:'right',imageRatio:'square'},
       {id:'custom-button',type:'button',heading:'',body:'',visible:true,buttonLabel:'Read with Ruslitiki',buttonUrl:content.waitlistUrl,buttonKind:'outline'},
+      {id:'test-video',type:'video',heading:'Video fixture',body:'',visible:true,videoUrl:'https://youtu.be/M7lc1UVf-VE?si=shared'},
     ];
-    customized.design={...designFor(customized),background:PALETTES.night.background,ink:PALETTES.night.ink,accent:PALETTES.night.accent,buttonStyle:'outline',width:'compact',spacing:'airy',headingFont:'golos',bodySize:20,blockOrder:['quote-first','opening','reader-image','custom-button']};
+    customized.design={...designFor(customized),background:PALETTES.night.background,ink:PALETTES.night.ink,accent:PALETTES.night.accent,buttonStyle:'outline',width:'compact',spacing:'airy',headingFont:'golos',bodySize:20,blockOrder:['quote-first','opening','reader-image','custom-button','test-video']};
     let revision=savedSelected.data.revision;
     for(const composition of ['book-left','stacked','centered','split']){
       customized.design.composition=composition;
@@ -122,6 +125,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
       const html=await (await fetch(result.data.preview.url)).text();
       assert.ok(html.includes(`composition-${composition}`));
       assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
+      assert.ok(html.includes('src="https://www.youtube-nocookie.com/embed/M7lc1UVf-VE"') && html.includes('referrerpolicy="strict-origin-when-cross-origin"') && html.includes('title="Video fixture"'));
+      assert.ok(!html.includes('autoplay=1') && !html.includes('canvas-video-control'));
       assert.ok(html.includes('--page-bg:#161b2c') && html.includes('data-button-style="outline"'));
       assert.ok(html.indexOf('data-block-id="quote-first"')<html.indexOf('data-block-id="opening"'),'Custom blocks can appear before the introduction.');
       assert.equal(html.indexOf('data-part="book"')<html.indexOf('data-part="introduction"'),composition==='book-left','Visual and document reading order agree.');

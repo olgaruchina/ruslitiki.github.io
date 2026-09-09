@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
 import { readContent, ctaFor } from '../src/lib/content.mjs';
+import {youtubeVideoId} from '../src/lib/design.mjs';
 const root=path.resolve(process.argv[2] || 'dist');
 const content=readContent();
 const home=await fs.readFile(path.join(root,'index.html'),'utf8');
@@ -13,6 +14,11 @@ assert.ok(home.includes('https://www.ruslitiki.com/'),'Canonical origin is missi
 assert.ok(!home.includes('mailto:') || Boolean(content.email),'Do not publish an unconfigured mailbox.');
 assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must not ship on the public page.');
 assert.ok(!home.includes('googletagmanager') && !home.includes('google-analytics'),'Unexpected tracking code.');
+const videos=content.sections.filter(section=>section.type==='video' && section.visible);
+const frames=[...home.matchAll(/<iframe\b([^>]*)>/g)];
+assert.equal(frames.length,videos.length,'Only configured visible videos may render a player.');
+for(const section of videos)assert.ok(home.includes(`https://www.youtube-nocookie.com/embed/${youtubeVideoId(section.videoUrl)}`),'Video must use the approved embed source.');
+for(const [attributes] of frames)assert.ok(attributes.includes('loading="lazy"') && attributes.includes('referrerpolicy="strict-origin-when-cross-origin"'),'Video must load lazily and retain its referring origin.');
 for(const html of [home,privacy]){
   for(const match of html.matchAll(/(?:src|href)="(\/[^"?#]*)"/g)){
     const target=match[1];

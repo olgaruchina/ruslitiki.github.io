@@ -7,6 +7,7 @@ export function insertSection(content,type,before=null,id='section-'+crypto.rand
   if(type==='quote')section.attribution='';
   if(type==='image')Object.assign(section,{image:'',imageAlt:'',imageWidth:0,imageHeight:0,caption:'',sourceUrl:'',imageLayout:'left',imageRatio:'auto'});
   if(type==='button')Object.assign(section,{buttonLabel:'',buttonUrl:'',buttonKind:'primary'});
+  if(type==='video')section.videoUrl='';
   content.sections.push(section);
   const index=before===null?content.design.blockOrder.length:content.design.blockOrder.indexOf(before);
   content.design.blockOrder.splice(index,0,id);return section;

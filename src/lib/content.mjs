@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { validateDesign, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, normalizedSections, safeButtonUrl } from './design.mjs';
+import { validateDesign, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, normalizedSections, safeButtonUrl, youtubeVideoId } from './design.mjs';
 
 export const LIMITS = { heading: 100, description: 180, introduction: 400, bookNote: 300 };
 const own = (o, key) => Object.hasOwn(o, key);
@@ -53,11 +53,11 @@ export function validateContent(data, {draft = false} = {}) {
   if (!Array.isArray(data.sections) || data.sections.length > MAX_SECTIONS) errors.push(`Use at most ${MAX_SECTIONS} additional sections.`);
   else data.sections.forEach((section, i) => {
     const label = `Section ${i+1}`;
-    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind'], label)) return;
+    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl'], label)) return;
     if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
     if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || section.id==='opening')) errors.push(`${label}: invalid block identifier.`);
     string(section.heading, `${label} heading`, 150, !draft && section.type!=='button');
-    string(section.body, `${label} text`, 1400, !draft && !['image','button'].includes(section.type));
+    string(section.body, `${label} text`, 1400, !draft && !['image','video','button'].includes(section.type));
     if (typeof section.visible !== 'boolean') errors.push(`${label}: visibility must be on or off.`);
     for(const [key,choices] of Object.entries(SECTION_OPTIONS))if(own(section,key) && (typeof section[key]!=='string' || !Object.hasOwn(choices,section[key])))errors.push(`${label}: choose a supported ${key}.`);
     if(section.type==='image'){
@@ -69,6 +69,10 @@ export function validateContent(data, {draft = false} = {}) {
       https(section.sourceUrl,`${label} image source`,false);
     }
     if(section.type==='quote')string(section.attribution??'',`${label} attribution`,150,false);
+    if(section.type==='video'){
+      const value=section.videoUrl??'';
+      if((value!=='' || (!draft && section.visible)) && !youtubeVideoId(value))errors.push(`${label} video: paste a valid YouTube video link, or keep the section hidden until it is ready.`);
+    }
     if(section.type==='button' || own(section,'buttonLabel') || own(section,'buttonUrl')){
       const required=!draft && (section.type==='button' || !!section.buttonLabel || !!section.buttonUrl);
       string(section.buttonLabel??'',`${label} button label`,70,required);
