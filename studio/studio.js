@@ -144,8 +144,11 @@ for(const button of document.querySelectorAll('[role="tab"]')){
     event.preventDefault();activateTab(buttons[index]);buttons[index].focus();
   });
 }
-for(const [id,phone] of [['desktop',false],['mobile',true]])$('#'+id).addEventListener('click',()=>{
-  $('#preview-stage').classList.toggle('phone',phone);$('#canvas-stage').classList.toggle('phone',phone);$('#desktop').setAttribute('aria-pressed',String(!phone));$('#mobile').setAttribute('aria-pressed',String(phone));
+for(const id of ['desktop','tablet','mobile'])$('#'+id).addEventListener('click',()=>{
+  for(const stage of [$('#preview-stage'),$('#canvas-stage')]){
+    stage.classList.toggle('phone',id==='mobile');stage.classList.toggle('tablet',id==='tablet');
+  }
+  for(const button of ['desktop','tablet','mobile'])$('#'+button).setAttribute('aria-pressed',String(button===id));
 });
 function showSurface(mode){
   const editing=mode==='edit';$('#canvas-stage').hidden=!editing;$('#canvas-palette').hidden=!editing;$('#canvas-status').hidden=!editing;$('#preview-stage').hidden=editing;
