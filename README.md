@@ -18,7 +18,9 @@ Native Pages CMS field configuration is supplied in `.pages.yml` as an optional 
 
 The original GitHub Pages configuration serves `main` from the repository root. Development remains on a separate branch. Nothing should be merged to `main` solely to publish this Astro source: the old Pages setup would not build it correctly.
 
-The local editor's public publishing adapter pushes only a reviewed static artifact to `site-live`, then waits for `https://www.ruslitiki.com/release.json` to confirm that exact release. It needs the free host to be connected once. It is disabled until configured, and has not been tested against live hosting. Follow [hosting setup](docs/HOSTING_SETUP.md).
+GitHub Actions is configured to test and build code pushes and automatically publish successful `main` builds once the owner changes the Pages source to GitHub Actions and this branch is merged. Development branches and pull requests only run checks. No additional hosting service or deployment secret is needed.
+
+The local editor can use the same workflow in a separate editor publishing mode: it pushes the reviewed static files under `dist/` plus the workflow to `site-live`, then waits for `https://www.ruslitiki.com/release.json` to confirm that exact release. A repository variable selects either automatic `main` publishing or editor publishing, preventing stale source from overwriting the owner's live edits. The editor remains disabled until configured, and live deployment has not been exercised. Follow [hosting setup](docs/HOSTING_SETUP.md).
 
 `.openai/hosting.json` identifies the separate owner-private Sites review deployment. That deployment is for reviewing the public page, not Olga's permanent editing service. Never put private research or the response CSV in this repository or its published output.
 

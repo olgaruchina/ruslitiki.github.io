@@ -27,14 +27,27 @@ export async function verifyArtifact(preview) {
   if (digest(actual) !== preview.artifactHash) throw new Error('The preview files changed. Prepare and review a fresh preview before publishing.');
 }
 
-// Cloudflare Pages must first be connected to this repository's site-live branch,
-// with no build command and the output directory set to the repository root.
-// Only generated public files go onto that branch. No hosting token reaches the UI.
+export async function stagePagesRelease(preview, work, workflowPath) {
+  await verifyArtifact(preview);
+  const output=path.join(work,'dist');
+  await fs.cp(preview.directory,output,{recursive:true});
+  if(digest(await fileMap(output))!==preview.artifactHash)throw new Error('The copied release differs from the reviewed preview. Prepare a fresh preview.');
+  // Push workflows must be present on the branch being pushed. Keep this trusted
+  // infrastructure outside dist so it never becomes part of the public website.
+  const workflow=path.join(work,'.github/workflows/pages.yml');
+  await fs.mkdir(path.dirname(workflow),{recursive:true});
+  await fs.copyFile(workflowPath,workflow);
+}
+
+// Pages must use GitHub Actions and RUSLITIKI_PUBLISH_SOURCE must be "editor".
+// The workflow uploads dist unchanged; only the selected mode can deploy.
 export async function publishRelease(preview, config, workingRoot, onStatus) {
   const liveUrl = validatePublishing(config);
   await verifyArtifact(preview);
   const remote=`https://github.com/${config.repository}.git`;
   await run('gh',['auth','status']);
+  const source=await run('gh',['api',`repos/${config.repository}/actions/variables/RUSLITIKI_PUBLISH_SOURCE`,'--jq','.value']).catch(()=>null);
+  if(source!=='editor')throw new Error('The GitHub publishing connection is not set to editor mode. Ask the maintainer to finish the one-time setup; your draft and preview are safe.');
   const work=path.join(workingRoot,`publish-${preview.id}`);
   const pendingFile=path.join(workingRoot,`pending-${preview.id}.json`);
   const pending=await json(pendingFile).catch(()=>null);
@@ -56,8 +69,7 @@ export async function publishRelease(preview, config, workingRoot, onStatus) {
       if(await git(['rev-parse','HEAD'])!==remoteCommit)throw new Error('The public release changed while preparing publication. Retry with a fresh preview.');
     }
     for (const entry of await fs.readdir(work)) if(entry!=='.git') await fs.rm(path.join(work,entry),{recursive:true,force:true});
-    await fs.cp(preview.directory,work,{recursive:true});
-    if(digest(await fileMap(work,['.git']))!==preview.artifactHash)throw new Error('The copied release differs from the reviewed preview. Prepare a fresh preview.');
+    await stagePagesRelease(preview,work,path.resolve(workingRoot,'../.github/workflows/pages.yml'));
     await git(['add','--all']);
     if(await git(['status','--porcelain']))await git(['-c','user.name=Ruslitiki Studio','-c','user.email=studio@users.noreply.github.com','commit','-m',`Publish reviewed Ruslitiki page ${preview.id}`]);
     commit=await git(['rev-parse','HEAD']);

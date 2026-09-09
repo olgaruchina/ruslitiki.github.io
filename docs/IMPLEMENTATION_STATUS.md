@@ -10,12 +10,13 @@
 - Private local editing UI: text, dates, links, logo upload/reset, optional note/FAQ blocks, ordering and visibility, search listing.
 - Draft save with stale-window conflict detection; exact saved previews; phone/desktop preview sizes; private upload staging; previous-content recovery mechanism.
 - Public publishing adapter: validates a reviewed artifact, sends generated output to a dedicated branch, reconciles a pending retry and checks the live release marker. Disabled pending real host connection.
+- GitHub Actions workflow: checks source pushes/pull requests and deploys successful `main` builds after Pages activation. Optional editor mode deploys the exact reviewed `dist/` artifact from `site-live`; its push includes the workflow. Only one mode can publish, preventing stale source from overwriting editor content.
 - Optional Pages CMS field configuration and a Mac application launcher; neither hosted authentication nor the native launcher has been exercised yet.
 
 ## Checked
 
 - Dependency installation completed; npm reported zero vulnerabilities at installation.
-- Ten automated tests passed, including an isolated local HTTP/editor integration test with real Astro preview builds.
+- Eleven automated tests passed, including an isolated local HTTP/editor integration test with real Astro preview builds and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
 - Tested: stale draft save, invalid URL/calendar/email inputs, image path restrictions, malformed upload type, rejected foreign origin/Host/token, missing image, artifact modification/symlink, private unselected upload, selected image rendering route, and disabled public publishing.
 - Production build and built-page checks passed: confirmed copy/dates, canonical origin, working local references, no editor/private files in output and no public client scripts.
 - The local page returned HTTP 200 before its preview was opened.
@@ -25,7 +26,7 @@ These are programmatic checks. They are not a completed browser visual/accessibi
 
 ## Still needed
 
-- Owner connection of the free host and custom domain, then activation and end-to-end testing of Publish/Restore using Olga's account. Current GitHub access permits pushing branches but not administering Pages settings.
+- Owner switch of the existing GitHub Pages source to GitHub Actions, merge of the checked branch, and first live deployment. Then activate editor mode and test Publish/Restore using Olga's account. The custom domain is already configured. Current GitHub access permits pushing branches but not administering Pages settings.
 - Olga's real editing walkthrough, browser/phone/keyboard/zoom checks and native Mac launcher verification.
 - An operational public email before showing Contact Olga; approved membership terms and Patreon destination before opening membership.
 - Full homepage/reading-guide content and member-offer sections in the later planned release.
