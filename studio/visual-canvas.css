@@ -1,0 +1,14 @@
+.workspace{grid-template-columns:minmax(310px,390px) minmax(0,1fr);max-width:2000px}.editing{padding:1.3rem}.edit-intro{margin-bottom:1rem}.edit-intro h1{font-size:1.6rem}.edit-intro p{font-size:.875rem}.preview-area{padding:1.3rem}.canvas-mode-controls{display:flex;justify-content:space-between;align-items:center;gap:.8rem;margin-top:1rem}.canvas-mode-controls button{font-size:.875rem}.canvas-mode-controls [aria-pressed=true]{background:#dee9fc;border-color:#9cadd0}.canvas-palette{display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.8rem}.canvas-palette button{font-size:.875rem;min-height:36px;padding:.35rem .7rem;cursor:grab}.canvas-status{font-size:.875rem;line-height:1.45;color:#515d70;margin-top:.7rem;white-space:pre-line}.canvas-stage{height:calc(100vh - 290px);max-height:none;min-height:520px}.insert-options{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin:1.2rem 0}.insert-options button{text-align:left;min-height:62px}#insert-dialog>div{justify-content:initial}.preview-toolbar h2{font-size:1.2rem}.button-fields{border:1px solid #d8dce7;border-radius:5px;padding:1rem;margin:1rem 0}.button-fields legend{font-size:.875rem;padding-inline:.3rem}
+@media(min-width:1051px){.editing{max-height:calc(100vh - 80px);overflow:auto;position:sticky;top:0}}@media(max-width:1050px){.workspace{grid-template-columns:1fr}.editing{max-height:none}.preview-area{grid-row:1}.canvas-stage{height:660px}}@media(max-width:500px){.canvas-mode-controls{align-items:start;flex-direction:column}.canvas-stage{min-height:500px}.canvas-palette button{min-height:40px}}
+.editing,fieldset{min-width:0}
+.preview-stage.tablet iframe{width:min(768px,100%)}
+.view-controls,.view-controls>div{display:flex;flex-wrap:wrap;gap:.5rem}
+dialog>div{flex-wrap:wrap}
+@media(max-width:500px){
+  .topbar{flex-wrap:wrap}
+  .top-actions{width:100%;display:grid;grid-template-columns:1fr 1fr}
+  .top-actions #save-state,.top-actions #save{grid-column:1/-1}
+  dialog{padding:1.25rem}
+  dialog>div>button{flex:1 1 100%}
+}
+@media(pointer:coarse){.canvas-palette button,.view-controls button,.tabs button,.section-controls button,.order-actions button,#undo,#redo{min-height:44px}}

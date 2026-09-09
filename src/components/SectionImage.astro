@@ -1,0 +1,7 @@
+---
+const {section,visualEditing=false}=Astro.props;
+---
+<figure class:list={['section-image',`ratio-${section.imageRatio || 'auto'}`]}>
+  {section.image ? <img src={section.image} alt={section.imageAlt} width={section.imageWidth} height={section.imageHeight} loading="lazy" decoding="async" /> : visualEditing && <button type="button" class="canvas-image-placeholder" data-select-image>Choose an image</button>}
+  {(section.caption || section.sourceUrl) && <figcaption>{section.caption}{section.sourceUrl && <> <a href={section.sourceUrl}>Image source</a></>}</figcaption>}
+</figure>

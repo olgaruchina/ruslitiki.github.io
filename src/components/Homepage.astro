@@ -1,0 +1,51 @@
+---
+import Page from '../layouts/Page.astro';
+import Opening from './Opening.astro';
+import ContentBlock from './ContentBlock.astro';
+import { instagramProfile } from '../lib/content.mjs';
+import { designFor, normalizedSections, pageNavigation } from '../lib/design.mjs';
+const {content,visualEditing=false}=Astro.props;
+const design=designFor(content);
+const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
+const navigation=pageNavigation(content);
+const hostProfile=instagramProfile(content.hostInstagramUrl);
+const status={ 'coming-soon':'Coming soon','membership-open':'Membership is open',reading:'Reading together' }[content.status];
+const structuredData = {
+  '@context':'https://schema.org',
+  '@type':'Organization',
+  name:content.brand,
+  url:Astro.site?.href,
+  description:content.description,
+  sameAs:[content.instagramUrl],
+  ...(content.email ? {email:content.email} : {}),
+};
+---
+<Page title={content.seo.title} description={content.seo.description} content={content} noindex={visualEditing}>
+  <div class="landing" id="canvas-content">
+    <header class="masthead" aria-label={content.brand} data-edit-region={visualEditing?"home":undefined}>
+      <div class:list={['wordmark', {'wordmark-original': content.logoPresentation === 'original-banner'}]}>
+        <img src={content.logo} alt={content.brand} width="2500" height="1000" fetchpriority="high" />
+      </div>
+      <div class="masthead-meta">
+        <p><span data-edit-field={visualEditing?"description":undefined}>{content.description}</span>{hostProfile && <> (<a href={hostProfile.url}>{hostProfile.handle}</a>)</>}</p>
+        <p class="status">{status}<span aria-hidden="true"> ↗</span></p>
+      </div>
+    </header>
+    <nav class="section-nav" aria-label="On this page">
+      <ul>{navigation.map(item=><li><a href={`#${item.id}`}>{item.label}</a></li>)}</ul>
+    </nav>
+    <main id="main">
+      {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock section={sections.get(id)} visualEditing={visualEditing} />)}
+    </main>
+    <footer class="footer">
+      <p>Read. Think. Question. Disagree.</p>
+      <nav aria-label="Contact and information">
+        <a href={content.instagramUrl}>Instagram<span class="sr-only"> — Ruslitiki</span></a>
+        {content.email && <a href={`mailto:${content.email}`}>Contact Olga Ruchina</a>}
+        <a href="/privacy/">Privacy</a>
+      </nav>
+    </footer>
+  </div>
+  <slot />
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g,'\\u003c')} />
+</Page>

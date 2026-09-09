@@ -1,0 +1,12 @@
+---
+import { youtubeVideoId } from '../lib/design.mjs';
+const {section,visualEditing=false}=Astro.props;
+const id=youtubeVideoId(section.videoUrl);
+---
+{id ? <>
+  <div class="section-video">
+    <iframe src={`https://www.youtube-nocookie.com/embed/${id}`} title={section.heading} width="960" height="540" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture; fullscreen" allowfullscreen></iframe>
+    {visualEditing && <button type="button" class="canvas-video-control" data-select-video>Change video link</button>}
+  </div>
+  <p class="video-link"><a href={`https://www.youtube.com/watch?v=${id}`} target="_blank" rel="noopener">Watch on YouTube ↗</a></p>
+</> : visualEditing && <button type="button" class="canvas-video-empty" data-select-video>Add a YouTube video link</button>}

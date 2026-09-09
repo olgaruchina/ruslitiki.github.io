@@ -1,0 +1,6 @@
+---
+import Homepage from '../components/Homepage.astro';
+import { readContent } from '../lib/content.mjs';
+const content=readContent();
+---
+<Homepage content={content} />

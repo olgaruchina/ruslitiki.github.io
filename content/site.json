@@ -1,0 +1,153 @@
+{
+  "brand": "Ruslitiki",
+  "status": "coming-soon",
+  "heading": "Russian literature, but make it fun.",
+  "description": "An online Russian literature book club with Olga Ruchina.",
+  "introduction": "Read the classics with context, conversation, and a guide to what gets lost in translation.",
+  "openingDate": "2026-09-24",
+  "readingDate": "2026-10-01",
+  "waitlistUrl": "https://docs.google.com/forms/d/e/1FAIpQLScbILxeZ4MsRmY1j3cjs4xb7IHHTZ8JVqLj2ReB1a2jeK31oQ/viewform",
+  "patreonUrl": "",
+  "email": "",
+  "instagramUrl": "https://www.instagram.com/ruslitiki/",
+  "logo": "/images/ruslitiki-original.png",
+  "logoPresentation": "original-banner",
+  "book": {
+    "title": "Eugene Onegin",
+    "author": "Alexander Pushkin",
+    "note": "Love, friendship, and missed chances. Our first read, beginning this October.",
+    "showArtwork": true
+  },
+  "sections": [
+    {
+      "id": "meet-ruslitiki",
+      "type": "video",
+      "heading": "Meet Ruslitiki",
+      "body": "Olga Ruchina introduces the club and what we’ll read together.",
+      "visible": false,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single",
+      "videoUrl": ""
+    },
+    {
+      "id": "how-the-club-works",
+      "type": "text",
+      "heading": "How the club works?",
+      "body": "The book is already chosen: we’re starting with Eugene Onegin by Alexander Pushkin.\n\nEvery week, you’ll get a new video, a reading guide and useful materials chosen for the book. Olga Ruchina will point out what to focus on, helping you notice details that depend on context, translation or hidden meanings.\n\nAt the end of the month, we’ll meet for a guided discussion of the book. You don’t need to prepare anything for the discussion.\n\nYou’ll receive the calendar in advance, so you can plan your reading and make time for our meeting.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "split"
+    },
+    {
+      "id": "membership",
+      "type": "text",
+      "heading": "Membership",
+      "body": "Standard membership: $14.99 USD per month\nEarly birds: $9.99 USD per month\n\nBoth include the weekly videos, reading guides and materials, the member chat and the guided discussion at the end of the month. Joining the waitlist is free; paid membership is a separate step on Patreon.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "panel",
+      "layout": "split"
+    },
+    {
+      "id": "faq",
+      "type": "text",
+      "heading": "Frequently asked questions",
+      "body": "What we’ll read, how the club will work, and what joining means.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "split"
+    },
+    {
+      "id": "faq-who-is-it-for",
+      "type": "faq",
+      "heading": "Who is Ruslitiki for?",
+      "body": "Curious readers are welcome, whether you’re new to Russian classics or returning to old favourites. You don’t need a literature degree: we’ll explore the books with context, guidance and conversation.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-read-in-translation",
+      "type": "faq",
+      "heading": "Do I need to read Russian?",
+      "body": "No. You can read in English translation. Olga Ruchina draws on the Russian original to explain wordplay, cultural references and details that translations can miss.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-membership-includes",
+      "type": "faq",
+      "heading": "What will membership include?",
+      "body": "Every week, you’ll get a new video, a reading guide and materials chosen for the book. Olga Ruchina will highlight what to focus on, including context, translation and hidden meanings. Membership also includes the member chat on Patreon and a guided book discussion at the end of the month.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-first-read",
+      "type": "faq",
+      "heading": "What are we reading first, and when do we start?",
+      "body": "Our first book is Eugene Onegin by Alexander Pushkin. Membership opens on 24 September 2026, and we start reading on 1 October 2026.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-reading-pace",
+      "type": "faq",
+      "heading": "Do I need to prepare for the discussion?",
+      "body": "No preparation is needed for the guided discussion. As you read, Olga Ruchina’s weekly videos, guides and materials will help you understand the book and notice important details. We’ll explore it together at the end of the month.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-live-sessions",
+      "type": "faq",
+      "heading": "What if I’m in a different timezone?",
+      "body": "You’ll receive the calendar in advance so you can plan for the guided discussion at the end of the month. The waitlist form asks for your timezone to help Olga Ruchina plan the sessions. Exact meeting times and replay arrangements are still being planned.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    },
+    {
+      "id": "faq-waitlist-and-price",
+      "type": "faq",
+      "heading": "Does joining the waitlist sign me up for a paid membership?",
+      "body": "No. Joining the waitlist is free and does not subscribe you to Patreon or take a payment. When membership opens, you can choose to join separately for $14.99 USD per month, or $9.99 USD per month for early birds.",
+      "visible": true,
+      "width": "full",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single"
+    }
+  ],
+  "seo": {
+    "title": "Ruslitiki | Online Russian Literature Book Club",
+    "description": "Read Russian classics with Olga Ruchina. Explore the context, characters and translations. Join the Ruslitiki waitlist; reading begins 1 October 2026."
+  },
+  "design": {
+    "logoSize": "small"
+  },
+  "hostInstagramUrl": "https://www.instagram.com/books_olgaruchina/"
+}
