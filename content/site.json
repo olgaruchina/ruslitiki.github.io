@@ -145,5 +145,8 @@
   "seo": {
     "title": "Ruslitiki | Online Russian Literature Book Club",
     "description": "Read Russian classics with Olga. Explore the context, characters and translations. Join the Ruslitiki waitlist; reading begins 1 October 2026."
+  },
+  "design": {
+    "logoSize": "small"
   }
 }
