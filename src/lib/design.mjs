@@ -30,7 +30,7 @@ export const SECTION_OPTIONS = {
   buttonKind:{primary:'Filled',outline:'Outline',text:'Text link'},
 };
 export const SECTION_TYPES = {text:'Text',image:'Image and text',video:'YouTube video',button:'Button',faq:'Question and answer',quote:'Quote'};
-export const MAX_SECTIONS = 12;
+export const MAX_SECTIONS = 24;
 
 export function youtubeVideoId(value) {
   if(typeof value!=='string' || value.length>2000)return null;
@@ -64,7 +64,7 @@ export function designFor(content) {
   for(const id of valid)if(!order.includes(id))order.push(id);
   return {...DESIGN_DEFAULTS,...content.design,blockOrder:order};
 }
-const DEFAULT_MENU_LABELS={'meet-ruslitiki':'Meet Olga','how-the-club-works':'How it works',membership:'Membership',faq:'FAQs'};
+const DEFAULT_MENU_LABELS={'meet-ruslitiki':'Meet Olga Ruchina','how-the-club-works':'How it works',membership:'Membership',faq:'FAQs'};
 export function navigationLabel(section) {
   return (section.navLabel??DEFAULT_MENU_LABELS[section.id]??'').trim();
 }

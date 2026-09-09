@@ -37,7 +37,7 @@ export function renderLlms(content, site) {
   }
   const cta = ctaFor(content);
   lines.push('', '## Join and contact', '', link(cta.label, absolute(cta.url)), link('Instagram', absolute(content.instagramUrl)));
-  if (content.email) lines.push(link('Contact Olga', absolute(`mailto:${content.email}`)));
+  if (content.email) lines.push(link('Contact Olga Ruchina', absolute(`mailto:${content.email}`)));
   lines.push('', '## Optional', '', link('Privacy', absolute('/privacy/'), 'How the website and waitlist handle personal information.'), '');
   return lines.join('\n');
 }
