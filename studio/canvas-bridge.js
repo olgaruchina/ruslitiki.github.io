@@ -28,6 +28,7 @@
   }
   function select(id,field,notify=true){
     selected=id;
+    if(id)document.body.removeAttribute('data-canvas-browsing');
     for(const block of blocks())block.toggleAttribute('data-canvas-selected',block.dataset.blockId===id);
     const block=selectedBlock();
     if(block){
@@ -71,8 +72,9 @@
     if(locked)return;
     if(link?.closest('.section-nav')){
       finishEditing();
+      select(null,undefined,false);send('deselect');document.body.setAttribute('data-canvas-browsing','');
       const target=document.getElementById(link.getAttribute('href').slice(1));
-      if(target){target.scrollIntoView({block:'start'});target.focus({preventScroll:true});const block=target.closest('[data-block-id]');if(block)select(block.dataset.blockId,block.dataset.blockId==='opening'?'book.title':undefined);}
+      if(target){target.scrollIntoView({block:'start'});target.focus({preventScroll:true});}
       return;
     }
     const field=event.target.closest('[data-edit-field]');if(field){if(field.closest('summary'))event.preventDefault();beginEditing(field);return;}
@@ -83,6 +85,7 @@
     else if(!block && event.target.closest('[data-edit-region]'))send('select',{id:'brand'});
   },true);
   document.addEventListener('keydown',event=>{
+    if(event.key==='Tab')document.body.removeAttribute('data-canvas-browsing');
     if(event.key==='Escape'){finishEditing();selectedBlock()?.focus();event.preventDefault();}
     if(editing || locked)return;
     const block=event.target.closest('[data-block-id]');

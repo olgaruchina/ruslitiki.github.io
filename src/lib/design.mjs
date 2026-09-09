@@ -24,7 +24,7 @@ export const SECTION_OPTIONS = {
   width:{reading:'Reading width',full:'Full width',narrow:'Narrow'},
   align:{left:'Left',center:'Centre',right:'Right'},
   tone:{plain:'Plain',panel:'Bordered',accent:'Accent colour'},
-  layout:{single:'One column',columns:'Two text columns'},
+  layout:{single:'One column',columns:'Two text columns',split:'Heading beside text'},
   imageLayout:{left:'Image on the left',right:'Image on the right',above:'Image above text'},
   imageRatio:{auto:'Original proportions',landscape:'Landscape crop',square:'Square crop',portrait:'Portrait crop'},
   buttonKind:{primary:'Filled',outline:'Outline',text:'Text link'},
@@ -71,7 +71,7 @@ export function navigationLabel(section) {
 export function pageNavigation(content) {
   const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
   return designFor(content).blockOrder.flatMap(id=>{
-    if(id==='opening')return [{id:'first-book-title',label:'First book'}];
+    if(id==='opening')return [{id:'first-book-title',label:"October's Book"}];
     const section=sections.get(id);
     const label=section?.visible?navigationLabel(section):'';
     return label?[{id,label}]:[];

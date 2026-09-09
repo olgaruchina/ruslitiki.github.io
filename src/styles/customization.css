@@ -8,7 +8,7 @@
 .section-nav a:hover{text-decoration:underline;text-underline-offset:.35em}
 .section-nav a:focus-visible{outline-offset:-2px}
 .content-block,#first-book-title{scroll-margin-top:1.5rem}
-.content-block:focus-visible,#first-book-title:focus-visible{outline:2px solid var(--indigo);outline-offset:8px}
+.content-block:focus,#first-book-title:focus{outline:none}
 @media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 @media(min-width:701px) and (min-height:600px){
   .section-nav{position:sticky;top:0}
@@ -45,6 +45,9 @@
 .block-align-left{text-align:left;margin-left:0;margin-right:auto}.block-align-center{text-align:center;margin-inline:auto}.block-align-right{text-align:right;margin-left:auto;margin-right:0}
 .content-block h2{font:400 clamp(1.65rem,3vw,2.4rem)/1.25 var(--heading-font);margin:0 0 1rem;text-wrap:balance}
 .block-copy{white-space:pre-line;font:400 var(--copy-size)/1.7 var(--body-font)}
+.block-width-full .block-copy{max-width:70ch}
+.block-width-full.block-align-center .block-copy{margin-inline:auto}
+.block-width-full.block-align-right .block-copy{margin-left:auto}
 .block-tone-panel{padding:clamp(1.25rem,3vw,2.5rem);border:1px solid var(--rule)}
 .block-tone-accent{padding:clamp(1.25rem,3vw,2.5rem);background:var(--indigo);color:var(--button-ink)}
 .block-tone-accent a:focus-visible,.block-tone-accent summary:focus-visible{outline-color:currentColor}
@@ -75,7 +78,13 @@
 .section-image.ratio-square img{aspect-ratio:1;height:auto;object-fit:cover}
 .section-image.ratio-portrait img{aspect-ratio:3/4;height:auto;object-fit:cover}
 .section-image figcaption{font:400 .875rem/1.6 var(--body-font);margin-top:.75rem}
-@media(min-width:900px){.block-layout-columns.block-text .block-copy{columns:18rem 2;column-gap:2.5rem}}
+@media(min-width:900px){
+  .block-layout-columns.block-text .block-copy{columns:18rem 2;column-gap:2.5rem}
+  .block-text.block-layout-split{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);column-gap:clamp(2rem,5vw,5rem);align-items:start}
+  .block-text.block-layout-split>h2{grid-column:1;grid-row:1;max-width:16ch;margin-bottom:0}
+  .block-text.block-layout-split>.block-copy{grid-column:2;grid-row:1}
+  .block-text.block-layout-split>.section-button{grid-column:2;justify-self:start}
+}
 @media(max-width:700px){
   .opening,.composition-book-left{grid-template-columns:minmax(0,1fr);gap:2rem}
   .first-book,.composition-book-left .first-book{border:0;border-top:1px solid var(--rule);padding:1.75rem 0 0}

@@ -52,7 +52,7 @@ test('section navigation follows visible block order and preserves explicit menu
     {id:'custom',type:'text',heading:'A new section',body:'More.',visible:true,navLabel:'New reading'},
   ];
   content.design.blockOrder=['membership','opening','custom','faq'];
-  assert.deepEqual(pageNavigation(content),[{id:'membership',label:'Membership'},{id:'first-book-title',label:'First book'},{id:'custom',label:'New reading'}]);
+  assert.deepEqual(pageNavigation(content),[{id:'membership',label:'Membership'},{id:'first-book-title',label:"October's Book"},{id:'custom',label:'New reading'}]);
   content.sections[0].navLabel='';content.sections[1].visible=true;
   assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','custom','faq']);
   content.sections[2].navLabel={};assert.ok(validateContent(content).some(error=>error.includes('menu label')));

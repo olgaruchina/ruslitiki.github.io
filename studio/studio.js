@@ -269,6 +269,7 @@ function canvasIntent(intent){
     return;
   }
   if(type==='edit-end'){lastHistoryGroup=null;canvas.schedule(draft);return;}
+  if(type==='deselect'){activeBlockId=null;return;}
   if(working || state?.busy)return;
   if(type==='insert-end'){openInsert(null);return;}
   if(type==='add'){addSection(intent.blockType,intent.before);return;}
@@ -354,7 +355,7 @@ function renderSections(){
     }
     buttons.append(selectControl('','Button appearance',SECTION_OPTIONS.buttonKind,section.buttonKind || 'primary',value=>{section.buttonKind=value;changed();}));fields.append(buttons);
     const appearance=element('div');appearance.className='design-controls';
-    for(const [key,label] of [['width','Block width'],['align','Alignment'],['tone','Background'],...(section.type==='text'?[['layout','Text columns']]:[])])appearance.append(selectControl('',label,SECTION_OPTIONS[key],section[key],value=>{section[key]=value;changed();}));
+    for(const [key,label] of [['width','Block width'],['align','Alignment'],['tone','Background'],...(section.type==='text'?[['layout','Text layout']]:[])])appearance.append(selectControl('',label,SECTION_OPTIONS[key],section[key],value=>{section[key]=value;changed();}));
     fields.append(appearance);
     const controls2=element('div');controls2.className='section-controls';
     const visibility=element('label');const checkbox=element('input');checkbox.type='checkbox';checkbox.checked=section.visible;

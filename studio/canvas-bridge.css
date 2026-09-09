@@ -4,7 +4,7 @@
 #canvas-tools button,#canvas-add-end,.canvas-image-placeholder{font:inherit;cursor:pointer;color:#23156b;background:#f4f7ff;border:1px solid #bdc9e3;border-radius:4px;min-height:36px;padding:6px 9px}
 #canvas-tools button:focus-visible,#canvas-add-end:focus-visible,.canvas-image-placeholder:focus-visible{outline:3px solid #3163c6;outline-offset:2px}
 #canvas-tools button:disabled{opacity:.4;cursor:default}#canvas-tools button[draggable=true]{cursor:grab;touch-action:none}.canvas-tool-label{font-size:12px;font-weight:600;max-width:15ch;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;margin-inline:4px}
-#main>[data-block-id]{position:relative}#main>[data-block-id]:hover{outline:1px dashed #507bcc;outline-offset:5px}#main>[data-canvas-selected]{outline:2px solid #3767be;outline-offset:5px}
+#main>[data-block-id]{position:relative}body:not([data-canvas-browsing]) #main>[data-block-id]:hover,body:not([data-canvas-browsing]) #main>[data-block-id]:focus-visible{outline:1px dashed #507bcc;outline-offset:5px}#main>[data-canvas-selected]{outline:2px solid #3767be;outline-offset:5px}
 [data-edit-field]{cursor:text;min-width:1ch}[data-edit-field]:empty{display:block;min-height:1.5em}[data-edit-field]:empty:before{content:attr(data-placeholder);opacity:.55}[contenteditable]{outline:2px solid #3767be;outline-offset:4px;min-width:2ch}
 #canvas-add-end{display:block;position:relative;margin:35px auto;min-height:44px;background:#fff}
 #canvas-tip{position:fixed;z-index:9999;bottom:8px;left:50%;transform:translateX(-50%);padding:6px 10px;border:1px solid #c8d2e8;border-radius:5px;background:#fffffff0;color:#394764;white-space:nowrap;font-size:12px;pointer-events:none}
