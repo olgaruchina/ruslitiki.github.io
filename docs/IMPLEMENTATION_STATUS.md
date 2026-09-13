@@ -9,6 +9,7 @@
 - The masthead description says “with Olga” and ends with a linked (@books_olgaruchina), using an optional Instagram profile field in the editor. There is no separate founder section; the club’s @ruslitiki handle is separately linked at the right of the menu and in the footer, opening a new tab. Other public copy retains Olga Ruchina’s full name; the AI overview follows the current page content.
 - Confirmed waitlist link, membership opening 24 September and reading start 1 October, first read *Eugene Onegin*, optional working email and future Patreon states. The two dates appear directly below the signup button in all four page compositions, using columns that stack when space is limited.
 - Separate “How the club works?” and Membership sections explain the chosen book, weekly video/guide/materials, reading guidance, monthly guided discussion without preparation, and advance calendar. Confirmed pricing is $14.99 USD per month, or $9.99 USD per month for early birds.
+- The FAQ introduction retains its heading without filler text. Text blocks can publish a heading alone; the editor keeps their optional text editable, and FAQ answers remain required.
 - Seven expandable FAQs explain the audience, translation, weekly offering, launch, discussion preparation, timezones and waitlist/membership distinction. Early-bird eligibility/duration, exact session times and replay arrangements remain unconfirmed.
 - Editable YouTube blocks accept video links and produce responsive, lazy-loaded privacy-enhanced players with no autoplay. The club introduction block is hidden until the owner provides the video later in the week; no placeholder player appears publicly. Player interaction is reserved for Saved preview; the editing canvas opens video settings.
 - Privacy page, 404, canonical metadata, sitemap, robots, organization data, accessible headings and controls; no public client JavaScript or analytics.
@@ -30,7 +31,7 @@
 ## Checked
 
 - Dependency installation completed; npm reported zero vulnerabilities at installation.
-- Thirty-two automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
+- Thirty-three automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
 - Tested: stale draft save, invalid URL/calendar/email inputs, image path restrictions, malformed upload type, rejected foreign origin/Host/token, missing image, artifact modification/symlink, private unselected upload, selected image rendering route, and disabled public publishing.
 - Production build and built-page checks passed: confirmed copy/dates, canonical origin, working local references, no editor/private files in output and no public client scripts.
 - AI overview checks cover hidden/unused-field exclusion, active membership links, custom section order, normalized video links, Markdown escaping and real editor previews using their reviewed draft. Built overview anchors resolve to the rendered sections.

@@ -18,6 +18,6 @@ const hasButton=section.type==='button' || !!section.buttonLabel || !!section.bu
     {imageLayout!=='right' && <SectionImage section={section} visualEditing={visualEditing} />}
     <div><h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2>{(section.body || visualEditing) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional text">{section.body}</p>}</div>
     {imageLayout==='right' && <SectionImage section={section} visualEditing={visualEditing} />}
-  </div> : <>{(section.heading || section.type!=='button') && <h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2>}{(section.body || section.type!=='button') && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Write your text">{section.body}</p>}</>}
+  </div> : <>{(section.heading || section.type!=='button') && <h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2>}{(section.body || (visualEditing && section.type==='text')) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional text">{section.body}</p>}</>}
   {hasButton && <SectionButton section={section} visualEditing={visualEditing} />}
 </section>

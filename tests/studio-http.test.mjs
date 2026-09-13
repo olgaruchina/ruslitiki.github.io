@@ -102,6 +102,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(!overviewText.includes('#meet-ruslitiki'),'Hidden sections must stay out of the AI overview.');
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
     assert.ok(previewHtml.includes('Frequently asked questions') && previewHtml.includes('Do I need to read Russian?'));
+    const faqIntro=previewHtml.match(/<section id="faq"[^>]*>([\s\S]*?)<\/section>/)[1];
+    assert.ok(faqIntro.includes('Frequently asked questions') && !faqIntro.includes('<p'),'A heading-only introduction publishes without an empty paragraph.');
     const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
     assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/">Home<\/a>/,'Home must be first and open the homepage without a section fragment.');
     for(const id of ['first-book-title','how-the-club-works','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));

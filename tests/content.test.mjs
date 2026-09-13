@@ -8,6 +8,18 @@ import { atomicJson, digest, saveDraft, fileMap, safeImage } from '../scripts/st
 import { validatePublishing, verifyArtifact } from '../scripts/publish-release.mjs';
 const fresh=()=>structuredClone(readContent());
 
+test('text sections can publish a heading alone, while empty headings and FAQ answers are rejected',()=>{
+  const content=fresh();
+  const section=content.sections.find(section=>section.id==='faq');
+  section.body='';
+  assert.deepEqual(validateContent(content),[]);
+  section.heading=' ';
+  assert.ok(validateContent(content).some(error=>error.includes('heading')));
+  section.heading='Frequently asked questions';
+  section.type='faq';
+  assert.ok(validateContent(content).some(error=>error.includes('text')));
+});
+
 test('host Instagram is optional for older drafts and only accepts safe profile links',()=>{
   const content=fresh();delete content.hostInstagramUrl;
   assert.deepEqual(validateContent(content),[]);

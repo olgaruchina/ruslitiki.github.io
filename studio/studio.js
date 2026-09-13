@@ -337,7 +337,7 @@ function renderSections(){
     textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
     textField('navLabel','Menu label (optional)','input',32,navigationLabel(section));
     fields.append(element('small','Add a short label to link to this section from the menu. Clear it to leave the section out of the menu. Hidden sections never appear in the menu.'));
-    textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':['image','video','button'].includes(section.type)?'Text (optional)':'Text','textarea',1400);
+    textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':'Text (optional)','textarea',1400);
     if(section.type==='quote')textField('attribution','Attribution (optional)');
     if(section.type==='video'){
       textField('videoUrl','YouTube video link','input',2000);

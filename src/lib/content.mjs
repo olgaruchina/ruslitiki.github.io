@@ -69,7 +69,7 @@ export function validateContent(data, {draft = false} = {}) {
     if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
     if(own(section,'navLabel'))string(section.navLabel,`${label} menu label`,32,false);
     string(section.heading, `${label} heading`, 150, !draft && section.type!=='button');
-    string(section.body, `${label} text`, 1400, !draft && !['image','video','button'].includes(section.type));
+    string(section.body, `${label} text`, 1400, !draft && !['text','image','video','button'].includes(section.type));
     if (typeof section.visible !== 'boolean') errors.push(`${label}: visibility must be on or off.`);
     for(const [key,choices] of Object.entries(SECTION_OPTIONS))if(own(section,key) && (typeof section[key]!=='string' || !Object.hasOwn(choices,section[key])))errors.push(`${label}: choose a supported ${key}.`);
     if(section.type==='image'){
