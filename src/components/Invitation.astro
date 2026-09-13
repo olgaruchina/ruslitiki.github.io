@@ -6,5 +6,5 @@ const action=ctaFor(content);
 <div class="invitation" data-part="introduction">
   <h1 data-edit-field={visualEditing?'heading':undefined}>{content.heading}</h1>
   <p class="introduction" data-edit-field={visualEditing?'introduction':undefined}>{content.introduction}</p>
-  <a class="join-button" href={action.url}>{action.label}<span aria-hidden="true">↗</span></a>
+  <a class="join-button" href={action.url} target="_blank" rel="noopener" title="Opens in a new tab">{action.label}<span aria-hidden="true">↗</span></a>
 </div>

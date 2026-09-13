@@ -73,6 +73,10 @@
     if(link?.closest('.section-nav')){
       finishEditing();
       select(null,undefined,false);send('deselect');document.body.setAttribute('data-canvas-browsing','');
+      if(link.getAttribute('href')==='/'){
+        document.querySelector('.masthead')?.focus({preventScroll:true});
+        window.scrollTo({top:0,left:0});return;
+      }
       const target=document.getElementById(link.getAttribute('href').slice(1));
       if(target){target.scrollIntoView({block:'start'});target.focus({preventScroll:true});}
       return;

@@ -16,7 +16,7 @@
   .section-nav li{flex:none}
   .content-block,#first-book-title{scroll-margin-top:6rem}
 }
-.wordmark{max-width:var(--logo-width)}
+.wordmark{width:75%;max-width:calc(var(--logo-width)*.75)}
 .wordmark-original{background:var(--blue)}
 .opening{padding-block:var(--section-space);align-items:start;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 .opening>*,.image-block>*{min-width:0}
@@ -45,6 +45,7 @@
 .composition-centered .book-artwork,.composition-centered .book-note,.composition-centered figcaption{margin-left:auto;margin-right:auto}
 .composition-stacked .dates,.composition-centered .dates{grid-template-columns:repeat(2,minmax(0,1fr))}
 .content-block{margin-block:var(--section-space);min-width:0;overflow-wrap:anywhere}
+#how-the-club-works{border-top:1px solid var(--rule);margin-top:0;padding-top:var(--section-space)}
 .block-width-reading{max-width:70ch}.block-width-narrow{max-width:48ch}.block-width-full{max-width:none}
 .block-align-left{text-align:left;margin-left:0;margin-right:auto}.block-align-center{text-align:center;margin-inline:auto}.block-align-right{text-align:right;margin-left:auto;margin-right:0}
 .content-block h2{font:400 clamp(1.65rem,3vw,2.4rem)/1.25 var(--heading-font);margin:0 0 1rem;text-wrap:balance}

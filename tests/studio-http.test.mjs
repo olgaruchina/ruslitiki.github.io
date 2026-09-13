@@ -103,6 +103,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
     assert.ok(previewHtml.includes('Frequently asked questions') && previewHtml.includes('Do I need to read Russian?'));
     const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
+    assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/">Home<\/a>/,'Home must be first and open the homepage without a section fragment.');
     for(const id of ['first-book-title','how-the-club-works','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
     assert.ok(!menu.includes('#meet-ruslitiki'),'Hidden video sections stay out of the menu.');
     assert.ok(!previewHtml.includes('youtube-nocookie.com/embed/'),'The pending video must not publish a broken player.');
@@ -128,6 +129,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     let revision=savedSelected.data.revision;
     for(const composition of ['book-left','stacked','centered','split']){
       customized.design.composition=composition;
+      customized.sections[2].buttonUrl=composition==='split'?'#first-book-title':content.waitlistUrl;
       const next=await api('/api/save',{content:customized,revision});
       assert.equal(next.status,200,JSON.stringify(next.data));revision=next.data.revision;
       assert.equal(next.data.preview.current,false,'A layout change invalidates the reviewed preview.');
@@ -136,6 +138,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
       const html=await (await fetch(result.data.preview.url)).text();
       assert.ok(html.includes(`composition-${composition}`));
       assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
+      const customButton=html.match(/<a\b[^>]*class="section-button [^"]*"[^>]*>/)[0];
+      assert.equal(customButton.includes('target="_blank"'),composition!=='split','External buttons open a new tab; section buttons stay on the page.');
       assert.ok(html.includes('src="https://www.youtube-nocookie.com/embed/M7lc1UVf-VE"') && html.includes('referrerpolicy="strict-origin-when-cross-origin"') && html.includes('title="Video fixture"'));
       const customMenu=html.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
       assert.ok(!customMenu.includes('#membership') && !customMenu.includes('#faq'),'Removed sections leave no broken menu links.');

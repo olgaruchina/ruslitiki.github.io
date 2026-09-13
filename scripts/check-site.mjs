@@ -23,6 +23,7 @@ assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must no
 assert.ok(!home.includes('googletagmanager') && !home.includes('google-analytics'),'Unexpected tracking code.');
 const menu=home.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
 assert.ok(menu,'The section menu is missing.');
+assert.match(menu,/<a href="\/">Home<\/a>/,'Home must return to the root route.');
 for(const [,id] of menu.matchAll(/href="#([a-z][a-z0-9-]*)"/g)){
   assert.equal([...home.matchAll(new RegExp(`\\sid="${id}"`,'g'))].length,1,`Menu target ${id} must exist exactly once.`);
 }
@@ -32,6 +33,10 @@ assert.equal(frames.length,videos.length,'Only configured visible videos may ren
 for(const section of videos)assert.ok(home.includes(`https://www.youtube-nocookie.com/embed/${youtubeVideoId(section.videoUrl)}`),'Video must use the approved embed source.');
 for(const [attributes] of frames)assert.ok(attributes.includes('loading="lazy"') && attributes.includes('referrerpolicy="strict-origin-when-cross-origin"'),'Video must load lazily and retain its referring origin.');
 for(const html of [home,privacy]){
+  for(const [tag,href] of html.matchAll(/<a\b[^>]*\bhref="([^"]+)"[^>]*>/g)){
+    if(href.startsWith('#') || href==='/' || href.startsWith('mailto:'))assert.ok(!tag.includes('target="_blank"'),'Page navigation must stay in the current tab.');
+    else assert.ok(tag.includes('target="_blank"') && tag.includes('rel="noopener"'),`Link must open separately: ${href}`);
+  }
   for(const match of html.matchAll(/(?:src|href)="(\/[^"?#]*)"/g)){
     const target=match[1];
     const file=path.join(root,target.endsWith('/') ? `${target}index.html` : target);
