@@ -20,14 +20,13 @@
 }
 .wordmark{width:75%;max-width:calc(var(--logo-width)*.75);margin-bottom:.5rem}
 .wordmark-original{background:var(--blue)}
-.opening{padding-block:min(var(--section-space),1.5rem) var(--section-space);align-items:start;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+.opening{padding-block:var(--section-space);align-items:start;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 .opening>*,.image-block>*{min-width:0}
 .masthead-meta{flex-wrap:wrap;padding-block:.625rem}
 .masthead-meta>p,.invitation,.first-book,.reading-page{min-width:0;overflow-wrap:anywhere}
-.invitation h1{font-family:var(--heading-font);font-size:var(--heading-size);max-width:18ch}
+.invitation h1{font-family:var(--heading-font);font-size:var(--heading-size);max-width:16ch}
 .first-book h2,.reading-page h1,.reading-page h2{font-family:var(--heading-font)}
 .introduction,.book-note,.reading-page{font-family:var(--body-font);font-size:var(--copy-size)}
-.introduction{max-width:42ch;margin:1rem 0 1.25rem}
 .join-button{font-family:var(--sans);color:var(--button-ink);border:1px solid var(--indigo);max-width:100%;gap:clamp(.75rem,3vw,2rem);overflow-wrap:anywhere}
 .join-button span{flex:none}
 .invitation .dates{grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));max-width:32rem;margin-top:1.5rem;gap:1rem 2rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
