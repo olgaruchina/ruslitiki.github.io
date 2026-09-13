@@ -11,7 +11,7 @@ The public coming-soon page stays available while you edit. If you change a draf
 
 After setup, **Publish website** sends your reviewed page to GitHub, and GitHub Actions updates the public website automatically. You do not need to open GitHub or run commands for routine updates. Use **Check publishing connection** during the one-time setup: it shows any owner settings still needed, with links, and enables publication when ready. Checking the connection preserves your draft and does not publish it. Until setup is complete, saving and previewing remain available.
 
-**Dates & links:** membership opening and reading start appear directly beneath the signup button, with distinct labels. They display side by side when space allows and stack on narrower screens. Edit the dates here; leave the email empty until the mailbox actually works. Only switch from Coming soon when the real Patreon link is available. Dates never activate a paid membership button automatically.
+**Dates & links:** membership opening and reading start appear directly beneath the signup button, with distinct labels. The opening date and reading date stack on the left, with the membership label and price on the right. The price moves below the dates on narrow screens. Edit the dates here; leave the email empty until the mailbox actually works. Only switch from Coming soon when the real Patreon link is available. Dates never activate a paid membership button automatically.
 
 **AI-readable overview:** the website's `llms.txt` updates automatically when you prepare and publish the page. It uses the same club details, dates, visible sections and active links. Hidden sections stay out, and there is no separate file for you to edit.
 
@@ -21,7 +21,7 @@ After setup, **Publish website** sends your reviewed page to GitHub, and GitHub 
 
 **Host Instagram:** the club description is followed by a linked handle in parentheses. Change **Host Instagram profile** under the club details to update it, or leave it empty to hide it. The handle is taken from the profile URL. Edit the description separately; the footer still links to the club’s own Instagram.
 
-**Signup price:** edit **Membership price** under **Dates & links**, or click the price on the canvas. It appears beneath the signup dates; leave it empty to hide it. The Membership section and pricing FAQ contain separate text, so keep those consistent when changing prices. The current standard price is $15 USD/month.
+**Signup price:** edit **Membership price** under **Dates & links**, or click the price on the canvas. It appears to the right of the stacked signup dates, or below them on narrow screens; leave it empty to hide it. The Membership section and pricing FAQ contain separate text, so keep those consistent when changing prices. The current standard price is $15 USD/month.
 
 **Club introduction video:** the **Meet Ruslitiki** block is enabled with Olga’s introduction video (`m9CKv9oMYRY`), after the opening and before How the club works. Its centered player scales at 16:9 up to 896 × 504 pixels at the default text size. To replace it, paste a new share or watch link into **YouTube video link** under **Page blocks** and prepare a preview. Check that the video plays before publishing. You can change its heading, introduction, width and position like any other section. The player uses YouTube's privacy-enhanced embed and does not autoplay. In **Edit page**, clicking the video opens its settings; use **Saved preview** to play it. You can add further video blocks from the palette.
 

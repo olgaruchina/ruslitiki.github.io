@@ -147,7 +147,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
       const bookFeature=html.match(/<aside[^>]*data-part="book"[^>]*>([\s\S]*?)<\/aside>/)[1];
       assert.ok(!bookFeature.includes('class="dates"'),'The launch dates belong with signup, not the book.');
       assert.equal((html.match(/class="dates"/g)||[]).length,1);
-      assert.match(html,/<a class="join-button"[\s\S]*?<\/a>\s*<dl class="dates">/,'The dates must directly follow the signup button in every composition.');
+      assert.match(html,/<a class="join-button"[\s\S]*?<\/a>\s*<div class="signup-details">\s*<dl class="dates">/,'The grouped dates and price must directly follow the signup button in every composition.');
       assert.match(html,/<\/dl>\s*<p class="membership-price">[\s\S]*?\$15 USD \/ month[\s\S]*?<\/p>/,'One standard membership price follows the signup dates.');
       assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
       const customButton=html.match(/<a\b[^>]*class="section-button [^"]*"[^>]*>/)[0];
