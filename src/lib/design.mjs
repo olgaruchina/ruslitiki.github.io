@@ -1,3 +1,5 @@
+import { labelsFor } from './labels.mjs';
+
 export const DESIGN_OPTIONS = {
   composition: { split: 'Introduction beside the book', 'book-left': 'Book beside the introduction', stacked: 'One column', centered: 'Centred introduction' },
   width: { compact: 'Compact', standard: 'Standard', wide: 'Wide' },
@@ -70,22 +72,24 @@ export function navigationLabel(section) {
 }
 export function pageNavigation(content) {
   const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
+  const labels=labelsFor(content);
   const visibleOrder=designFor(content).blockOrder.filter(id=>id==='opening' || sections.get(id)?.visible);
   return visibleOrder.flatMap((id,index)=>{
-    if(id==='opening')return [{id:'first-book-title',label:"October's Book"}];
+    if(id==='opening')return [{id:'first-book-title',label:labels.firstBookNav,blockId:'labels',field:'firstBookNav'}];
     const section=sections.get(id);
-    const label=navigationLabel(section);
-    if(!label)return [];
+    const label=section.navLabel??navigationLabel(section);
+    if(!label.trim())return [];
     const previous=sections.get(visibleOrder[index-1]);
     // An adjacent intro without its own menu label starts the How it works group.
     const target=id==='how-the-club-works' && previous?.id==='meet-ruslitiki' && previous.type==='video' && !navigationLabel(previous) ? previous.id : id;
-    return [{id:target,label}];
+    return [{id:target,label,blockId:id,field:'navLabel'}];
   });
 }
 export function editableContent(content) {
   const draft=structuredClone(content);
   draft.sections=normalizedSections(draft.sections);
   draft.design=designFor(draft);
+  draft.labels=labelsFor(draft);
   return draft;
 }
 export function contrast(first,second) {

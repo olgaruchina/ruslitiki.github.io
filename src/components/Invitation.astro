@@ -1,17 +1,21 @@
 ---
 import { ctaFor, formatDate } from '../lib/content.mjs';
+import { labelsFor } from '../lib/labels.mjs';
+import RichText from './RichText.astro';
 const {content,visualEditing=false}=Astro.props;
 const action=ctaFor(content);
+const labels=labelsFor(content);
+const ctaField=content.status==='coming-soon'?'waitlistCta':'patreonCta';
 ---
 <div class="invitation" data-part="introduction">
-  <h1 data-edit-field={visualEditing?'heading':undefined}>{content.heading}</h1>
-  <p class="introduction" data-edit-field={visualEditing?'introduction':undefined}>{content.introduction}</p>
-  <a class="join-button" href={action.url} target="_blank" rel="noopener" title="Opens in a new tab">{action.label}<span aria-hidden="true">↗</span></a>
+  <RichText content={content} id="opening" field="heading" value={content.heading} as="h1" visualEditing={visualEditing} />
+  <RichText content={content} id="opening" field="introduction" value={content.introduction} as="div" mode="block" class="introduction" visualEditing={visualEditing} />
+  <a class="join-button" href={action.url} target="_blank" rel="noopener" title={labels.opensNewTab}><RichText content={content} id="labels" field={ctaField} value={action.label} class="join-label" visualEditing={visualEditing} /><span aria-hidden="true">↗</span></a>
   <div class="signup-details">
     <dl class="dates">
-      <div><dt>Membership opens</dt><dd><time datetime={content.openingDate}>{formatDate(content.openingDate)}</time></dd></div>
-      <div><dt>We start reading</dt><dd><time datetime={content.readingDate}>{formatDate(content.readingDate)}</time></dd></div>
+      <div><RichText content={content} id="labels" field="membershipOpens" value={labels.membershipOpens} as="dt" visualEditing={visualEditing} /><dd><time datetime={content.openingDate} data-edit-date={visualEditing?'openingDate':undefined} data-edit-region={visualEditing?'dates':undefined} tabindex={visualEditing?0:undefined} role={visualEditing?'button':undefined}>{formatDate(content.openingDate)}</time></dd></div>
+      <div><RichText content={content} id="labels" field="readingStarts" value={labels.readingStarts} as="dt" visualEditing={visualEditing} /><dd><time datetime={content.readingDate} data-edit-date={visualEditing?'readingDate':undefined} data-edit-region={visualEditing?'dates':undefined} tabindex={visualEditing?0:undefined} role={visualEditing?'button':undefined}>{formatDate(content.readingDate)}</time></dd></div>
     </dl>
-    {(content.membershipPrice?.trim() || visualEditing) && <p class="membership-price"><span>Membership</span><strong data-edit-field={visualEditing?'membershipPrice':undefined} data-placeholder="Add a membership price">{content.membershipPrice}</strong></p>}
+    {(content.membershipPrice?.trim() || visualEditing) && <p class="membership-price"><RichText content={content} id="labels" field="membership" value={labels.membership} visualEditing={visualEditing} /><RichText content={content} id="opening" field="membershipPrice" value={content.membershipPrice??''} as="strong" visualEditing={visualEditing} data-placeholder="Add a membership price" /></p>}
   </div>
 </div>

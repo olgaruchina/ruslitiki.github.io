@@ -3,15 +3,19 @@ import Page from '../layouts/Page.astro';
 import Opening from './Opening.astro';
 import ContentBlock from './ContentBlock.astro';
 import BookImprint from './BookImprint.astro';
+import RichText from './RichText.astro';
+import Navigation from './Navigation.astro';
 import { instagramProfile } from '../lib/content.mjs';
-import { designFor, normalizedSections, pageNavigation } from '../lib/design.mjs';
+import { designFor, normalizedSections } from '../lib/design.mjs';
+import { labelsFor } from '../lib/labels.mjs';
 const {content,visualEditing=false}=Astro.props;
 const design=designFor(content);
 const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
-const navigation=pageNavigation(content);
+const labels=labelsFor(content);
 const hostProfile=instagramProfile(content.hostInstagramUrl);
-const clubHandle=instagramProfile(content.instagramUrl)?.handle || 'Instagram';
-const status={ 'coming-soon':'Coming soon','membership-open':'Membership is open',reading:'Reading together' }[content.status];
+const clubHandle=instagramProfile(content.instagramUrl)?.handle || labels.instagramFallback;
+const statusKey={ 'coming-soon':'statusComingSoon','membership-open':'statusMembershipOpen',reading:'statusReading' }[content.status];
+const label=field=>({content,id:'labels',field,value:labels[field],visualEditing});
 const structuredData = {
   '@context':'https://schema.org',
   '@type':'Organization',
@@ -30,25 +34,27 @@ const structuredData = {
         <img src={content.logo} alt={content.brand} width="2500" height="1000" fetchpriority="high" />
       </div>
       <div class="masthead-meta">
-        <p><span data-edit-field={visualEditing?"description":undefined}>{content.description}</span>{hostProfile && <> (<a href={hostProfile.url} target="_blank" rel="noopener" title="Opens in a new tab">{hostProfile.handle}</a>)</>}</p>
-        {content.status!=='coming-soon' && <p class="status">{status}<span aria-hidden="true"> ↗</span></p>}
+        <p><RichText content={content} id="brand" field="description" value={content.description} visualEditing={visualEditing} />{hostProfile && <> (<a href={hostProfile.url} target="_blank" rel="noopener" title={labels.opensNewTab} data-edit-region={visualEditing?'host-instagram':undefined}>{hostProfile.handle}</a>)</>}</p>
+        {content.status!=='coming-soon' && <p class="status"><RichText {...label(statusKey)} /><span aria-hidden="true"> ↗</span></p>}
       </div>
     </header>
-    <nav class="section-nav" aria-label="Main navigation">
-      <ul><li><a href="/">Home</a></li>{navigation.map(item=><li><a href={`#${item.id}`}>{item.label}</a></li>)}</ul>
-    </nav>
+    <Navigation content={content} visualEditing={visualEditing} />
     <main id="main">
-      {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock section={sections.get(id)} visualEditing={visualEditing} />)}
+      {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock content={content} section={sections.get(id)} visualEditing={visualEditing} />)}
     </main>
     <footer class="footer">
-      <p>Read. Think. Question.<BookImprint kind="stack" placement="footer" /></p>
-      <nav aria-label="Contact and information">
-        <a href={content.instagramUrl} target="_blank" rel="noopener" title="Opens in a new tab" data-edit-region={visualEditing?'club-instagram':undefined}>Instagram: {clubHandle}<span aria-hidden="true"> ↗</span></a>
-        {content.email && <a href={`mailto:${content.email}`}>Contact Olga Ruchina</a>}
-        <a href="/privacy/" target="_blank" rel="noopener" title="Opens in a new tab">Privacy</a>
+      <p><RichText {...label('footerMotto')} /><BookImprint kind="stack" placement="footer" /></p>
+      <nav aria-label={labels.footerNavigation}>
+        <a href={content.instagramUrl} target="_blank" rel="noopener" title={labels.opensNewTab} data-edit-region={visualEditing?'club-instagram':undefined}><RichText {...label('instagramPrefix')} /> {clubHandle}<span aria-hidden="true"> ↗</span></a>
+        {content.email && <a href={`mailto:${content.email}`}><RichText {...label('contact')} /></a>}
+        <a href="/privacy/" target="_blank" rel="noopener" title={labels.opensNewTab}><RichText {...label('privacy')} /></a>
       </nav>
     </footer>
   </div>
   <slot />
   <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g,'\\u003c')} />
 </Page>
+<script>
+  import '../scripts/navigation.js';
+  import '../scripts/faq.js';
+</script>

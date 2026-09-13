@@ -7,6 +7,7 @@ import net from 'node:net';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { designFor, PALETTES } from '../src/lib/design.mjs';
+import { fromPlainText } from '../src/lib/rich-text.mjs';
 
 test('local editor keeps drafts private, validates requests and builds the exact selected preview', {timeout:60000}, async()=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'ruslitiki-http-'));
@@ -48,6 +49,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const firstCanvas=await fetch(canvasOne.data.url);assert.equal(firstCanvas.status,200);
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
     assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');
+    assert.ok(canvasHtml.includes('data-edit-id="labels" data-edit-field="bookLabel"') && canvasHtml.includes('data-edit-date="openingDate"') && canvasHtml.includes('data-edit-date="readingDate"'),'Book labels and both dates are directly editable.');
+    assert.match(canvasHtml,/data-edit-id="how-the-club-works" data-edit-field="body" data-rich-text="block"[^>]*><p>/,'Existing multiline text must start with paragraph boundaries in the editing canvas.');
+    for(const route of ['/__canvas/rich-text-editor.js','/__canvas/rich-text.mjs'])assert.equal((await fetch(new URL(route,canvasOne.data.origin))).status,200);
     assert.match(canvasHtml,/<span\b[^>]*data-edit-field="description"[^>]*>[^<]*<\/span>/,'The editable description must not include the host link.');
     assert.ok(canvasHtml.includes('href="https://www.instagram.com/books_olgaruchina/"'));
     const tabTwo={...initial.content,heading:'A different unsaved tab',design:{...initial.content.design,bookImprints:false}};
@@ -77,6 +81,10 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const reboundStatus=await new Promise((resolve,reject)=>{const req=http.get(origin+'/api/state',{headers:{Host:'rebound.example'}},res=>{res.resume();resolve(res.statusCode);});req.on('error',reject);});
     assert.equal(reboundStatus,403);
     const content=structuredClone(initial.content);content.heading='Read the classics together.';
+    content.introduction='Read the classics together.\n\nBring your questions.';
+    const headingFormat=fromPlainText(content.heading);headingFormat.blocks[0].runs[0].bold=true;
+    const answer=content.sections.find(section=>section.type==='faq');answer.body='Read in translation\nDiscuss together';
+    content.richText={'opening:heading':headingFormat,[`${answer.id}:body`]:{blocks:[{type:'bullet',runs:[{text:'Read in translation',italic:true}]},{type:'bullet',runs:[{text:'Discuss together'}]}]}};
     delete content.book.showArtwork; // Existing saved drafts predate this optional field.
     const saved=await api('/api/save',{content,revision:initial.revision});
     assert.equal(saved.status,200);
@@ -94,6 +102,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const rendered=await fetch(built.data.preview.url);
     assert.match(rendered.headers.get('x-robots-tag'),/noindex/);
     const previewHtml=await rendered.text();
+    assert.ok(previewHtml.includes('<strong>Read the classics together.</strong>') && previewHtml.includes('<ul><li><em>Read in translation</em></li><li>Discuss together</li></ul>'),'Saved emphasis and lists must render in the reviewed production artifact.');
+    assert.ok(previewHtml.includes('<p>Read the classics together.</p><p><br></p><p>Bring your questions.</p>'),'Unformatted paragraph breaks must also match the editing canvas.');
+    assert.ok(previewHtml.includes('<dialog class="navigation-drawer"') && previewHtml.includes('data-nav-open'),'The public artifact includes the mobile drawer.');
     const imprintAssets=[...previewHtml.matchAll(/--book-mask:url\('([^']+)'\)/g)].map(match=>match[1]);
     assert.equal(imprintAssets.length,5,'The page has five decorative book placements.');
     for(const asset of new Set(imprintAssets)){
@@ -113,12 +124,12 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const faqIntro=previewHtml.match(/<section id="faq"[^>]*>([\s\S]*?)<\/section>/)[1];
     assert.ok(faqIntro.includes('Frequently asked questions') && !faqIntro.includes('<p'),'A heading-only introduction publishes without an empty paragraph.');
     const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
-    assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/">Home<\/a>/,'Home must be first and open the homepage without a section fragment.');
+    assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/"[^>]*><span>Home<\/span><\/a>/,'Home must be first and open the homepage without a section fragment.');
     for(const id of ['first-book-title','meet-ruslitiki','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
     assert.ok(!menu.includes('instagram.com') && !menu.includes('Introduction') && !menu.includes('href="#how-the-club-works"'),'The compact menu keeps one How it works link and leaves Instagram to the footer.');
-    assert.match(menu,/<a href="#meet-ruslitiki">How it works<\/a>/);
+    assert.match(menu,/<a href="#meet-ruslitiki"[^>]*><span>How it works<\/span><\/a>/);
     const footer=previewHtml.match(/<footer class="footer">([\s\S]*?)<\/footer>/)[1];
-    assert.match(footer,/<a [^>]*href="https:\/\/www\.instagram\.com\/ruslitiki\/"[^>]*target="_blank"[^>]*>Instagram: @ruslitiki/);
+    assert.match(footer,/<a [^>]*href="https:\/\/www\.instagram\.com\/ruslitiki\/"[^>]*target="_blank"[^>]*><span>Instagram:<\/span> @ruslitiki/);
     assert.ok(previewHtml.includes('https://www.youtube-nocookie.com/embed/m9CKv9oMYRY'),'The supplied club introduction must render its privacy-enhanced player.');
     const introPosition=previewHtml.indexOf('<section id="meet-ruslitiki"');
     assert.ok(previewHtml.indexOf('id="first-book-title"')<introPosition && introPosition<previewHtml.indexOf('<section id="how-the-club-works"'),'The introduction video belongs after the opening and before How the club works.');
@@ -134,6 +145,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(!(await (await fetch(selectedPreview.data.preview.url)).text()).includes('Onegin speaks to Tatyana'),'The editor can hide the book illustration.');
     assert.equal((await fetch(new URL(stagedPath,selectedPreview.data.preview.url))).status,200,'The selected upload must appear in its reviewed release.');
     const customized=structuredClone(content);
+    delete customized.richText; // These sections replace the formatted FAQ fixture.
     customized.sections=[
       {id:'quote-first',type:'quote',heading:'A reading invitation',body:'A supplied quotation.',attribution:'Club notes',visible:true,tone:'accent',align:'center',width:'full'},
       {id:'reader-image',type:'image',heading:'Our library',body:'Reading together.',visible:true,image:stagedPath,imageAlt:'The supplied Ruslitiki wordmark.',imageWidth:2500,imageHeight:1000,imageLayout:'right',imageRatio:'square'},

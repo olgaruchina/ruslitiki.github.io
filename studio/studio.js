@@ -1,6 +1,9 @@
 import { DESIGN_DEFAULTS, DESIGN_OPTIONS, PALETTES, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, editableContent, contrast, navigationLabel } from '/design.mjs';
 import { insertSection, moveSectionBefore, setCanvasText, editableField } from '/canvas-model.mjs';
+import { LABEL_FIELDS } from '/labels.mjs';
 import { VisualCanvas } from '/visual-canvas.js';
+import { setCanvasRichText, pruneRichText, copyRichSection, richMode } from '/rich-fields.mjs';
+import { plainText, validateRichText } from '/rich-text.mjs';
 const $ = selector => document.querySelector(selector);
 const token = $('meta[name="studio-token"]').content;
 let state=null;
@@ -31,6 +34,7 @@ function renderFields(){
   renderDesignState();
 }
 function changed(historyGroup=null,{deferCanvas=false}={}){
+  pruneRichText(draft);
   const snapshot=JSON.stringify(draft);
   if(lastSnapshot && snapshot!==lastSnapshot){if(!historyGroup || historyGroup!==lastHistoryGroup){past.push(JSON.parse(lastSnapshot));if(past.length>40)past.shift();}future=[];}
   lastHistoryGroup=historyGroup;
@@ -221,6 +225,23 @@ function buildDesignControls(){
     const option=element('button',label);option.type='button';option.addEventListener('click',()=>{$('#insert-dialog').close();addSection(type,insertionBefore);});$('#insert-options').append(option);
   }
 }
+function buildLabelControls(){
+  const groups=new Map();
+  for(const [key,definition] of Object.entries(LABEL_FIELDS)){
+    let fields=groups.get(definition.group);
+    if(!fields){
+      const group=element('details');group.className='section-item';group.open=groups.size===0;
+      group.append(element('summary',definition.group));
+      fields=element('div');fields.className='block-fields';group.append(fields);
+      $('#label-controls').append(group);groups.set(definition.group,fields);
+    }
+    const label=element('label',definition.title);
+    const input=element(definition.max>150?'textarea':'input');
+    input.name='labels.'+key;input.maxLength=definition.max;input.required=true;
+    if(input.tagName==='TEXTAREA')input.rows=3;
+    label.append(input);fields.append(label);
+  }
+}
 function renderDesignState(){
   if(!draft?.design)return;
   $('#body-size-value').value=draft.design.bodySize+'px';
@@ -245,16 +266,43 @@ function addSection(type,before=null){
   activeBlockId=section.id;changed();renderSections();selectSection(section.id);showSurface('edit');
   document.getElementById('edit-'+section.id).querySelector('input,textarea').focus();
 }
-function selectSection(id,field){
-  activeBlockId=id;
-  if(id==='brand'){activateTab($(field==='instagramUrl'?'#tab-details':'#tab-home'));return;}
-  if(id==='opening'){activateTab($(field==='membershipPrice'?'#tab-details':field?.startsWith('book.')?'#tab-book':field?'#tab-home':'#tab-design'));return;}
+function selectSection(id,field,{focus=false}={}){
+  activeBlockId=['brand','labels'].includes(id)?null:id;
+  const focusInput=input=>{
+    if(!input)return;
+    input.closest('details')?.setAttribute('open','');
+    input.scrollIntoView({block:'nearest'});
+    if(focus)input.focus({preventScroll:true});
+  };
+  const namedInput=name=>[...$('#editor').querySelectorAll('[name]')].find(input=>input.name===name);
+  if(id==='labels'){
+    activateTab($('#tab-labels'));
+    if(Object.hasOwn(LABEL_FIELDS,field))focusInput(namedInput('labels.'+field));
+    return;
+  }
+  if(id==='brand'){
+    activateTab($(field==='instagramUrl'?'#tab-details':'#tab-home'));
+    if(field)focusInput(namedInput(field));
+    return;
+  }
+  if(id==='opening'){
+    const isDate=['openingDate','readingDate'].includes(field);
+    activateTab($(isDate || field==='membershipPrice'?'#tab-details':field?.startsWith('book.')?'#tab-book':field?'#tab-home':'#tab-design'));
+    const input=field?namedInput(field):null;
+    if(isDate && input){
+      input.scrollIntoView({block:'nearest'});input.focus({preventScroll:true});
+      // Browsers that require a fresh activation still leave the native field focused.
+      try{input.showPicker?.();}catch{}
+    }else focusInput(input);
+    return;
+  }
   const card=document.getElementById('edit-'+id);if(!card)return;
   activateTab($('#tab-sections'));card.open=true;card.scrollIntoView({block:'nearest'});
+  if(field)focusInput([...card.querySelectorAll('[data-section-field]')].find(input=>input.dataset.sectionField===field));
 }
 function duplicateSection(id){
   const section=draft.sections.find(item=>item.id===id);if(!section || draft.sections.length>=MAX_SECTIONS)return;
-  const copy=structuredClone(section);copy.id='section-'+crypto.randomUUID();draft.sections.push(copy);draft.design.blockOrder.splice(draft.design.blockOrder.indexOf(id)+1,0,copy.id);activeBlockId=copy.id;changed();renderSections();
+  const copy=structuredClone(section);copy.id='section-'+crypto.randomUUID();draft.sections.push(copy);copyRichSection(draft,id,copy.id);draft.design.blockOrder.splice(draft.design.blockOrder.indexOf(id)+1,0,copy.id);activeBlockId=copy.id;changed();renderSections();
 }
 function removeSection(id){draft.sections=draft.sections.filter(item=>item.id!==id);draft.design.blockOrder=draft.design.blockOrder.filter(item=>item!==id);changed();renderSections();}
 function canvasIntent(intent){
@@ -263,8 +311,9 @@ function canvasIntent(intent){
   if(type==='text'){
     const target=typeof intent.field==='string'?editableField(draft,id,intent.field):null;
     const current=target?(target.object[target.key]??''):null;
-    const accepted=!!target && typeof intent.value==='string' && typeof intent.transaction==='string' && intent.transaction.length<80 && (current===intent.previousValue || current===intent.value) && (!(working || state?.busy) || canvas.flushing);
-    if(accepted && setCanvasText(draft,id,intent.field,intent.value)){
+    const validFormatting=intent.richText===undefined || (validateRichText(intent.richText,{inline:richMode(intent.field)==='inline'}).length===0 && plainText(intent.richText)===intent.value);
+    const accepted=!!target && validFormatting && typeof intent.value==='string' && typeof intent.transaction==='string' && intent.transaction.length<80 && (current===intent.previousValue || current===intent.value) && (!(working || state?.busy) || canvas.flushing);
+    if(accepted && (intent.richText===undefined?setCanvasText(draft,id,intent.field,intent.value):setCanvasRichText(draft,id,intent.field,intent.value,intent.richText))){
       changed(intent.transaction,{deferCanvas:true});renderFields();
     }
     if(!accepted && current!==intent.value)$('#canvas-status').textContent='This text also changed in the settings. The settings value was kept; review it before publishing.';
@@ -276,9 +325,9 @@ function canvasIntent(intent){
   if(working || state?.busy)return;
   if(type==='insert-end'){openInsert(null);return;}
   if(type==='add'){addSection(intent.blockType,intent.before);return;}
-  if(type==='select' && id==='brand'){selectSection(id,intent.field);return;}
+  if(['select','options'].includes(type) && ['brand','labels'].includes(id)){selectSection(id,intent.field,{focus:type==='options'});return;}
   if(!draft.design.blockOrder.includes(id))return;
-  if(type==='select' || type==='options'){selectSection(id,intent.field);return;}
+  if(type==='select' || type==='options'){selectSection(id,intent.field,{focus:type==='options'});return;}
   if(type==='insert-before'){openInsert(id);return;}
   if(type==='insert-after'){openInsert(draft.design.blockOrder[draft.design.blockOrder.indexOf(id)+1] || null);return;}
   if(type==='move'){if(moveSectionBefore(draft,id,intent.before)){activeBlockId=id;changed();renderSections();}return;}
@@ -331,7 +380,7 @@ function renderSections(){
     wrapper.append(element('summary',SECTION_TYPES[section.type]+' · '+(section.heading || 'New block')));
     const fields=element('div');fields.className='block-fields';
     const textField=(key,label,tag='input',max=150,fallback='')=>{
-      const field=element('label',label);const input=element(tag);input.value=section[key]??fallback;input.maxLength=max;if(tag==='textarea')input.rows=4;
+      const field=element('label',label);const input=element(tag);input.value=section[key]??fallback;input.maxLength=max;input.dataset.sectionField=key;if(tag==='textarea')input.rows=4;
       input.addEventListener('input',()=>{section[key]=input.value;changed();if(key==='heading'){name.textContent=section.heading || SECTION_TYPES[section.type];wrapper.querySelector('summary').textContent=SECTION_TYPES[section.type]+' · '+(section.heading || 'New block');}});field.append(input);fields.append(field);
     };
     textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
@@ -352,7 +401,7 @@ function renderSections(){
     }
     const buttons=element('fieldset');buttons.className='button-fields';buttons.append(element('legend',section.type==='button'?'Button':'Button (optional)'));
     for(const [key,label,max] of [['buttonLabel','Button label',70],['buttonUrl','Button link',2000]]){
-      const wrapper=element('label',label);const input=element('input');input.value=section[key] || '';input.maxLength=max;
+      const wrapper=element('label',label);const input=element('input');input.value=section[key] || '';input.maxLength=max;input.dataset.sectionField=key;
       if(key==='buttonUrl')input.placeholder='https://… or mailto:…';
       input.addEventListener('input',()=>{section[key]=input.value;changed();});wrapper.append(input);buttons.append(wrapper);
     }
@@ -373,6 +422,7 @@ function renderSections(){
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
 async function initialize(){try{state=await request('/api/state');draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);renderFields();update();canvas.schedule(draft);}catch(error){failure(error);}}
 buildDesignControls();
+buildLabelControls();
 initialize();
 let polling=false;
 setInterval(async()=>{

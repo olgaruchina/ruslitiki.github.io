@@ -23,7 +23,7 @@ assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must no
 assert.ok(!home.includes('googletagmanager') && !home.includes('google-analytics'),'Unexpected tracking code.');
 const menu=home.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
 assert.ok(menu,'The section menu is missing.');
-assert.match(menu,/<a href="\/">Home<\/a>/,'Home must return to the root route.');
+assert.match(menu,/<a\b[^>]*href="\/"[^>]*>/,'The home menu link must return to the root route.');
 for(const [,id] of menu.matchAll(/href="#([a-z][a-z0-9-]*)"/g)){
   assert.equal([...home.matchAll(new RegExp(`\\sid="${id}"`,'g'))].length,1,`Menu target ${id} must exist exactly once.`);
 }
@@ -46,6 +46,10 @@ for(const html of [home,privacy]){
 for(const entry of ['studio','scripts','content','.studio','.git']){
   assert.equal(await fs.access(path.join(root,entry)).then(()=>true,()=>false),false,`${entry} must not ship.`);
 }
-const scripts=[...home.matchAll(/<script([^>]*)>/g)].filter(match=>!match[1].includes('application/ld+json'));
-assert.equal(scripts.length,0,'The coming-soon page should not require client JavaScript.');
-console.log('Built-page checks passed: content, AI overview, dates, canonical, links, assets, privacy boundary and zero client scripts.');
+const scripts=[...home.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)].filter(match=>!match[1].includes('application/ld+json'));
+assert.equal(scripts.length,1,'Only the public navigation and FAQ module should run on the page.');
+const scriptSource=scripts[0][1].match(/src="(\/[^"?#]+)"/)?.[1];
+const script=scriptSource?await fs.readFile(path.join(root,scriptSource),'utf8'):scripts[0][2];
+assert.ok(scripts[0][1].includes('type="module"') && script.includes('ruslitiki-navigation') && script.includes('ruslitiki-faq'),'The public script must provide the mobile drawer and FAQ animation.');
+assert.ok(script.length<12000 && !home.includes('canvas-rich-tools') && !script.includes('canvas-rich-tools'),'The public page must not include the editor runtime.');
+console.log('Built-page checks passed: content, AI overview, dates, canonical, links, assets, privacy boundary and isolated public interaction script.');

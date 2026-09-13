@@ -3,24 +3,25 @@ import SectionImage from './SectionImage.astro';
 import SectionButton from './SectionButton.astro';
 import SectionVideo from './SectionVideo.astro';
 import BookImprint from './BookImprint.astro';
-const {section,visualEditing=false}=Astro.props;
+import RichText from './RichText.astro';
+const {content,section,visualEditing=false}=Astro.props;
 const imageLayout=section.imageLayout || 'left';
-const field=key=>visualEditing?key:undefined;
+const rich=field=>({content,id:section.id,field,value:section[field]??'',visualEditing});
 const hasButton=section.type==='button' || !!section.buttonLabel || !!section.buttonUrl;
 ---
 <section id={section.id} tabindex="-1" class:list={['content-block',`block-${section.type}`,`block-width-${section.width}`,`block-align-${section.align}`,`block-tone-${section.tone}`,`block-layout-${section.layout}`]} data-block-id={section.id} data-block-label={visualEditing?(section.heading || section.type):undefined}>
-  {section.type==='faq' ? <details open={visualEditing}><summary data-edit-field={field('heading')} data-placeholder="Question">{section.heading}</summary><p class="block-copy" data-edit-field={field('body')} data-placeholder="Write an answer">{section.body}</p></details> : section.type==='quote' ? <>
-    <h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2><blockquote><p data-edit-field={field('body')} data-placeholder="Write a quote">{section.body}</p>{(section.attribution || visualEditing) && <cite data-edit-field={field('attribution')} data-placeholder="Attribution">{section.attribution}</cite>}</blockquote>
+  {section.type==='faq' ? <ruslitiki-faq data-visual-editing={visualEditing?'true':undefined}><details open={visualEditing}><RichText {...rich('heading')} as="summary" data-placeholder="Question" /><div class="faq-answer"><RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Write an answer" /></div></details></ruslitiki-faq> : section.type==='quote' ? <>
+    <RichText {...rich('heading')} as="h2" data-placeholder="Heading" /><blockquote><RichText {...rich('body')} as="div" mode="block" class="quote-copy" data-placeholder="Write a quote" />{(section.attribution || visualEditing) && <RichText {...rich('attribution')} as="cite" data-placeholder="Attribution" />}</blockquote>
   </> : section.type==='video' ? <>
-    <h2 data-edit-field={field('heading')} data-placeholder="Video heading">{section.heading}</h2>
-    {(section.body || visualEditing) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional introduction">{section.body}</p>}
+    <RichText {...rich('heading')} as="h2" data-placeholder="Video heading" />
+    {(section.body || visualEditing) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional introduction" />}
     <SectionVideo section={section} visualEditing={visualEditing} />
   </> : section.type==='image' ? <div class:list={['image-block',`image-${imageLayout}`]}>
-    {imageLayout!=='right' && <SectionImage section={section} visualEditing={visualEditing} />}
-    <div><h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2>{(section.body || visualEditing) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional text">{section.body}</p>}</div>
-    {imageLayout==='right' && <SectionImage section={section} visualEditing={visualEditing} />}
-  </div> : <>{(section.heading || section.type!=='button') && <h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2>}{(section.body || (visualEditing && section.type==='text')) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional text">{section.body}</p>}</>}
-  {hasButton && <SectionButton section={section} visualEditing={visualEditing} />}
+    {imageLayout!=='right' && <SectionImage content={content} section={section} visualEditing={visualEditing} />}
+    <div><RichText {...rich('heading')} as="h2" data-placeholder="Heading" />{(section.body || visualEditing) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}</div>
+    {imageLayout==='right' && <SectionImage content={content} section={section} visualEditing={visualEditing} />}
+  </div> : <>{(section.heading || section.type!=='button') && <RichText {...rich('heading')} as="h2" data-placeholder="Heading" />}{(section.body || (visualEditing && section.type==='text')) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}</>}
+  {hasButton && <SectionButton content={content} section={section} visualEditing={visualEditing} />}
   {section.id==='meet-ruslitiki' && <BookImprint kind="open" placement="video" />}
   {section.id==='how-the-club-works' && <BookImprint kind="stack" placement="how" />}
   {section.id==='membership' && <BookImprint kind="closed" placement="membership" />}

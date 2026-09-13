@@ -1,23 +1,27 @@
 ---
 import Page from '../layouts/Page.astro';
+import RichText from '../components/RichText.astro';
 import { readContent } from '../lib/content.mjs';
+import { labelsFor } from '../lib/labels.mjs';
 const content = readContent();
+const labels = labelsFor(content);
+const label = field => ({content,id:'labels',field,value:labels[field]});
 ---
-<Page title="Privacy | Ruslitiki" description="How the Ruslitiki website and waitlist use information you choose to share." path="/privacy/">
+<Page title={`${labels.privacy} | ${content.brand}`} description={labels.privacyDescription} content={content} path="/privacy/">
   <div class="reading-page">
-    <header><a class="back-link" href="/">← Ruslitiki</a></header>
+    <header><RichText {...label('privacyBack')} as="a" class="back-link" href="/" /></header>
     <main id="main">
-      <h1>Privacy</h1>
-      <p>This website introduces Ruslitiki and links to our waitlist. It does not have a signup form of its own or site analytics.</p>
-      <h2>The waitlist</h2>
-      <p>The waitlist opens in Google Forms. The form asks for an email address and timezone, with additional questions about reading experience and interests. Olga Ruchina uses this information to plan the club and contact the waitlist when membership opens.</p>
-      <p>Please share only what you are comfortable providing. Optional survey answers help shape the reading programme. They are not published as testimonials or shared on this website.</p>
-      <p>Google processes information when you use its form. Read <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" title="Opens in a new tab">Google’s privacy policy</a> for details about its service.</p>
-      <h2>Questions or removal</h2>
-      <p>If you want to ask about your response or request its removal, {content.email ? <a href={`mailto:${content.email}`}>contact Olga Ruchina by email</a> : <a href={content.instagramUrl} target="_blank" rel="noopener" title="Opens in a new tab">contact Olga Ruchina through the Ruslitiki Instagram account</a>}.</p>
-      <h2>Other services</h2>
-      <p>When a YouTube video is available, the website may include a player using YouTube’s privacy-enhanced mode. Loading or playing it connects to YouTube, which processes technical information under <a href="https://policies.google.com/privacy" target="_blank" rel="noopener" title="Opens in a new tab">Google’s privacy policy</a>. The video does not play automatically.</p>
-      <p>Our hosting provider processes technical request information to deliver and secure the website. Instagram, Google Forms and, when available, Patreon have their own privacy practices when you visit them.</p>
+      <RichText {...label('privacy')} as="h1" />
+      <RichText {...label('privacyIntroduction')} as="p" />
+      <RichText {...label('privacyWaitlistHeading')} as="h2" />
+      <RichText {...label('privacyWaitlistBody')} as="p" />
+      <RichText {...label('privacyOptionalAnswers')} as="p" />
+      <p><RichText {...label('privacyGoogleBeforeLink')} /> <RichText {...label('privacyGoogleLink')} as="a" href="https://policies.google.com/privacy" target="_blank" rel="noopener" title={labels.opensNewTab} /> <RichText {...label('privacyGoogleAfterLink')} /></p>
+      <RichText {...label('privacyContactHeading')} as="h2" />
+      <p><RichText {...label('privacyContactBeforeLink')} /> {content.email ? <RichText {...label('privacyContactEmail')} as="a" href={`mailto:${content.email}`} /> : <RichText {...label('privacyContactInstagram')} as="a" href={content.instagramUrl} target="_blank" rel="noopener" title={labels.opensNewTab} />}<RichText {...label('privacyContactAfterLink')} /></p>
+      <RichText {...label('privacyServicesHeading')} as="h2" />
+      <p><RichText {...label('privacyYouTubeBeforeLink')} /> <RichText {...label('privacyGoogleLink')} as="a" href="https://policies.google.com/privacy" target="_blank" rel="noopener" title={labels.opensNewTab} /><RichText {...label('privacyYouTubeAfterLink')} /></p>
+      <RichText {...label('privacyHosting')} as="p" />
     </main>
   </div>
 </Page>

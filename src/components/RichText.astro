@@ -1,0 +1,8 @@
+---
+import { fromPlainText, plainText, renderRichText, validateRichText } from '../lib/rich-text.mjs';
+const {content,id,field,value='',as:Tag='span',mode='inline',visualEditing=false,...attributes}=Astro.props;
+const candidate=content?.richText?.[`${id}:${field}`];
+const formatted=candidate && validateRichText(candidate,{inline:mode==='inline'}).length===0 && plainText(candidate)===value;
+const {class:className,...rest}=attributes;
+---
+<Tag {...rest} class:list={[className,{'rich-copy-formatted':formatted || mode==='block'}]} data-edit-id={visualEditing?id:undefined} data-edit-field={visualEditing?field:undefined} data-rich-text={visualEditing?mode:undefined}>{formatted ? <Fragment set:html={renderRichText(candidate,{inline:mode==='inline'})} /> : mode==='block' ? <Fragment set:html={renderRichText(fromPlainText(value))} /> : value}</Tag>

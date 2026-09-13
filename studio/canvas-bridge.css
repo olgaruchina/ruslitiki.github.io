@@ -16,3 +16,14 @@
 [data-canvas-locked] #canvas-content{pointer-events:none}[data-canvas-locked] #canvas-tip{display:none}
 @media(max-width:450px){.canvas-tool-label{display:none}#canvas-tip{max-width:95%;white-space:normal;text-align:center}#canvas-tools{gap:3px}#canvas-tools button{padding:5px 7px}}
 @media(pointer:coarse){#canvas-tools button,#canvas-add-end,.canvas-image-placeholder{min-height:44px}}
+
+#canvas-rich-tools{position:fixed;z-index:10003;display:flex;align-items:center;gap:4px;flex-wrap:wrap;max-width:calc(100vw - 16px);box-sizing:border-box;padding:6px;color:#141321;background:#fff;border:1px solid #6884c3;border-radius:7px;box-shadow:0 3px 15px #14244a24;font:400 14px/1.4 -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+#canvas-rich-tools[hidden],#canvas-rich-tools button[hidden]{display:none}
+#canvas-rich-tools button{min-height:36px;padding:6px 9px;border:1px solid #bdc9e3;border-radius:4px;color:#23156b;background:#f4f7ff;font:inherit;cursor:pointer}
+#canvas-rich-tools button[data-command=bold]{font-weight:700}#canvas-rich-tools button[data-command=italic]{font-style:italic}
+#canvas-rich-tools button[aria-pressed=true]{background:#23156b;color:#fff;border-color:#23156b}
+#canvas-rich-tools button:focus-visible{outline:3px solid #3163c6;outline-offset:2px}
+.canvas-rich-status:empty{display:none}.canvas-rich-status{max-width:25ch;font-size:12px}
+[data-rich-text=block][contenteditable] p{min-height:1em}[data-rich-text] strong{font-weight:700}[data-rich-text] em{font-style:italic}
+@media(pointer:coarse){#canvas-rich-tools button{min-height:44px}}
+@media(max-width:450px){#canvas-rich-tools{gap:3px}#canvas-rich-tools button{padding:5px 7px;font-size:13px}}

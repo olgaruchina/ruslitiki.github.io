@@ -1,0 +1,41 @@
+---
+import { pageNavigation } from '../lib/design.mjs';
+import { labelsFor } from '../lib/labels.mjs';
+import RichText from './RichText.astro';
+import '../styles/navigation.css';
+
+const {content,visualEditing=false}=Astro.props;
+const labels=labelsFor(content);
+const links=[
+  {href:'/',label:labels.homeNav,blockId:'labels',field:'homeNav'},
+  ...pageNavigation(content).map(item=>({...item,href:`#${item.id}`})),
+];
+---
+<ruslitiki-navigation data-visual-editing={visualEditing?'true':undefined}>
+  <nav class="section-nav" aria-label={labels.pageNavigation} data-nav-desktop>
+    <ul>{links.map(item=><li class="navigation-item">
+      <a href={item.href} data-nav-link><RichText content={content} id={item.blockId} field={item.field} value={item.label} visualEditing={visualEditing} /></a>
+      {visualEditing && <a href={item.href} class="navigation-jump" data-nav-jump aria-label={`Go to ${item.label}`} title={`Go to ${item.label}`}><span aria-hidden="true">↗</span></a>}
+    </li>)}</ul>
+  </nav>
+  <div class="navigation-mobile-bar">
+    <button class="navigation-toggle" type="button" data-nav-open aria-haspopup="dialog" aria-expanded="false" aria-label={labels.menuOpen}>
+      <span>{labels.menuTitle}</span>
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+    </button>
+  </div>
+  <dialog class="navigation-drawer" data-nav-dialog>
+    <div class="navigation-drawer-heading">
+      <h2 data-nav-title>{labels.menuTitle}</h2>
+      <button class="navigation-close" type="button" data-nav-close aria-label={labels.menuClose} autofocus>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+      </button>
+    </div>
+    <nav class="section-nav" aria-label={labels.pageNavigation} data-nav-mobile>
+      <ul>{links.map(item=><li class="navigation-item">
+        <a href={item.href} data-nav-link><RichText content={content} id={item.blockId} field={item.field} value={item.label} visualEditing={visualEditing} /></a>
+        {visualEditing && <a href={item.href} class="navigation-jump" data-nav-jump aria-label={`Go to ${item.label}`} title={`Go to ${item.label}`}><span aria-hidden="true">↗</span></a>}
+      </li>)}</ul>
+    </nav>
+  </dialog>
+</ruslitiki-navigation>

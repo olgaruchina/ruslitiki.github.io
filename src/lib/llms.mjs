@@ -1,14 +1,16 @@
 import { ctaFor, formatDate, instagramProfile } from './content.mjs';
 import { designFor, normalizedSections, youtubeVideoId } from './design.mjs';
+import { labelsFor } from './labels.mjs';
 
 // Editor fields are plain text. Keep their punctuation from creating Markdown links or headings.
 const text = value => String(value ?? '').trim().replace(/\s+/g, ' ').replace(/[\\`*_[\]<>#!|]/g, '\\$&');
 const link = (label, url, note = '') => `- [${text(label)}](<${url.replace(/</g, '%3C').replace(/>/g, '%3E')}>)${note ? `: ${text(note)}` : ''}`;
 
 export function renderLlms(content, site) {
+  const labels=labelsFor(content);
   const absolute = value => new URL(value, site).href;
   const sections = new Map(normalizedSections(content.sections).map(section => [section.id, section]));
-  const status = { 'coming-soon': 'Coming soon', 'membership-open': 'Membership is open', reading: 'Reading together' }[content.status];
+  const status = { 'coming-soon': labels.statusComingSoon, 'membership-open': labels.statusMembershipOpen, reading: labels.statusReading }[content.status];
   const lines = [
     `# ${text(content.brand)}`, '',
     `> ${text(content.description)}`, '',
@@ -23,7 +25,7 @@ export function renderLlms(content, site) {
   ];
   for (const id of designFor(content).blockOrder) {
     if (id === 'opening') {
-      lines.push(link('Our first book', absolute('/#first-book-title'), `${content.book.title} by ${content.book.author}. ${content.book.note}`));
+      lines.push(link(labels.bookLabel, absolute('/#first-book-title'), `${content.book.title} ${labels.authorPrefix} ${content.book.author}. ${content.book.note}`));
       continue;
     }
     const section = sections.get(id);
@@ -41,7 +43,7 @@ export function renderLlms(content, site) {
   lines.push(link(cta.label, absolute(cta.url)), link('Instagram', absolute(content.instagramUrl)));
   const hostProfile = instagramProfile(content.hostInstagramUrl);
   if (hostProfile) lines.push(link(hostProfile.handle, hostProfile.url, 'Book club host on Instagram.'));
-  if (content.email) lines.push(link('Contact Olga Ruchina', absolute(`mailto:${content.email}`)));
-  lines.push('', '## Optional', '', link('Privacy', absolute('/privacy/'), 'How the website and waitlist handle personal information.'), '');
+  if (content.email) lines.push(link(labels.contact, absolute(`mailto:${content.email}`)));
+  lines.push('', '## Optional', '', link(labels.privacy, absolute('/privacy/'), 'How the website and waitlist handle personal information.'), '');
   return lines.join('\n');
 }
