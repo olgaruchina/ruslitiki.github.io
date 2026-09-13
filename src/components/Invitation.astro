@@ -11,4 +11,5 @@ const action=ctaFor(content);
     <div><dt>Membership opens</dt><dd><time datetime={content.openingDate}>{formatDate(content.openingDate)}</time></dd></div>
     <div><dt>We start reading</dt><dd><time datetime={content.readingDate}>{formatDate(content.readingDate)}</time></dd></div>
   </dl>
+  {(content.membershipPrice?.trim() || visualEditing) && <p class="membership-price"><span>Membership</span><strong data-edit-field={visualEditing?'membershipPrice':undefined} data-placeholder="Add a membership price">{content.membershipPrice}</strong></p>}
 </div>

@@ -5,6 +5,27 @@ import { renderLlms } from '../src/lib/llms.mjs';
 
 const site = 'https://www.ruslitiki.com/';
 
+test('AI overview includes the configured signup price and omits absent or empty prices', () => {
+  const content = readContent();delete content.membershipPrice;
+  assert.ok(!renderLlms(content, site).includes('Membership price:'));
+  for(const value of ['', '   ']){
+    content.membershipPrice=value;
+    assert.ok(!renderLlms(content, site).includes('Membership price:'));
+  }
+  content.membershipPrice='$15 USD / month';
+  for(const status of ['coming-soon','membership-open','reading']){
+    content.status=status;content.patreonUrl='https://www.patreon.com/ruslitiki';
+    const output=renderLlms(content, site);
+    assert.ok(output.includes('Membership price: $15 USD / month.'));
+    assert.ok(output.indexOf('Membership price:')>output.indexOf('## Join and contact'));
+    assert.ok(output.includes(status==='coming-soon'?content.waitlistUrl:content.patreonUrl));
+  }
+  content.membershipPrice='$15\n\n## Fake price\n[Subscribe](https://unrelated.example/)';
+  const output=renderLlms(content, site);
+  assert.ok(output.includes('Membership price: $15 \\#\\# Fake price \\[Subscribe\\](https://unrelated.example/)'));
+  assert.ok(!output.includes('\n## Fake price'));
+});
+
 test('AI overview excludes hidden content, unused fields and inactive join links', () => {
   const content = readContent();
   content.patreonUrl = 'https://www.patreon.com/unannounced-membership';

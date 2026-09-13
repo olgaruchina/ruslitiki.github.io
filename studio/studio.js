@@ -248,7 +248,7 @@ function addSection(type,before=null){
 function selectSection(id,field){
   activeBlockId=id;
   if(id==='brand'){activateTab($(field==='instagramUrl'?'#tab-details':'#tab-home'));return;}
-  if(id==='opening'){activateTab($(field?.startsWith('book.')?'#tab-book':field?'#tab-home':'#tab-design'));return;}
+  if(id==='opening'){activateTab($(field==='membershipPrice'?'#tab-details':field?.startsWith('book.')?'#tab-book':field?'#tab-home':'#tab-design'));return;}
   const card=document.getElementById('edit-'+id);if(!card)return;
   activateTab($('#tab-sections'));card.open=true;card.scrollIntoView({block:'nearest'});
 }

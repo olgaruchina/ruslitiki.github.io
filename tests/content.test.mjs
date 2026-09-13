@@ -8,6 +8,19 @@ import { atomicJson, digest, saveDraft, fileMap, safeImage } from '../scripts/st
 import { validatePublishing, verifyArtifact } from '../scripts/publish-release.mjs';
 const fresh=()=>structuredClone(readContent());
 
+test('membership price is optional for older drafts and validates plain text up to 80 characters',()=>{
+  const content=fresh();delete content.membershipPrice;
+  assert.deepEqual(validateContent(content),[]);
+  for(const value of ['', '$15 USD / month', 'A'.repeat(80)]){
+    content.membershipPrice=value;
+    assert.deepEqual(validateContent(content),[]);
+  }
+  for(const value of [null,15,['$15 USD / month'],{},'A'.repeat(81)]){
+    content.membershipPrice=value;
+    for(const options of [{},{draft:true}])assert.ok(validateContent(content,options).some(error=>error.startsWith('Membership price:')));
+  }
+});
+
 test('text sections can publish a heading alone, while empty headings and FAQ answers are rejected',()=>{
   const content=fresh();
   const section=content.sections.find(section=>section.id==='faq');

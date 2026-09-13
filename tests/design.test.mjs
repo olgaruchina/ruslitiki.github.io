@@ -60,6 +60,67 @@ test('section navigation follows visible block order and preserves explicit menu
   assert.ok(validateContent(content).some(error=>error.includes('invalid block identifier')));
 });
 
+const introductionNavigationContent=()=>{
+  const content=editableContent(readContent());
+  content.sections=[
+    {id:'meet-ruslitiki',type:'video',heading:'Meet Ruslitiki',body:'An introduction.',videoUrl:'https://youtu.be/m9CKv9oMYRY',visible:true},
+    {id:'how-the-club-works',type:'text',heading:'How the club works',body:'Read together.',visible:true},
+    {id:'membership',type:'text',heading:'Membership',body:'Details.',visible:true},
+  ];
+  content.design.blockOrder=['opening','meet-ruslitiki','how-the-club-works','membership'];
+  return content;
+};
+
+test('How it works includes its adjacent visible introduction without a separate intro menu item',()=>{
+  const content=introductionNavigationContent();
+  assert.deepEqual(pageNavigation(content),[
+    {id:'first-book-title',label:"October's Book"},
+    {id:'meet-ruslitiki',label:'How it works'},
+    {id:'membership',label:'Membership'},
+  ]);
+  const separator={id:'extra-note',type:'text',heading:'More context',body:'An optional note.',visible:false};
+  content.sections.push(separator);
+  content.design.blockOrder.splice(2,0,separator.id);
+  assert.equal(pageNavigation(content)[1].id,'meet-ruslitiki','Hidden sections do not separate a visible group.');
+  separator.visible=true;
+  assert.equal(pageNavigation(content)[1].id,'how-the-club-works','Visible sections separate the group even without a menu label.');
+});
+
+test('How it works retains its own target when the introduction is hidden, missing or no longer a video',()=>{
+  const content=introductionNavigationContent();
+  content.sections[0].visible=false;
+  assert.equal(pageNavigation(content)[1].id,'how-the-club-works');
+  content.sections[0].visible=true;content.sections[0].type='text';
+  assert.equal(pageNavigation(content)[1].id,'how-the-club-works');
+  content.sections.shift();
+  content.design.blockOrder=content.design.blockOrder.filter(id=>id!=='meet-ruslitiki');
+  assert.equal(pageNavigation(content)[1].id,'how-the-club-works');
+});
+
+test('reordering the introduction keeps navigation in the visible section order',()=>{
+  const content=introductionNavigationContent();
+  content.design.blockOrder=['opening','meet-ruslitiki','membership','how-the-club-works'];
+  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','membership','how-the-club-works']);
+  content.design.blockOrder=['opening','how-the-club-works','meet-ruslitiki','membership'];
+  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','how-the-club-works','membership']);
+  content.design.blockOrder=['meet-ruslitiki','opening','how-the-club-works','membership'];
+  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','how-the-club-works','membership']);
+});
+
+test('explicit introduction and How it works menu labels remain editable',()=>{
+  const content=introductionNavigationContent();
+  content.sections[0].navLabel='Meet Olga Ruchina';
+  content.sections[1].navLabel='Our format';
+  assert.deepEqual(pageNavigation(content).slice(1,3),[
+    {id:'meet-ruslitiki',label:'Meet Olga Ruchina'},
+    {id:'how-the-club-works',label:'Our format'},
+  ]);
+  content.sections[0].navLabel='';
+  assert.deepEqual(pageNavigation(content)[1],{id:'meet-ruslitiki',label:'Our format'});
+  content.sections[1].navLabel='';
+  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','membership']);
+});
+
 test('block images require safe paths, descriptions and dimensions; hidden images stay private',()=>{
   const content=readContent();
   content.sections=[{type:'image',heading:'Our library',body:'',visible:true,image:'/images/reading.png',imageAlt:'A shelf of books.',imageWidth:1000,imageHeight:800}];

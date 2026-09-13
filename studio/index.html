@@ -51,6 +51,7 @@
         </div>
         <div role="tabpanel" id="panel-details" aria-labelledby="tab-details" hidden>
           <label>Membership state<select name="status"><option value="coming-soon">Coming soon — show the waitlist</option><option value="membership-open">Membership open — link to Patreon</option><option value="reading">Reading together — link to Patreon</option></select><small>Change this when the membership link is ready. It does not switch automatically.</small></label>
+          <label>Membership price (optional)<input name="membershipPrice" maxlength="80" placeholder="$15 USD / month"><small>Shown beside the signup button. Leave empty to hide it.</small></label>
           <label>Membership opens<input type="date" name="openingDate" required></label>
           <label>Reading starts<input type="date" name="readingDate" required></label>
           <label>Waitlist link<input type="url" name="waitlistUrl" required></label>

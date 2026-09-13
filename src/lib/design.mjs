@@ -64,17 +64,22 @@ export function designFor(content) {
   for(const id of valid)if(!order.includes(id))order.push(id);
   return {...DESIGN_DEFAULTS,...content.design,blockOrder:order};
 }
-const DEFAULT_MENU_LABELS={'meet-ruslitiki':'Meet Olga Ruchina','how-the-club-works':'How it works',membership:'Membership',faq:'FAQs'};
+const DEFAULT_MENU_LABELS={'meet-ruslitiki':'','how-the-club-works':'How it works',membership:'Membership',faq:'FAQs'};
 export function navigationLabel(section) {
   return (section.navLabel??DEFAULT_MENU_LABELS[section.id]??'').trim();
 }
 export function pageNavigation(content) {
   const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
-  return designFor(content).blockOrder.flatMap(id=>{
+  const visibleOrder=designFor(content).blockOrder.filter(id=>id==='opening' || sections.get(id)?.visible);
+  return visibleOrder.flatMap((id,index)=>{
     if(id==='opening')return [{id:'first-book-title',label:"October's Book"}];
     const section=sections.get(id);
-    const label=section?.visible?navigationLabel(section):'';
-    return label?[{id,label}]:[];
+    const label=navigationLabel(section);
+    if(!label)return [];
+    const previous=sections.get(visibleOrder[index-1]);
+    // An adjacent intro without its own menu label starts the How it works group.
+    const target=id==='how-the-club-works' && previous?.id==='meet-ruslitiki' && previous.type==='video' && !navigationLabel(previous) ? previous.id : id;
+    return [{id:target,label}];
   });
 }
 export function editableContent(content) {

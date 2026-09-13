@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { validateDesign, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, normalizedSections, safeButtonUrl, youtubeVideoId } from './design.mjs';
 
-export const LIMITS = { heading: 100, description: 180, introduction: 400, bookNote: 300 };
+export const LIMITS = { heading: 100, description: 180, introduction: 400, bookNote: 300, membershipPrice: 80 };
 const own = (o, key) => Object.hasOwn(o, key);
 const record = value => value !== null && typeof value === 'object' && !Array.isArray(value);
 
@@ -36,11 +36,12 @@ export function validateContent(data, {draft = false} = {}) {
       if (url.protocol !== 'https:' || url.username || url.password || (hosts.length && !hosts.includes(url.hostname))) throw new Error();
     } catch { errors.push(`${label}: enter a valid HTTPS link${hosts.length ? ` on ${hosts.join(' or ')}` : ''}.`); }
   };
-  if (!keys(data, ['brand','status','heading','description','hostInstagramUrl','introduction','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design'], 'Website')) return errors;
+  if (!keys(data, ['brand','status','heading','description','hostInstagramUrl','introduction','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design'], 'Website')) return errors;
   string(data.brand, 'Club name', 40);
   string(data.heading, 'Main heading', LIMITS.heading);
   string(data.description, 'Club description', LIMITS.description);
   string(data.introduction, 'Introduction', LIMITS.introduction);
+  if (own(data, 'membershipPrice')) string(data.membershipPrice, 'Membership price', LIMITS.membershipPrice, false);
   if (!['coming-soon','membership-open','reading'].includes(data.status)) errors.push('Choose a valid membership state.');
   for (const [key,label] of [['openingDate','Membership opening'],['readingDate','Reading start']]) {
     const value = data[key];

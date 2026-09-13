@@ -106,9 +106,11 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(faqIntro.includes('Frequently asked questions') && !faqIntro.includes('<p'),'A heading-only introduction publishes without an empty paragraph.');
     const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
     assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/">Home<\/a>/,'Home must be first and open the homepage without a section fragment.');
-    for(const id of ['first-book-title','how-the-club-works','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
-    assert.match(menu,/<a class="club-instagram"[^>]*href="https:\/\/www\.instagram\.com\/ruslitiki\/"[^>]*target="_blank"[^>]*>@ruslitiki/);
-    assert.match(menu,/<a href="#meet-ruslitiki">Introduction<\/a>/);
+    for(const id of ['first-book-title','meet-ruslitiki','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
+    assert.ok(!menu.includes('instagram.com') && !menu.includes('Introduction') && !menu.includes('href="#how-the-club-works"'),'The compact menu keeps one How it works link and leaves Instagram to the footer.');
+    assert.match(menu,/<a href="#meet-ruslitiki">How it works<\/a>/);
+    const footer=previewHtml.match(/<footer class="footer">([\s\S]*?)<\/footer>/)[1];
+    assert.match(footer,/<a [^>]*href="https:\/\/www\.instagram\.com\/ruslitiki\/"[^>]*target="_blank"[^>]*>Instagram: @ruslitiki/);
     assert.ok(previewHtml.includes('https://www.youtube-nocookie.com/embed/m9CKv9oMYRY'),'The supplied club introduction must render its privacy-enhanced player.');
     const introPosition=previewHtml.indexOf('<section id="meet-ruslitiki"');
     assert.ok(previewHtml.indexOf('id="first-book-title"')<introPosition && introPosition<previewHtml.indexOf('<section id="how-the-club-works"'),'The introduction video belongs after the opening and before How the club works.');
@@ -146,6 +148,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
       assert.ok(!bookFeature.includes('class="dates"'),'The launch dates belong with signup, not the book.');
       assert.equal((html.match(/class="dates"/g)||[]).length,1);
       assert.match(html,/<a class="join-button"[\s\S]*?<\/a>\s*<dl class="dates">/,'The dates must directly follow the signup button in every composition.');
+      assert.match(html,/<\/dl>\s*<p class="membership-price">[\s\S]*?\$15 USD \/ month[\s\S]*?<\/p>/,'One standard membership price follows the signup dates.');
       assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
       const customButton=html.match(/<a\b[^>]*class="section-button [^"]*"[^>]*>/)[0];
       assert.equal(customButton.includes('target="_blank"'),composition!=='split','External buttons open a new tab; section buttons stay on the page.');

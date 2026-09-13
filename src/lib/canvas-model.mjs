@@ -20,7 +20,7 @@ export function moveSectionBefore(content,id,before) {
 }
 export function editableField(content,id,field) {
   if(id==='opening' || id==='brand'){
-    const limits=id==='brand'?{description:180}:{heading:100,introduction:400,'book.title':120,'book.author':100,'book.note':300};
+    const limits=id==='brand'?{description:180}:{heading:100,introduction:400,membershipPrice:80,'book.title':120,'book.author':100,'book.note':300};
     if(!Object.hasOwn(limits,field))return null;
     const parts=field.split('.');return {object:parts.length===2?content.book:content,key:parts.at(-1),max:limits[field]};
   }

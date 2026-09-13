@@ -36,7 +36,9 @@ export function renderLlms(content, site) {
     if (section.buttonLabel && section.buttonUrl) lines.push(link(section.buttonLabel, absolute(section.buttonUrl)));
   }
   const cta = ctaFor(content);
-  lines.push('', '## Join and contact', '', link(cta.label, absolute(cta.url)), link('Instagram', absolute(content.instagramUrl)));
+  lines.push('', '## Join and contact', '');
+  if (content.membershipPrice?.trim()) lines.push(`Membership price: ${text(content.membershipPrice)}.`, '');
+  lines.push(link(cta.label, absolute(cta.url)), link('Instagram', absolute(content.instagramUrl)));
   const hostProfile = instagramProfile(content.hostInstagramUrl);
   if (hostProfile) lines.push(link(hostProfile.handle, hostProfile.url, 'Book club host on Instagram.'));
   if (content.email) lines.push(link('Contact Olga Ruchina', absolute(`mailto:${content.email}`)));

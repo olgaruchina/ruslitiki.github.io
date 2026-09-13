@@ -2,7 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readContent, validateContent } from '../src/lib/content.mjs';
 import { editableContent, safeButtonUrl } from '../src/lib/design.mjs';
-import { insertSection, moveSectionBefore, setCanvasText } from '../src/lib/canvas-model.mjs';
+import { insertSection, moveSectionBefore, setCanvasText, editableField } from '../src/lib/canvas-model.mjs';
 import { saveDraft, atomicJson, digest, json } from '../scripts/studio-store.mjs';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
@@ -27,6 +27,21 @@ test('inline text cannot change arbitrary fields and over-limit pastes are prese
   const long='A'.repeat(101);assert.equal(setCanvasText(content,'opening','heading',long),true);
   assert.equal(content.heading,long);assert.ok(validateContent(content,{draft:true}).some(error=>error.startsWith('Main heading')));
   assert.equal(setCanvasText(content,'opening','heading','Read together.'),true);assert.deepEqual(validateContent(content),[]);
+});
+
+test('the signup price can be edited or hidden inline without changing other fields',()=>{
+  const content=editableContent(readContent());delete content.membershipPrice;
+  assert.equal(editableField(content,'opening','membershipPrice').max,80);
+  assert.equal(setCanvasText(content,'brand','membershipPrice','$99'),false);
+  assert.equal(setCanvasText(content,'opening','membershipPrice','$15 USD / month'),true);
+  assert.equal(content.membershipPrice,'$15 USD / month');
+  assert.deepEqual(validateContent(content),[]);
+  assert.equal(setCanvasText(content,'opening','membershipPrice',''),true);
+  assert.deepEqual(validateContent(content),[]);
+  const long='A'.repeat(81);
+  assert.equal(setCanvasText(content,'opening','membershipPrice',long),true);
+  assert.equal(content.membershipPrice,long);
+  assert.ok(validateContent(content,{draft:true}).some(error=>error.startsWith('Membership price:')));
 });
 
 test('unfinished sections can be saved privately but cannot enter a publishing preview',async()=>{
