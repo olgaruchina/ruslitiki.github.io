@@ -29,7 +29,7 @@ const structuredData = {
       </div>
       <div class="masthead-meta">
         <p><span data-edit-field={visualEditing?"description":undefined}>{content.description}</span>{hostProfile && <> (<a href={hostProfile.url} target="_blank" rel="noopener" title="Opens in a new tab">{hostProfile.handle}</a>)</>}</p>
-        <p class="status">{status}<span aria-hidden="true"> ↗</span></p>
+        {content.status!=='coming-soon' && <p class="status">{status}<span aria-hidden="true"> ↗</span></p>}
       </div>
     </header>
     <nav class="section-nav" aria-label="Main navigation">

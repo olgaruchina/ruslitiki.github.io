@@ -22,6 +22,7 @@
 .opening{padding-block:calc(var(--section-space)*.75) var(--section-space);align-items:start;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 .opening>*,.image-block>*{min-width:0}
 .masthead-meta{flex-wrap:wrap;padding-block:.625rem}
+.masthead-meta>p:only-child{max-width:none}
 .masthead-meta>p,.invitation,.first-book,.reading-page{min-width:0;overflow-wrap:anywhere}
 .invitation h1{font-family:var(--heading-font);font-size:var(--heading-size);max-width:16ch}
 .first-book h2,.reading-page h1,.reading-page h2{font-family:var(--heading-font)}
