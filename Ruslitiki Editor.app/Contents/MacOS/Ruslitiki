@@ -1,0 +1,25 @@
+#!/bin/zsh
+set -eu
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+ruslitiki_root="${0:A:h}/../../.."
+cd -- "$ruslitiki_root"
+mkdir -p .studio
+if curl --silent --fail --max-time 1 http://127.0.0.1:4310/api/state >/dev/null 2>&1; then
+  open 'http://127.0.0.1:4310'
+  exit 0
+fi
+if ! command -v node >/dev/null 2>&1 || [[ ! -d node_modules ]]; then
+  print 'Ruslitiki Editor needs its one-time installation. Ask the website maintainer to install Node.js 22.12 or later and run npm install in the project folder.' > .studio/SETUP_NEEDED.txt
+  open .studio/SETUP_NEEDED.txt
+  exit 1
+fi
+nohup node scripts/studio.mjs > .studio/editor.log 2>&1 < /dev/null &
+disown
+for ruslitiki_attempt in {1..30}; do
+  if curl --silent --fail --max-time 1 http://127.0.0.1:4310/api/state >/dev/null 2>&1; then
+    open 'http://127.0.0.1:4310'
+    exit 0
+  fi
+  sleep 0.1
+done
+open .studio/editor.log

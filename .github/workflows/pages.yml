@@ -1,0 +1,99 @@
+name: Check and publish website
+
+on:
+  push:
+    branches: [main, 'build/**', site-live]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Both publishing modes share one queue. Never interrupt an active deployment.
+concurrency:
+  group: ruslitiki-pages-${{ (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/site-live') && 'production' || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  prepare:
+    name: Check and prepare public files
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the pushed revision
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        if: github.ref != 'refs/heads/site-live'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Install locked dependencies
+        if: github.ref != 'refs/heads/site-live'
+        run: npm ci
+
+      - name: Test content and editor
+        if: github.ref != 'refs/heads/site-live'
+        run: npm test
+
+      - name: Build the website
+        if: github.ref != 'refs/heads/site-live'
+        run: npm run build
+
+      - name: Check the public output
+        if: github.ref != 'refs/heads/site-live'
+        run: npm run check:site
+
+      - name: Identify the source release
+        if: github.ref != 'refs/heads/site-live'
+        run: |
+          node --input-type=module -e "import { writeFileSync } from 'node:fs'; writeFileSync('dist/release.json', JSON.stringify({id: 'source-' + process.env.GITHUB_SHA, commit: process.env.GITHUB_SHA, createdAt: new Date().toISOString()}) + '\n');"
+
+      # The editor supplies the exact reviewed artifact. Never rebuild it here.
+      - name: Check required release files
+        run: |
+          test -f dist/index.html
+          test -f dist/release.json
+          test ! -e dist/.studio
+          test ! -e dist/.git
+          test ! -e dist/.github
+
+      - name: Upload public files
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/site-live')
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
+        with:
+          path: dist
+          retention-days: 1
+
+  deploy:
+    name: Publish to GitHub Pages
+    needs: prepare
+    # Use one production source at a time so old source cannot replace editor changes.
+    # Default: pushes to main. Set the repository variable to "editor" only when
+    # connecting Olga's editor; main then continues to build/test without publishing.
+    if: >-
+      github.event_name != 'pull_request' &&
+      ((github.ref == 'refs/heads/main' &&
+        (vars.RUSLITIKI_PUBLISH_SOURCE == '' || vars.RUSLITIKI_PUBLISH_SOURCE == 'main')) ||
+       (github.ref == 'refs/heads/site-live' && vars.RUSLITIKI_PUBLISH_SOURCE == 'editor'))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Read the existing Pages configuration
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6.0.0
+
+      - name: Publish the checked artifact
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
