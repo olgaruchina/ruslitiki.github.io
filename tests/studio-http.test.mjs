@@ -99,7 +99,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.match(overview.headers.get('content-type'),/text\/plain/);
     const overviewText=await overview.text();
     assert.ok(overviewText.includes('Read the classics together.'),'The AI overview must use the reviewed draft, not public source.');
-    assert.ok(!overviewText.includes('#meet-ruslitiki'),'Hidden sections must stay out of the AI overview.');
+    assert.ok(overviewText.includes('#meet-ruslitiki') && overviewText.includes('https://www.youtube.com/watch?v=m9CKv9oMYRY'),'The visible club introduction must appear in the AI overview.');
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
     assert.ok(previewHtml.includes('Frequently asked questions') && previewHtml.includes('Do I need to read Russian?'));
     const faqIntro=previewHtml.match(/<section id="faq"[^>]*>([\s\S]*?)<\/section>/)[1];
@@ -108,8 +108,10 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/">Home<\/a>/,'Home must be first and open the homepage without a section fragment.');
     for(const id of ['first-book-title','how-the-club-works','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
     assert.match(menu,/<a class="club-instagram"[^>]*href="https:\/\/www\.instagram\.com\/ruslitiki\/"[^>]*target="_blank"[^>]*>@ruslitiki/);
-    assert.ok(!menu.includes('#meet-ruslitiki'),'Hidden video sections stay out of the menu.');
-    assert.ok(!previewHtml.includes('youtube-nocookie.com/embed/'),'The pending video must not publish a broken player.');
+    assert.match(menu,/<a href="#meet-ruslitiki">Introduction<\/a>/);
+    assert.ok(previewHtml.includes('https://www.youtube-nocookie.com/embed/m9CKv9oMYRY'),'The supplied club introduction must render its privacy-enhanced player.');
+    const introPosition=previewHtml.indexOf('<section id="meet-ruslitiki"');
+    assert.ok(previewHtml.indexOf('id="first-book-title"')<introPosition && introPosition<previewHtml.indexOf('<section id="how-the-club-works"'),'The introduction video belongs after the opening and before How the club works.');
     assert.equal((await fetch(new URL(stagedPath,built.data.preview.url))).status,404,'Unselected upload must not be included in a release.');
     const manifest=JSON.parse(await fs.readFile(path.join(root,'.studio/previews',built.data.preview.id,'manifest.json')));
     assert.equal((await fetch(new URL('/favicon.svg',built.data.preview.url))).status,200);

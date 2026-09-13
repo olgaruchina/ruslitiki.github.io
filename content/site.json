@@ -24,12 +24,13 @@
       "type": "video",
       "heading": "Meet Ruslitiki",
       "body": "Olga Ruchina introduces the club and what we’ll read together.",
-      "visible": false,
+      "visible": true,
       "width": "full",
-      "align": "left",
+      "align": "center",
       "tone": "plain",
       "layout": "single",
-      "videoUrl": ""
+      "videoUrl": "https://www.youtube.com/watch?v=m9CKv9oMYRY",
+      "navLabel": "Introduction"
     },
     {
       "id": "how-the-club-works",
