@@ -20,7 +20,7 @@ There are five responsive placements:
 
 | Placement | Drawing | Responsive behavior |
 | --- | --- | --- |
-| Header | Closed book | Scales with the viewport near the upper-right corner. |
+| Header | Closed book | Sits just beside the wordmark and scales to fit the available space. |
 | Meet Ruslitiki video | Open book | Appears beside a centered video when the surrounding space allows it. |
 | How the club works | Book stack | Appears in the heading column for split text layouts at widths of 900 px and above. |
 | Membership | Closed book | Appears in the heading column for split text layouts at widths of 900 px and above. |
@@ -69,4 +69,3 @@ Composition: one centered isolated motif with modest transparent breathing room,
 Important: this will be used as a CSS alpha mask tinted into a very faint tone-on-tone imprint. Keep the generated ink pure black and opaque and the rest genuinely transparent. Open paper and cover regions must remain transparent; use outlines only.
 Subject: one loose small stack of exactly two closed vintage hardback books, slightly offset from one another, seen in a slight three-quarter perspective. Simple plain covers with visible page edges, sparse and quiet.
 ```
-

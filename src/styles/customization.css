@@ -115,18 +115,19 @@
 }
 @media(pointer:coarse){.section-nav a,.join-button,.section-button,.block-faq summary,.footer a{min-height:48px}}
 
-.book-imprint{display:none;pointer-events:none;user-select:none;background:currentColor;opacity:.16;-webkit-mask:var(--book-mask) center/contain no-repeat;mask:var(--book-mask) center/contain no-repeat}
+.book-imprint{display:none;pointer-events:none;user-select:none;background:currentColor;opacity:.21;-webkit-mask:var(--book-mask) center/contain no-repeat;mask:var(--book-mask) center/contain no-repeat}
 .masthead,.content-block{position:relative}
+.masthead{--wordmark-half-width:min(37.5%,calc(var(--logo-width)*.375))}
 [data-book-imprints=on] .imprint-header,[data-book-imprints=on] .imprint-footer{display:block}
-.imprint-header{position:absolute;right:0;top:0;width:clamp(1.75rem,8vw,7rem);aspect-ratio:1;transform:rotate(9deg)}
+.imprint-header{position:absolute;left:calc(50% + var(--wordmark-half-width) + .25rem);top:0;width:min(clamp(2rem,9.2vw,8rem),calc(50% - var(--wordmark-half-width) - .25rem));aspect-ratio:1;transform:rotate(9deg)}
 .footer>p{display:flex;align-items:center;gap:1rem}
-.imprint-footer{flex:none;width:3.5rem;height:2.75rem;transform:rotate(-6deg)}
-[data-book-imprints=on] .block-video.block-align-center>.imprint-video{display:block;position:absolute;left:.5rem;top:50%;width:clamp(0px,calc((100% - 56rem)/2 - 1.5rem),6rem);aspect-ratio:1;transform:rotate(-12deg)}
+.imprint-footer{flex:none;width:4rem;height:3.125rem;transform:rotate(-6deg)}
+[data-book-imprints=on] .block-video.block-align-center>.imprint-video{display:block;position:absolute;left:.5rem;top:50%;width:clamp(0px,calc((100% - 56rem)/2 - 1.5rem),7rem);aspect-ratio:1;transform:rotate(-12deg)}
 @media(min-width:900px){
   [data-book-imprints=on] .block-text.block-layout-split:has(>.book-imprint)>.block-copy{grid-row:1 / span 2}
   [data-book-imprints=on] .block-text.block-layout-split:has(>.book-imprint)>.section-button{grid-row:3}
-  [data-book-imprints=on] .block-text.block-layout-split>.imprint-how,[data-book-imprints=on] .block-text.block-layout-split>.imprint-membership{display:block;grid-column:1;grid-row:2;align-self:end;justify-self:start;width:8rem;height:7rem;margin-top:1rem}
+  [data-book-imprints=on] .block-text.block-layout-split>.imprint-how,[data-book-imprints=on] .block-text.block-layout-split>.imprint-membership{display:block;grid-column:1;grid-row:2;align-self:end;justify-self:start;width:min(9.25rem,100%);aspect-ratio:37/32;margin-top:1rem}
   .imprint-how{transform:rotate(-9deg)}
   .imprint-membership{transform:rotate(8deg)}
 }
-@media(max-width:700px){.imprint-footer{width:2.75rem;height:1.75rem}}
+@media(max-width:700px){.imprint-footer{width:3.125rem;height:2rem}}
