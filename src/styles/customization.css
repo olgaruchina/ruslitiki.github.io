@@ -1,7 +1,8 @@
 :root{--rule:color-mix(in srgb,var(--ink) 35%,var(--page-bg));background:var(--page-bg);font-family:var(--body-font)}
 .skip-link{background:var(--page-bg);color:var(--ink);z-index:100}
-.landing{max-width:var(--page-width)}
-.section-nav{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem 1.5rem;background:var(--page-bg);border-bottom:1px solid var(--rule);padding:.5rem 0;z-index:20}
+.landing{max-width:var(--page-width);padding-top:clamp(.75rem,1.5vw,1.5rem)}
+.masthead{padding-top:0}
+.section-nav{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem 1.5rem;background:var(--page-bg);border-bottom:1px solid var(--rule);padding:.375rem 0;z-index:20}
 .section-nav ul{display:flex;flex:1 1 34rem;min-width:0;flex-wrap:wrap;gap:.25rem clamp(.75rem,3vw,2.5rem);list-style:none;padding:0;margin:0}
 .section-nav li{min-width:0;max-width:100%}
 .section-nav a{display:inline-flex;align-items:center;min-height:44px;max-width:100%;overflow-wrap:anywhere;padding:.45rem .15rem;font:500 1rem/1.5 var(--sans);text-decoration:none;color:var(--indigo)}
@@ -17,15 +18,16 @@
   .section-nav li{flex:none}
   .content-block,#first-book-title{scroll-margin-top:6rem}
 }
-.wordmark{width:75%;max-width:calc(var(--logo-width)*.75)}
+.wordmark{width:75%;max-width:calc(var(--logo-width)*.75);margin-bottom:.5rem}
 .wordmark-original{background:var(--blue)}
-.opening{padding-block:var(--section-space);align-items:start;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+.opening{padding-block:min(var(--section-space),1.5rem) var(--section-space);align-items:start;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 .opening>*,.image-block>*{min-width:0}
-.masthead-meta{flex-wrap:wrap}
+.masthead-meta{flex-wrap:wrap;padding-block:.625rem}
 .masthead-meta>p,.invitation,.first-book,.reading-page{min-width:0;overflow-wrap:anywhere}
-.invitation h1{font-family:var(--heading-font);font-size:var(--heading-size)}
+.invitation h1{font-family:var(--heading-font);font-size:var(--heading-size);max-width:18ch}
 .first-book h2,.reading-page h1,.reading-page h2{font-family:var(--heading-font)}
 .introduction,.book-note,.reading-page{font-family:var(--body-font);font-size:var(--copy-size)}
+.introduction{max-width:42ch;margin:1rem 0 1.25rem}
 .join-button{font-family:var(--sans);color:var(--button-ink);border:1px solid var(--indigo);max-width:100%;gap:clamp(.75rem,3vw,2rem);overflow-wrap:anywhere}
 .join-button span{flex:none}
 .invitation .dates{grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));max-width:32rem;margin-top:1.5rem;gap:1rem 2rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
