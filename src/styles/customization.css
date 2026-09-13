@@ -67,7 +67,9 @@
 .block-tone-accent{padding:clamp(1.25rem,3vw,2.5rem);background:var(--indigo);color:var(--button-ink)}
 .block-tone-accent a:focus-visible,.block-tone-accent summary:focus-visible{outline-color:currentColor}
 .block-faq details{border-top:1px solid currentColor;padding-top:1.25rem}
-.block-faq summary{cursor:pointer;min-height:44px;font-size:var(--copy-size);font-weight:500}
+.block-faq summary{cursor:pointer;min-height:44px;font-size:var(--copy-size);font-weight:500;-webkit-tap-highlight-color:transparent}
+ruslitiki-faq{display:block}
+.faq-answer{display:flow-root}
 .block-faq .block-copy{margin-top:1rem}
 .block-faq{margin-block:0;padding-block:0 1.25rem}
 .block-faq details{border-top-color:var(--rule)}

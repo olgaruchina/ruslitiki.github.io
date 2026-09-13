@@ -47,7 +47,9 @@ for(const entry of ['studio','scripts','content','.studio','.git']){
   assert.equal(await fs.access(path.join(root,entry)).then(()=>true,()=>false),false,`${entry} must not ship.`);
 }
 const scripts=[...home.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)].filter(match=>!match[1].includes('application/ld+json'));
-assert.equal(scripts.length,1,'Only the mobile-navigation module should run on the public page.');
-assert.ok(scripts[0][1].includes('type="module"') && scripts[0][2].includes('ruslitiki-navigation'),'The public script must provide the mobile drawer.');
-assert.ok(scripts[0][2].length<12000 && !home.includes('canvas-rich-tools'),'The public page must not include the editor runtime.');
-console.log('Built-page checks passed: content, AI overview, dates, canonical, links, assets, privacy boundary and isolated mobile-navigation script.');
+assert.equal(scripts.length,1,'Only the public navigation and FAQ module should run on the page.');
+const scriptSource=scripts[0][1].match(/src="(\/[^"?#]+)"/)?.[1];
+const script=scriptSource?await fs.readFile(path.join(root,scriptSource),'utf8'):scripts[0][2];
+assert.ok(scripts[0][1].includes('type="module"') && script.includes('ruslitiki-navigation') && script.includes('ruslitiki-faq'),'The public script must provide the mobile drawer and FAQ animation.');
+assert.ok(script.length<12000 && !home.includes('canvas-rich-tools') && !script.includes('canvas-rich-tools'),'The public page must not include the editor runtime.');
+console.log('Built-page checks passed: content, AI overview, dates, canonical, links, assets, privacy boundary and isolated public interaction script.');

@@ -54,3 +54,7 @@ const structuredData = {
   <slot />
   <script type="application/ld+json" set:html={JSON.stringify(structuredData).replace(/</g,'\\u003c')} />
 </Page>
+<script>
+  import '../scripts/navigation.js';
+  import '../scripts/faq.js';
+</script>

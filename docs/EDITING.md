@@ -35,6 +35,8 @@ After setup, **Publish website** sends your reviewed page to GitHub, and GitHub 
 
 **Layout & style:** choose an introduction beside the book, the book on the left, one column, or a centred composition. Change page width, section spacing, wordmark size, heading size, paragraph size and button shape. Choose Literata or Golos Text independently for headings and paragraphs. Apply a colour palette or choose your own background, text and accent colours; unreadable combinations must be corrected before saving. Move the Onegin illustration above or below its title/description and change its size.
 
+**FAQ motion:** answers gently slide open and fade in on the public page and Saved preview. They stay open in Edit page so you can work on their text. Visitors who prefer reduced motion get immediate opening and closing.
+
 **Screen sizes:** Phone uses up to 390px, Tablet up to 768px, and Desktop uses the available preview width. These views resize both the editing page and Saved preview; use **Open preview** for more room. Below 900px the page stacks its columns and replaces the desktop menu with a **Menu** button. Tap it to open the drawer from the right; use its close button to return to the page. Check both the menu and page in Phone view before publishing.
 
 **Section menu:** in **Edit page**, click a menu label to edit its words and use the adjacent **↗** arrow to jump without losing unsaved edits. The Home arrow scrolls to the top. In **Saved preview**, labels navigate normally and Home opens the root homepage. These controls work in the desktop bar and mobile drawer.

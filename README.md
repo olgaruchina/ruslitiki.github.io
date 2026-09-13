@@ -1,6 +1,6 @@
 # Ruslitiki
 
-The website introduces the club, its first book, membership offering and waitlist. A private local visual editor manages its content and layout. The public page is statically generated with a small script for mobile navigation; editing tools remain private. The full membership service remains a later release.
+The website introduces the club, its first book, membership offering and waitlist. A private local visual editor manages its content and layout. The public page is statically generated with a small script for mobile navigation and FAQ motion; editing tools remain private. The full membership service remains a later release.
 
 ## Run locally
 
@@ -16,9 +16,9 @@ For ordinary editing on this Mac, double-click **Ruslitiki Editor.app** after th
 
 The editing canvas uses a separate loopback-only Astro service with isolated per-tab snapshots. It shares homepage components with production; its controls and unsaved snapshots never enter the public build. **Saved preview** remains an immutable reviewed artifact, separate from the changing editing canvas.
 
-The waitlist page explains weekly reading materials, the monthly guided discussion and the advance calendar. It lists standard membership at $15 USD/month and early-bird membership at $9.99 USD/month. Seven expandable FAQs share one top separator. Olga's YouTube introduction is enabled between the opening and the written club explanation. Video embeds use privacy-enhanced mode, load lazily and do not autoplay.
+The waitlist page explains weekly reading materials, the monthly guided discussion and the advance calendar. It lists standard membership at $15 USD/month and early-bird membership at $9.99 USD/month. Seven expandable FAQs share one top separator and open/close with a gentle 260ms slide and fade. Reduced-motion preferences retain immediate toggling; FAQ answers stay open for editing. Olga's YouTube introduction is enabled between the opening and the written club explanation. Video embeds use privacy-enhanced mode, load lazily and do not autoplay.
 
-The desktop menu follows the visible block order. Below 900px a Menu button opens a drawer from the right. In **Edit page**, clicking menu words edits them and an adjacent arrow jumps to their destination; **Saved preview** links navigate normally. How it works starts at the adjacent introduction video unless the owner separates those blocks or gives the video its own menu label. The small public navigation script controls the drawer; it does not expose editor controls or private drafts.
+The desktop menu follows the visible block order. Below 900px a Menu button opens a drawer from the right. In **Edit page**, clicking menu words edits them and an adjacent arrow jumps to their destination; **Saved preview** links navigate normally. How it works starts at the adjacent introduction video unless the owner separates those blocks or gives the video its own menu label. The small public interaction script controls the drawer and FAQ motion; it does not expose editor controls or private drafts.
 
 The local editor is the supported workflow and has no recurring editor subscription. The earlier `.pages.yml` configuration is retained as an inactive reference; it does not cover the expanded layout/block schema. Do not activate it without reconciling those fields and deciding how remote drafts and publishing would work.
 
