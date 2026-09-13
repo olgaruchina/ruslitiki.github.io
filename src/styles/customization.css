@@ -31,9 +31,8 @@
 .join-button span{flex:none}
 .invitation .dates{grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));max-width:32rem;margin-top:1.5rem;gap:1rem 2rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
 .invitation .dates dd{font-size:1.125rem}
-.membership-price{display:flex;flex-wrap:wrap;align-items:baseline;gap:.35rem 1rem;margin-top:1.25rem;font:400 1rem/1.5 var(--body-font)}
+.membership-price{display:grid;gap:.2rem;margin-top:1.25rem;font:400 1rem/1.5 var(--body-font)}
 .membership-price strong{font-size:1.25rem;font-weight:500}
-.composition-centered .membership-price{justify-content:center}
 .composition-centered .invitation .dates{margin-inline:auto}
 .join-button:hover{background:var(--ink);border-color:var(--ink);color:var(--page-bg)}
 [data-button-style=square] .join-button{border-radius:0}
