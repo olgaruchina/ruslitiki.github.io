@@ -13,7 +13,7 @@ export const DESIGN_OPTIONS = {
 export const DESIGN_DEFAULTS = {
   composition:'split', width:'standard', spacing:'comfortable', logoSize:'large', headingSize:'large',
   headingFont:'literata', bodyFont:'golos', bodySize:18, buttonStyle:'soft',
-  background:'#b4cdf6', ink:'#141321', accent:'#23156b', artworkPlacement:'below-title', artworkSize:'full',
+  background:'#b4cdf6', ink:'#141321', accent:'#23156b', artworkPlacement:'below-title', artworkSize:'full', bookImprints:false,
 };
 export const PALETTES = {
   blue:{label:'Ruslitiki blue',background:'#b4cdf6',ink:'#141321',accent:'#23156b'},
@@ -104,6 +104,7 @@ export function validateDesign(content) {
   for(const key of Object.keys(input))if(!Object.hasOwn(DESIGN_DEFAULTS,key) && key!=='blockOrder')errors.push(`Layout & style: unknown setting “${key}”.`);
   for(const [key,choices] of Object.entries(DESIGN_OPTIONS))if(input[key]!==undefined && (typeof input[key]!=='string' || !Object.hasOwn(choices,input[key])))errors.push(`Layout & style: choose a supported ${key}.`);
   if(input.bodySize!==undefined && (!Number.isInteger(input.bodySize) || input.bodySize<16 || input.bodySize>22))errors.push('Text size: choose a whole number from 16 to 22.');
+  if(Object.hasOwn(input,'bookImprints') && typeof input.bookImprints!=='boolean')errors.push('Background book drawings: choose on or off.');
   for(const key of ['background','ink','accent'])if(input[key]!==undefined && (typeof input[key]!=='string' || !/^#[0-9a-f]{6}$/i.test(input[key])))errors.push(`Colours: ${key} must be a six-digit hex colour, such as #b4cdf6.`);
   const design={...DESIGN_DEFAULTS,...input};
   if(['background','ink','accent'].every(key=>typeof design[key]==='string' && /^#[0-9a-f]{6}$/i.test(design[key]))){

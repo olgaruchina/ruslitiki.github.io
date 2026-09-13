@@ -47,12 +47,14 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(canvasOne.status,200,JSON.stringify(canvasOne.data));
     const firstCanvas=await fetch(canvasOne.data.url);assert.equal(firstCanvas.status,200);
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
+    assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');
     assert.match(canvasHtml,/<span\b[^>]*data-edit-field="description"[^>]*>[^<]*<\/span>/,'The editable description must not include the host link.');
     assert.ok(canvasHtml.includes('href="https://www.instagram.com/books_olgaruchina/"'));
-    const tabTwo={...initial.content,heading:'A different unsaved tab'};
+    const tabTwo={...initial.content,heading:'A different unsaved tab',design:{...initial.content.design,bookImprints:false}};
     const canvasTwo=await api('/api/canvas',{sequence:1,generation:1,content:tabTwo});assert.equal(canvasTwo.status,200);
     assert.notEqual(canvasTwo.data.session,canvasOne.data.session);
     assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('A different unsaved tab'));
+    assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('data-book-imprints="off"'),'Drawing visibility remains private to each canvas snapshot.');
     assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));
     const badNonce=new URL(canvasOne.data.url);badNonce.searchParams.set('nonce','wrong');
     assert.equal((await fetch(badNonce)).status,403);
@@ -92,6 +94,12 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const rendered=await fetch(built.data.preview.url);
     assert.match(rendered.headers.get('x-robots-tag'),/noindex/);
     const previewHtml=await rendered.text();
+    const imprintAssets=[...previewHtml.matchAll(/--book-mask:url\('([^']+)'\)/g)].map(match=>match[1]);
+    assert.equal(imprintAssets.length,5,'The page has five decorative book placements.');
+    for(const asset of new Set(imprintAssets)){
+      assert.ok(asset.includes('.webp'),'Book drawings use optimized assets.');
+      assert.equal((await fetch(new URL(asset,built.data.preview.url))).status,200);
+    }
     assert.ok(!previewHtml.includes('/@vite/') && !previewHtml.includes('/__canvas/') && !previewHtml.includes('data-edit-field='),'A preview prepared after canvas startup is still a production artifact.');
     assert.ok(previewHtml.includes('Read the classics together.'));
     const overview=await fetch(new URL('/llms.txt',built.data.preview.url));

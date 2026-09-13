@@ -6,6 +6,7 @@
 
 - Responsive, static Astro coming-soon page using the supplied wordmark, pale blue, Literata and Golos Text.
 - Historical Eugene Onegin garden illustration by Elena Samokish-Sudkovskaya (1908), with source credit, descriptive alternative text and responsive WebP images. The editor can hide it; changing the first book removes this specific artwork. See [artwork provenance](ARTWORK.md).
+- Five faint background book imprints use three transparent illustrations optimized as WebP masks. They follow the page colours, stay outside editable text and links, and adapt to available space. Layout & style includes a Background book drawings switch. See [assets and generation prompts](BOOK_IMPRINTS.md).
 - The masthead description says “with Olga” and ends with a linked (@books_olgaruchina), using an optional Instagram profile field in the editor. There is no separate founder section; the club’s @ruslitiki handle is separately linked in the footer, opening a new tab. Other public copy retains Olga Ruchina’s full name; the AI overview follows the current page content.
 - Confirmed waitlist link, membership opening 25 September and reading start 1 October, first read *Eugene Onegin*, optional working email and future Patreon states. The two dates stack in larger type on the left below the signup button, with Membership and its editable $15 USD/month price on the right. Narrow screens place the price below the dates; early-bird pricing stays in the Membership section and FAQ.
 - Separate “How the club works?” and Membership sections explain the chosen book, weekly video/guide/materials, reading guidance, monthly guided discussion without preparation, and advance calendar. Confirmed pricing is $15 USD per month, or $9.99 USD per month for early birds.
@@ -31,7 +32,7 @@
 ## Checked
 
 - Dependency installation completed; npm reported zero vulnerabilities at installation.
-- Forty automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files.
+- Forty-one automated tests passed, including isolated local HTTP/editor integration tests with real Astro preview builds for all four compositions and a check that editor pushes preserve the reviewed artifact while keeping the workflow outside public files. Background-drawing checks cover strict boolean settings, independent canvas snapshots and optimized assets in the saved preview.
 - Tested: stale draft save, invalid URL/calendar/email inputs, image path restrictions, malformed upload type, rejected foreign origin/Host/token, missing image, artifact modification/symlink, private unselected upload, selected image rendering route, and disabled public publishing.
 - Production build and built-page checks passed: confirmed copy/dates, canonical origin, working local references, no editor/private files in output and no public client scripts.
 - AI overview checks cover hidden/unused-field exclusion, active membership links, custom section order, normalized video links, Markdown escaping and real editor previews using their reviewed draft. Built overview anchors resolve to the rendered sections.

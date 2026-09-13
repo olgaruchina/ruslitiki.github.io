@@ -16,6 +16,24 @@ test('legacy content receives stable layout defaults without changing saved data
   assert.deepEqual(validateContent(editable),[]);
 });
 
+test('background book drawings default off for older drafts and accept only boolean settings',()=>{
+  const content=readContent();content.design={};
+  const before=JSON.stringify(content);
+  assert.equal(DESIGN_DEFAULTS.bookImprints,false);
+  assert.equal(designFor(content).bookImprints,false);
+  assert.equal(editableContent(content).design.bookImprints,false);
+  assert.equal(JSON.stringify(content),before);
+  for(const value of [true,false]){
+    content.design.bookImprints=value;
+    assert.deepEqual(validateContent(content),[]);
+    assert.equal(editableContent(content).design.bookImprints,value);
+  }
+  for(const value of ['true','false',1,0,null,undefined,[],{}]){
+    content.design.bookImprints=value;
+    assert.ok(validateContent(content).some(error=>error.startsWith('Background book drawings:')));
+  }
+});
+
 test('layout colours and values reject CSS injection, unreadable combinations and invalid sizes',()=>{
   const content=readContent();content.design={background:'#ffffff',ink:'#eeeeee',accent:'#23156b'};
   assert.ok(validateContent(content).some(error=>error.includes('text needs more contrast')));

@@ -2,6 +2,7 @@
 import SectionImage from './SectionImage.astro';
 import SectionButton from './SectionButton.astro';
 import SectionVideo from './SectionVideo.astro';
+import BookImprint from './BookImprint.astro';
 const {section,visualEditing=false}=Astro.props;
 const imageLayout=section.imageLayout || 'left';
 const field=key=>visualEditing?key:undefined;
@@ -20,4 +21,7 @@ const hasButton=section.type==='button' || !!section.buttonLabel || !!section.bu
     {imageLayout==='right' && <SectionImage section={section} visualEditing={visualEditing} />}
   </div> : <>{(section.heading || section.type!=='button') && <h2 data-edit-field={field('heading')} data-placeholder="Heading">{section.heading}</h2>}{(section.body || (visualEditing && section.type==='text')) && <p class="block-copy" data-edit-field={field('body')} data-placeholder="Optional text">{section.body}</p>}</>}
   {hasButton && <SectionButton section={section} visualEditing={visualEditing} />}
+  {section.id==='meet-ruslitiki' && <BookImprint kind="open" placement="video" />}
+  {section.id==='how-the-club-works' && <BookImprint kind="stack" placement="how" />}
+  {section.id==='membership' && <BookImprint kind="closed" placement="membership" />}
 </section>

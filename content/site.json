@@ -148,7 +148,8 @@
     "description": "Read Russian classics with Olga Ruchina. Explore the context, characters and translations. Join the Ruslitiki waitlist; reading begins 1 October 2026."
   },
   "design": {
-    "logoSize": "small"
+    "logoSize": "small",
+    "bookImprints": true
   },
   "hostInstagramUrl": "https://www.instagram.com/books_olgaruchina/"
 }

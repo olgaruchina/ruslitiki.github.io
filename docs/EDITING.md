@@ -19,6 +19,8 @@ After setup, **Publish website** sends your reviewed page to GitHub, and GitHub 
 
 **Book illustration:** under **First book**, use **Show the Eugene Onegin illustration** to show or hide the historical garden scene. Its artist credit appears with it. Changing the book title or author hides this Onegin-specific artwork automatically.
 
+**Background book drawings:** under **Layout & style**, turn **Background book drawings** on or off. Five faint book imprints sit in the wider layout’s open spaces. Smaller screens keep the header and footer accents; the other drawings appear only where there is room. Their tint follows your page colours. See [artwork details](BOOK_IMPRINTS.md).
+
 **Host Instagram:** the club description is followed by a linked handle in parentheses. Change **Host Instagram profile** under the club details to update it, or leave it empty to hide it. The handle is taken from the profile URL. Edit the description separately; the footer still links to the club’s own Instagram.
 
 **Signup price:** edit **Membership price** under **Dates & links**, or click the price on the canvas. It appears to the right of the stacked signup dates, or below them on narrow screens; leave it empty to hide it. The Membership section and pricing FAQ contain separate text, so keep those consistent when changing prices. The current standard price is $15 USD/month.
