@@ -1,17 +1,18 @@
 :root{--rule:color-mix(in srgb,var(--ink) 35%,var(--page-bg));background:var(--page-bg);font-family:var(--body-font)}
 .skip-link{background:var(--page-bg);color:var(--ink);z-index:100}
 .landing{max-width:var(--page-width)}
-.section-nav{background:var(--page-bg);border-bottom:1px solid var(--rule);padding:.5rem 0;z-index:20}
-.section-nav ul{display:flex;flex-wrap:wrap;gap:.25rem clamp(.75rem,3vw,2.5rem);list-style:none;padding:0;margin:0}
+.section-nav{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem 1.5rem;background:var(--page-bg);border-bottom:1px solid var(--rule);padding:.5rem 0;z-index:20}
+.section-nav ul{display:flex;flex:1 1 34rem;min-width:0;flex-wrap:wrap;gap:.25rem clamp(.75rem,3vw,2.5rem);list-style:none;padding:0;margin:0}
 .section-nav li{min-width:0;max-width:100%}
 .section-nav a{display:inline-flex;align-items:center;min-height:44px;max-width:100%;overflow-wrap:anywhere;padding:.45rem .15rem;font:500 1rem/1.5 var(--sans);text-decoration:none;color:var(--indigo)}
 .section-nav a:hover{text-decoration:underline;text-underline-offset:.35em}
 .section-nav a:focus-visible{outline-offset:-2px}
+.section-nav .club-instagram{flex:none;gap:.4rem;margin-inline-start:auto}
 .content-block,#first-book-title{scroll-margin-top:1.5rem}
 .content-block:focus,#first-book-title:focus{outline:none}
 @media(prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 @media(min-width:900px) and (min-height:600px){
-  .section-nav{position:sticky;top:0}
+  .section-nav{position:sticky;top:0;flex-wrap:nowrap}
   .section-nav ul{flex-wrap:nowrap;overflow-x:auto}
   .section-nav li{flex:none}
   .content-block,#first-book-title{scroll-margin-top:6rem}
@@ -27,6 +28,8 @@
 .introduction,.book-note,.reading-page{font-family:var(--body-font);font-size:var(--copy-size)}
 .join-button{font-family:var(--sans);color:var(--button-ink);border:1px solid var(--indigo);max-width:100%;gap:clamp(.75rem,3vw,2rem);overflow-wrap:anywhere}
 .join-button span{flex:none}
+.invitation .dates{grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr));max-width:32rem;margin-top:1.5rem;gap:1rem 2rem;padding-top:1.25rem;border-top:1px solid var(--rule)}
+.composition-centered .invitation .dates{margin-inline:auto}
 .join-button:hover{background:var(--ink);border-color:var(--ink);color:var(--page-bg)}
 [data-button-style=square] .join-button{border-radius:0}
 [data-button-style=pill] .join-button{border-radius:999px}
@@ -43,7 +46,6 @@
 .composition-centered .invitation h1,.composition-centered .introduction,.composition-centered .first-book{margin-left:auto;margin-right:auto}
 .composition-centered .first-book{text-align:center}
 .composition-centered .book-artwork,.composition-centered .book-note,.composition-centered figcaption{margin-left:auto;margin-right:auto}
-.composition-stacked .dates,.composition-centered .dates{grid-template-columns:repeat(2,minmax(0,1fr))}
 .content-block{margin-block:var(--section-space);min-width:0;overflow-wrap:anywhere}
 #how-the-club-works{border-top:1px solid var(--rule);margin-top:0;padding-top:var(--section-space)}
 .block-width-reading{max-width:70ch}.block-width-narrow{max-width:48ch}.block-width-full{max-width:none}
@@ -99,7 +101,5 @@
   .image-block{grid-template-columns:minmax(0,1fr)}
   .content-block{max-width:100%}
   .content-block.block-align-right{text-align:left}
-  .dates,.composition-stacked .dates,.composition-centered .dates{grid-template-columns:repeat(auto-fit,minmax(min(100%,12rem),1fr))}
 }
-@media(max-width:360px){.composition-stacked .dates,.composition-centered .dates{grid-template-columns:1fr}}
 @media(pointer:coarse){.section-nav a,.join-button,.section-button,.block-faq summary,.footer a{min-height:48px}}

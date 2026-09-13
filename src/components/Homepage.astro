@@ -9,6 +9,7 @@ const design=designFor(content);
 const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
 const navigation=pageNavigation(content);
 const hostProfile=instagramProfile(content.hostInstagramUrl);
+const clubHandle=instagramProfile(content.instagramUrl)?.handle || 'Instagram';
 const status={ 'coming-soon':'Coming soon','membership-open':'Membership is open',reading:'Reading together' }[content.status];
 const structuredData = {
   '@context':'https://schema.org',
@@ -31,8 +32,9 @@ const structuredData = {
         <p class="status">{status}<span aria-hidden="true"> ↗</span></p>
       </div>
     </header>
-    <nav class="section-nav" aria-label="On this page">
+    <nav class="section-nav" aria-label="Main navigation">
       <ul><li><a href="/">Home</a></li>{navigation.map(item=><li><a href={`#${item.id}`}>{item.label}</a></li>)}</ul>
+      <a class="club-instagram" href={content.instagramUrl} target="_blank" rel="noopener" title="Opens in a new tab" data-edit-region={visualEditing?'club-instagram':undefined}>{clubHandle}<span aria-hidden="true">↗</span></a>
     </nav>
     <main id="main">
       {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock section={sections.get(id)} visualEditing={visualEditing} />)}
@@ -40,7 +42,7 @@ const structuredData = {
     <footer class="footer">
       <p>Read. Think. Question. Disagree.</p>
       <nav aria-label="Contact and information">
-        <a href={content.instagramUrl} target="_blank" rel="noopener" title="Opens in a new tab">Instagram<span class="sr-only"> — Ruslitiki</span></a>
+        <a href={content.instagramUrl} target="_blank" rel="noopener" title="Opens in a new tab" data-edit-region={visualEditing?'club-instagram':undefined}>{clubHandle}<span class="sr-only"> — Ruslitiki on Instagram</span></a>
         {content.email && <a href={`mailto:${content.email}`}>Contact Olga Ruchina</a>}
         <a href="/privacy/" target="_blank" rel="noopener" title="Opens in a new tab">Privacy</a>
       </nav>

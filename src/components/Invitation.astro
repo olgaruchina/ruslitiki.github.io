@@ -1,5 +1,5 @@
 ---
-import { ctaFor } from '../lib/content.mjs';
+import { ctaFor, formatDate } from '../lib/content.mjs';
 const {content,visualEditing=false}=Astro.props;
 const action=ctaFor(content);
 ---
@@ -7,4 +7,8 @@ const action=ctaFor(content);
   <h1 data-edit-field={visualEditing?'heading':undefined}>{content.heading}</h1>
   <p class="introduction" data-edit-field={visualEditing?'introduction':undefined}>{content.introduction}</p>
   <a class="join-button" href={action.url} target="_blank" rel="noopener" title="Opens in a new tab">{action.label}<span aria-hidden="true">↗</span></a>
+  <dl class="dates">
+    <div><dt>Membership opens</dt><dd><time datetime={content.openingDate}>{formatDate(content.openingDate)}</time></dd></div>
+    <div><dt>We start reading</dt><dd><time datetime={content.readingDate}>{formatDate(content.readingDate)}</time></dd></div>
+  </dl>
 </div>

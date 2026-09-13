@@ -1,6 +1,5 @@
 ---
 import BookArtwork from './BookArtwork.astro';
-import { formatDate } from '../lib/content.mjs';
 const {content,design,visualEditing=false}=Astro.props;
 const showArtwork=content.book.showArtwork!==false && content.book.title.trim().toLowerCase()==='eugene onegin' && content.book.author.trim().toLowerCase()==='alexander pushkin';
 ---
@@ -12,8 +11,4 @@ const showArtwork=content.book.showArtwork!==false && content.book.title.trim().
   {showArtwork && design.artworkPlacement==='below-title' && <BookArtwork />}
   <p class="book-note" data-edit-field={visualEditing?'book.note':undefined}>{content.book.note}</p>
   {showArtwork && design.artworkPlacement==='below-note' && <BookArtwork />}
-  <dl class="dates">
-    <div><dt>Membership opens</dt><dd><time datetime={content.openingDate}>{formatDate(content.openingDate)}</time></dd></div>
-    <div><dt>We start reading</dt><dd><time datetime={content.readingDate}>{formatDate(content.readingDate)}</time></dd></div>
-  </dl>
 </aside>

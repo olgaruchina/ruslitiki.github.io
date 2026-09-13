@@ -105,6 +105,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
     assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/">Home<\/a>/,'Home must be first and open the homepage without a section fragment.');
     for(const id of ['first-book-title','how-the-club-works','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
+    assert.match(menu,/<a class="club-instagram"[^>]*href="https:\/\/www\.instagram\.com\/ruslitiki\/"[^>]*target="_blank"[^>]*>@ruslitiki/);
     assert.ok(!menu.includes('#meet-ruslitiki'),'Hidden video sections stay out of the menu.');
     assert.ok(!previewHtml.includes('youtube-nocookie.com/embed/'),'The pending video must not publish a broken player.');
     assert.equal((await fetch(new URL(stagedPath,built.data.preview.url))).status,404,'Unselected upload must not be included in a release.');
@@ -137,6 +138,10 @@ test('local editor keeps drafts private, validates requests and builds the exact
       const result=await api('/api/preview',{revision});assert.equal(result.status,200,JSON.stringify(result.data));
       const html=await (await fetch(result.data.preview.url)).text();
       assert.ok(html.includes(`composition-${composition}`));
+      const bookFeature=html.match(/<aside[^>]*data-part="book"[^>]*>([\s\S]*?)<\/aside>/)[1];
+      assert.ok(!bookFeature.includes('class="dates"'),'The launch dates belong with signup, not the book.');
+      assert.equal((html.match(/class="dates"/g)||[]).length,1);
+      assert.match(html,/<a class="join-button"[\s\S]*?<\/a>\s*<dl class="dates">/,'The dates must directly follow the signup button in every composition.');
       assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
       const customButton=html.match(/<a\b[^>]*class="section-button [^"]*"[^>]*>/)[0];
       assert.equal(customButton.includes('target="_blank"'),composition!=='split','External buttons open a new tab; section buttons stay on the page.');
