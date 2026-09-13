@@ -25,6 +25,7 @@
         <button role="tab" aria-selected="false" aria-controls="panel-book" id="tab-book" data-tab="book" tabindex="-1">First book</button>
         <button role="tab" aria-selected="false" aria-controls="panel-details" id="tab-details" data-tab="details" tabindex="-1">Dates & links</button>
         <button role="tab" aria-selected="false" aria-controls="panel-sections" id="tab-sections" data-tab="sections" tabindex="-1">Page blocks</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-labels" id="tab-labels" data-tab="labels" tabindex="-1">Labels &amp; menu</button>
         <button role="tab" aria-selected="false" aria-controls="panel-search" id="tab-search" data-tab="search" tabindex="-1">Search listing</button>
       </div>
       <form id="editor" novalidate>
@@ -67,6 +68,11 @@
           <div class="section-actions" id="add-block-controls"></div>
           <p class="panel-help">Add up to 24 blocks. Hidden blocks stay in your draft.</p>
           <div id="sections"></div>
+        </div>
+        <div role="tabpanel" id="panel-labels" aria-labelledby="tab-labels" hidden>
+          <p class="panel-help">Change the smaller words around the page, including Our first book, signup labels, menu links and the footer. Most visible labels can also be edited directly on the page.</p>
+          <p class="panel-help">Other section menu links are named in Page blocks. Date labels are edited here; change the actual dates in Dates &amp; links.</p>
+          <div id="label-controls"></div>
         </div>
         <div role="tabpanel" id="panel-search" aria-labelledby="tab-search" hidden>
           <p class="panel-help">These describe the page in search results and shared links. Keep them specific to the club.</p>

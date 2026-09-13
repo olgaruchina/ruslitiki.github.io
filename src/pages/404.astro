@@ -1,6 +1,12 @@
 ---
 import Page from '../layouts/Page.astro';
+import RichText from '../components/RichText.astro';
+import { readContent } from '../lib/content.mjs';
+import { labelsFor } from '../lib/labels.mjs';
+const content = readContent();
+const labels = labelsFor(content);
+const label = field => ({content,id:'labels',field,value:labels[field]});
 ---
-<Page title="Page not found | Ruslitiki" description="Return to the Ruslitiki book club." path="/404/" noindex>
-  <main class="reading-page" id="main"><h1>This page isn’t here.</h1><p><a href="/">Return to Ruslitiki</a></p></main>
+<Page title={`${labels.notFoundTitle} | ${content.brand}`} description={labels.notFoundDescription} content={content} path="/404/" noindex>
+  <main class="reading-page" id="main"><RichText {...label('notFoundHeading')} as="h1" /><p><RichText {...label('notFoundHomeLink')} as="a" href="/" /></p></main>
 </Page>

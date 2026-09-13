@@ -1,14 +1,17 @@
 ---
 import BookArtwork from './BookArtwork.astro';
+import RichText from './RichText.astro';
+import { labelsFor } from '../lib/labels.mjs';
 const {content,design,visualEditing=false}=Astro.props;
+const labels=labelsFor(content);
 const showArtwork=content.book.showArtwork!==false && content.book.title.trim().toLowerCase()==='eugene onegin' && content.book.author.trim().toLowerCase()==='alexander pushkin';
 ---
 <aside class="first-book" aria-labelledby="first-book-title" data-part="book">
-  {showArtwork && design.artworkPlacement==='above-title' && <BookArtwork />}
-  <p class="book-label">Our first book</p>
-  <h2 id="first-book-title" tabindex="-1"><i data-edit-field={visualEditing?'book.title':undefined}>{content.book.title}</i></h2>
-  <p class="author">by <span data-edit-field={visualEditing?'book.author':undefined}>{content.book.author}</span></p>
-  {showArtwork && design.artworkPlacement==='below-title' && <BookArtwork />}
-  <p class="book-note" data-edit-field={visualEditing?'book.note':undefined}>{content.book.note}</p>
-  {showArtwork && design.artworkPlacement==='below-note' && <BookArtwork />}
+  {showArtwork && design.artworkPlacement==='above-title' && <BookArtwork content={content} visualEditing={visualEditing} />}
+  <RichText content={content} id="labels" field="bookLabel" value={labels.bookLabel} as="p" class="book-label" visualEditing={visualEditing} />
+  <h2 id="first-book-title" tabindex="-1"><RichText content={content} id="opening" field="book.title" value={content.book.title} as="i" visualEditing={visualEditing} /></h2>
+  <p class="author"><RichText content={content} id="labels" field="authorPrefix" value={labels.authorPrefix} visualEditing={visualEditing} /> <RichText content={content} id="opening" field="book.author" value={content.book.author} visualEditing={visualEditing} /></p>
+  {showArtwork && design.artworkPlacement==='below-title' && <BookArtwork content={content} visualEditing={visualEditing} />}
+  <RichText content={content} id="opening" field="book.note" value={content.book.note} as="div" mode="block" class="book-note" visualEditing={visualEditing} />
+  {showArtwork && design.artworkPlacement==='below-note' && <BookArtwork content={content} visualEditing={visualEditing} />}
 </aside>

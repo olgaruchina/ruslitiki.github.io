@@ -2,6 +2,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readContent, validateContent, selectedImagePaths } from '../src/lib/content.mjs';
 import { DESIGN_DEFAULTS, PALETTES, designFor, editableContent, pageNavigation } from '../src/lib/design.mjs';
+const publicNavigation=content=>pageNavigation(content).map(({id,label})=>({id,label}));
 
 test('legacy content receives stable layout defaults without changing saved data',()=>{
   const content=readContent();delete content.design;
@@ -70,9 +71,9 @@ test('section navigation follows visible block order and preserves explicit menu
     {id:'custom',type:'text',heading:'A new section',body:'More.',visible:true,navLabel:'New reading'},
   ];
   content.design.blockOrder=['membership','opening','custom','faq'];
-  assert.deepEqual(pageNavigation(content),[{id:'membership',label:'Membership'},{id:'first-book-title',label:"October's Book"},{id:'custom',label:'New reading'}]);
+  assert.deepEqual(publicNavigation(content),[{id:'membership',label:'Membership'},{id:'first-book-title',label:"October's Book"},{id:'custom',label:'New reading'}]);
   content.sections[0].navLabel='';content.sections[1].visible=true;
-  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','custom','faq']);
+  assert.deepEqual(publicNavigation(content).map(item=>item.id),['first-book-title','custom','faq']);
   content.sections[2].navLabel={};assert.ok(validateContent(content).some(error=>error.includes('menu label')));
   content.sections[2].navLabel='Custom';content.sections[2].id='first-book-title';
   assert.ok(validateContent(content).some(error=>error.includes('invalid block identifier')));
@@ -91,7 +92,7 @@ const introductionNavigationContent=()=>{
 
 test('How it works includes its adjacent visible introduction without a separate intro menu item',()=>{
   const content=introductionNavigationContent();
-  assert.deepEqual(pageNavigation(content),[
+  assert.deepEqual(publicNavigation(content),[
     {id:'first-book-title',label:"October's Book"},
     {id:'meet-ruslitiki',label:'How it works'},
     {id:'membership',label:'Membership'},
@@ -99,44 +100,44 @@ test('How it works includes its adjacent visible introduction without a separate
   const separator={id:'extra-note',type:'text',heading:'More context',body:'An optional note.',visible:false};
   content.sections.push(separator);
   content.design.blockOrder.splice(2,0,separator.id);
-  assert.equal(pageNavigation(content)[1].id,'meet-ruslitiki','Hidden sections do not separate a visible group.');
+  assert.equal(publicNavigation(content)[1].id,'meet-ruslitiki','Hidden sections do not separate a visible group.');
   separator.visible=true;
-  assert.equal(pageNavigation(content)[1].id,'how-the-club-works','Visible sections separate the group even without a menu label.');
+  assert.equal(publicNavigation(content)[1].id,'how-the-club-works','Visible sections separate the group even without a menu label.');
 });
 
 test('How it works retains its own target when the introduction is hidden, missing or no longer a video',()=>{
   const content=introductionNavigationContent();
   content.sections[0].visible=false;
-  assert.equal(pageNavigation(content)[1].id,'how-the-club-works');
+  assert.equal(publicNavigation(content)[1].id,'how-the-club-works');
   content.sections[0].visible=true;content.sections[0].type='text';
-  assert.equal(pageNavigation(content)[1].id,'how-the-club-works');
+  assert.equal(publicNavigation(content)[1].id,'how-the-club-works');
   content.sections.shift();
   content.design.blockOrder=content.design.blockOrder.filter(id=>id!=='meet-ruslitiki');
-  assert.equal(pageNavigation(content)[1].id,'how-the-club-works');
+  assert.equal(publicNavigation(content)[1].id,'how-the-club-works');
 });
 
 test('reordering the introduction keeps navigation in the visible section order',()=>{
   const content=introductionNavigationContent();
   content.design.blockOrder=['opening','meet-ruslitiki','membership','how-the-club-works'];
-  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','membership','how-the-club-works']);
+  assert.deepEqual(publicNavigation(content).map(item=>item.id),['first-book-title','membership','how-the-club-works']);
   content.design.blockOrder=['opening','how-the-club-works','meet-ruslitiki','membership'];
-  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','how-the-club-works','membership']);
+  assert.deepEqual(publicNavigation(content).map(item=>item.id),['first-book-title','how-the-club-works','membership']);
   content.design.blockOrder=['meet-ruslitiki','opening','how-the-club-works','membership'];
-  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','how-the-club-works','membership']);
+  assert.deepEqual(publicNavigation(content).map(item=>item.id),['first-book-title','how-the-club-works','membership']);
 });
 
 test('explicit introduction and How it works menu labels remain editable',()=>{
   const content=introductionNavigationContent();
   content.sections[0].navLabel='Meet Olga Ruchina';
   content.sections[1].navLabel='Our format';
-  assert.deepEqual(pageNavigation(content).slice(1,3),[
+  assert.deepEqual(publicNavigation(content).slice(1,3),[
     {id:'meet-ruslitiki',label:'Meet Olga Ruchina'},
     {id:'how-the-club-works',label:'Our format'},
   ]);
   content.sections[0].navLabel='';
-  assert.deepEqual(pageNavigation(content)[1],{id:'meet-ruslitiki',label:'Our format'});
+  assert.deepEqual(publicNavigation(content)[1],{id:'meet-ruslitiki',label:'Our format'});
   content.sections[1].navLabel='';
-  assert.deepEqual(pageNavigation(content).map(item=>item.id),['first-book-title','membership']);
+  assert.deepEqual(publicNavigation(content).map(item=>item.id),['first-book-title','membership']);
 });
 
 test('block images require safe paths, descriptions and dimensions; hidden images stay private',()=>{

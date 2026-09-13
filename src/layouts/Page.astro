@@ -1,14 +1,19 @@
 ---
 import '@fontsource/literata/latin-400.css';
 import '@fontsource/literata/latin-400-italic.css';
+import '@fontsource/literata/latin-700.css';
+import '@fontsource/literata/latin-700-italic.css';
 import '@fontsource/golos-text/latin-400.css';
 import '@fontsource/golos-text/latin-500.css';
+import '@fontsource/golos-text/latin-700.css';
 import '../styles/site.css';
 import '../styles/customization.css';
 import { readContent } from '../lib/content.mjs';
 import { designFor, designVariables } from '../lib/design.mjs';
+import { labelsFor } from '../lib/labels.mjs';
 const { title, description, path = '/', noindex = false } = Astro.props;
 const design=designFor(Astro.props.content || readContent());
+const labels=labelsFor(Astro.props.content || readContent());
 const canonical = new URL(path, Astro.site);
 const isPreview = process.env.RUSLITIKI_PREVIEW === '1';
 ---
@@ -31,7 +36,7 @@ const isPreview = process.env.RUSLITIKI_PREVIEW === '1';
     {(isPreview || noindex) && <meta name="robots" content="noindex, nofollow" />}
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to content</a>
+    <a class="skip-link" href="#main">{labels.skipToContent}</a>
     <slot />
   </body>
 </html>

@@ -1,4 +1,5 @@
-import { SECTION_TYPES, MAX_SECTIONS } from './design.mjs';
+import { SECTION_TYPES, MAX_SECTIONS, navigationLabel } from './design.mjs';
+import { LABEL_FIELDS, labelsFor } from './labels.mjs';
 
 export function insertSection(content,type,before=null,id='section-'+crypto.randomUUID()) {
   if(typeof type!=='string' || !Object.hasOwn(SECTION_TYPES,type) || content.sections.length>=MAX_SECTIONS)return null;
@@ -19,13 +20,15 @@ export function moveSectionBefore(content,id,before) {
   order.splice(before===null?order.length:order.indexOf(before),0,id);return previous!==order.join('|');
 }
 export function editableField(content,id,field) {
+  if(id==='labels')return Object.hasOwn(LABEL_FIELDS,field)?{object:labelsFor(content),key:field,max:LABEL_FIELDS[field].max}:null;
   if(id==='opening' || id==='brand'){
     const limits=id==='brand'?{description:180}:{heading:100,introduction:400,membershipPrice:80,'book.title':120,'book.author':100,'book.note':300};
     if(!Object.hasOwn(limits,field))return null;
     const parts=field.split('.');return {object:parts.length===2?content.book:content,key:parts.at(-1),max:limits[field]};
   }
   const section=content.sections.find(item=>item.id===id);if(!section)return null;
-  const limits={heading:150,body:1400,...(section.type==='quote'?{attribution:150}:{}),...((section.type==='button' || section.buttonLabel || section.buttonUrl)?{buttonLabel:70}:{})};
+  if(field==='navLabel')return {object:{navLabel:section.navLabel??navigationLabel(section)},key:field,max:32};
+  const limits={heading:150,body:1400,...(section.type==='quote'?{attribution:150}:{}),...(section.type==='image'?{caption:300}:{}),...((section.type==='button' || section.buttonLabel || section.buttonUrl)?{buttonLabel:70}:{})};
   return Object.hasOwn(limits,field)?{object:section,key:field,max:limits[field]}:null;
 }
 export function setCanvasText(content,id,field,value) {
@@ -34,5 +37,8 @@ export function setCanvasText(content,id,field,value) {
   // Preserve over-limit text in the unsaved draft; validation must report it,
   // rather than silently saving the previous shorter value after a paste.
   if(!target || target.object[target.key]===value)return false;
-  target.object[target.key]=value;return true;
+  if(id==='labels')content.labels={...labelsFor(content),[field]:value};
+  else if(field==='navLabel')content.sections.find(section=>section.id===id).navLabel=value;
+  else target.object[target.key]=value;
+  return true;
 }

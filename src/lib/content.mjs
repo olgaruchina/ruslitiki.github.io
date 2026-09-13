@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
+import { validateRichContent } from './rich-fields.mjs';
 import { resolve } from 'node:path';
 import { validateDesign, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, normalizedSections, safeButtonUrl, youtubeVideoId } from './design.mjs';
+import { LABEL_FIELDS, labelsFor } from './labels.mjs';
 
 export const LIMITS = { heading: 100, description: 180, introduction: 400, bookNote: 300, membershipPrice: 80 };
 const own = (o, key) => Object.hasOwn(o, key);
@@ -36,7 +38,10 @@ export function validateContent(data, {draft = false} = {}) {
       if (url.protocol !== 'https:' || url.username || url.password || (hosts.length && !hosts.includes(url.hostname))) throw new Error();
     } catch { errors.push(`${label}: enter a valid HTTPS link${hosts.length ? ` on ${hosts.join(' or ')}` : ''}.`); }
   };
-  if (!keys(data, ['brand','status','heading','description','hostInstagramUrl','introduction','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design'], 'Website')) return errors;
+  if (!keys(data, ['brand','status','heading','description','hostInstagramUrl','introduction','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design','labels','richText'], 'Website')) return errors;
+  if (own(data,'labels') && keys(data.labels,Object.keys(LABEL_FIELDS),'Page labels')) {
+    for (const [key,field] of Object.entries(LABEL_FIELDS)) if (own(data.labels,key)) string(data.labels[key],field.title,field.max,!draft);
+  }
   string(data.brand, 'Club name', 40);
   string(data.heading, 'Main heading', LIMITS.heading);
   string(data.description, 'Club description', LIMITS.description);
@@ -67,7 +72,7 @@ export function validateContent(data, {draft = false} = {}) {
     const label = `Section ${i+1}`;
     if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
     if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
-    if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
+    if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','labels','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
     if(own(section,'navLabel'))string(section.navLabel,`${label} menu label`,32,false);
     string(section.heading, `${label} heading`, 150, !draft && section.type!=='button');
     string(section.body, `${label} text`, 1400, !draft && !['text','image','video','button'].includes(section.type));
@@ -102,6 +107,7 @@ export function validateContent(data, {draft = false} = {}) {
     string(data.seo.title, 'Search title', 100);
     string(data.seo.description, 'Search description', 240);
   }
+  errors.push(...validateRichContent(data));
   return errors;
 }
 
@@ -117,9 +123,10 @@ export function readContent(file = process.env.RUSLITIKI_CONTENT_FILE || resolve
 }
 
 export function ctaFor(data) {
+  const labels=labelsFor(data);
   return data.status === 'coming-soon'
-    ? { label: 'Join the waitlist', url: data.waitlistUrl }
-    : { label: 'Join on Patreon', url: data.patreonUrl };
+    ? { label: labels.waitlistCta, url: data.waitlistUrl }
+    : { label: labels.patreonCta, url: data.patreonUrl };
 }
 
 export function formatDate(iso) {

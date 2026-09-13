@@ -1,7 +1,9 @@
-(()=>{
+(async()=>{
   const config=JSON.parse(document.getElementById('canvas-config').textContent);
+  const {createRichTextEditor,serializeRichText,plainText}=await import('/__canvas/rich-text-editor.js');
   let sequence=config.sequence,generation=config.generation,minimumGeneration=config.generation,selected=null,editing=null,locked=false,pendingRender=null,rendering=false,awaitingEditAck=null,textSequence=0;
   const send=(type,data={})=>parent.postMessage({channel:'ruslitiki-canvas',session:config.session,nonce:config.nonce,sequence,generation,type,...data},config.studioOrigin);
+  const richEditor=createRichTextEditor({onChange:()=>emitText()});
   const make=(tag,text)=>{const element=document.createElement(tag);if(text!==undefined)element.textContent=text;return element;};
   const toolbar=make('div');toolbar.id='canvas-tools';toolbar.setAttribute('role','toolbar');toolbar.setAttribute('aria-label','Selected section');toolbar.hidden=true;
   const label=make('span');label.className='canvas-tool-label';toolbar.append(label);
@@ -21,7 +23,7 @@
   const selectedBlock=()=>blocks().find(block=>block.dataset.blockId===selected);
   function positionTools(){
     const block=selectedBlock();
-    toolbar.hidden=!block || locked;if(!block || locked)return;
+    toolbar.hidden=!block || locked || !!editing?.rich;if(toolbar.hidden)return;
     const rect=block.getBoundingClientRect();
     toolbar.style.left=Math.max(8,Math.min(rect.left,innerWidth-toolbar.offsetWidth-8))+'px';
     toolbar.style.top=Math.max(8,Math.min(innerHeight-toolbar.offsetHeight-8,rect.top-toolbar.offsetHeight-5))+'px';
@@ -52,24 +54,38 @@
     if(locked || editing?.field===field)return;
     finishEditing();
     const block=field.closest('[data-block-id]');
-    const id=block?.dataset.blockId || 'brand';
-    editing={field,id,key:field.dataset.editField,transaction:crypto.randomUUID(),lastValue:field.textContent};
-    field.contentEditable='plaintext-only';field.setAttribute('role','textbox');field.setAttribute('aria-label',field.dataset.placeholder || field.dataset.editField.replaceAll('.',' '));field.spellcheck=true;field.focus();
+    const id=field.closest('[data-edit-id]')?.dataset.editId || block?.dataset.blockId || 'brand';
+    const rich=['inline','block'].includes(field.dataset.richText),inline=field.dataset.richText==='inline';
+    const initialDoc=rich?serializeRichText(field,{inline}):null;
+    editing={field,id,key:field.dataset.editField,transaction:crypto.randomUUID(),lastValue:rich?plainText(initialDoc):fieldText(field),rich,inline};
+    field.contentEditable=rich?'true':'plaintext-only';field.setAttribute('role','textbox');field.setAttribute('aria-label',field.dataset.placeholder || field.dataset.editField.replaceAll('.',' '));field.spellcheck=true;field.focus();
+    if(rich)richEditor.open(field,{inline});
     if(block)select(id,editing.key);else send('select',{id,field:editing.key});
   }
-  function emitText(){if(editing){textSequence++;const value=fieldText(editing.field);send('text',{id:editing.id,field:editing.key,value,previousValue:editing.lastValue,transaction:editing.transaction,textSequence});editing.lastValue=value;}}
+  function emitText(){if(editing){
+    textSequence++;const richText=editing.rich?richEditor.serialize():null;
+    const value=richText?plainText(richText):fieldText(editing.field);
+    send('text',{id:editing.id,field:editing.key,value,previousValue:editing.lastValue,transaction:editing.transaction,textSequence,...(richText?{richText}:{})});editing.lastValue=value;
+  }}
   function finishEditing(){
     if(!editing)return;
-    emitText();awaitingEditAck={transaction:editing.transaction,textSequence};const field=editing.field;editing=null;field.removeAttribute('contenteditable');field.removeAttribute('role');field.removeAttribute('aria-label');
-    // Rich clipboard formatting never becomes saved content.
-    field.textContent=fieldText(field);send('edit-end');
+    const {field,rich,inline}=editing;const doc=rich?richEditor.serialize():null;
+    emitText();awaitingEditAck={transaction:editing.transaction,textSequence};editing=null;richEditor.close();field.removeAttribute('contenteditable');field.removeAttribute('role');field.removeAttribute('aria-label');
+    if(doc)richEditor.normalize(field,doc,{inline});else field.textContent=fieldText(field);
+    positionTools();send('edit-end');
   }
   document.addEventListener('input',event=>{if(editing?.field===event.target)emitText();});
-  document.addEventListener('focusout',event=>{if(editing?.field===event.target)finishEditing();});
+  document.addEventListener('focusout',event=>{if(editing?.field===event.target || richEditor.owns(event.target))queueMicrotask(()=>{
+    if(editing && !editing.field.contains(document.activeElement) && !richEditor.owns(document.activeElement))finishEditing();
+  });});
+  document.addEventListener('ruslitiki:navigation-close',finishEditing);
   document.addEventListener('click',event=>{
-    if(event.target.closest('#canvas-tools,#canvas-add-end'))return;
+    if(event.target.closest('#canvas-tools,#canvas-add-end,#canvas-rich-tools'))return;
     const link=event.target.closest('a');if(link)event.preventDefault();
     if(locked)return;
+    const date=event.target.closest('[data-edit-date]');
+    if(date){finishEditing();send('select',{id:'opening',field:date.dataset.editDate});send('options',{id:'opening',field:date.dataset.editDate});return;}
+    const field=event.target.closest('[data-edit-field]');if(field){if(field.closest('summary'))event.preventDefault();beginEditing(field);return;}
     if(link?.closest('.section-nav') && (link.getAttribute('href')==='/' || link.getAttribute('href')?.startsWith('#'))){
       finishEditing();
       select(null,undefined,false);send('deselect');document.body.setAttribute('data-canvas-browsing','');
@@ -81,17 +97,18 @@
       if(target){target.scrollIntoView({block:'start'});target.focus({preventScroll:true});}
       return;
     }
-    const field=event.target.closest('[data-edit-field]');if(field){if(field.closest('summary'))event.preventDefault();beginEditing(field);return;}
     finishEditing();
     const block=event.target.closest('[data-block-id]');
     if(block)select(block.dataset.blockId);
     if(event.target.closest('[data-select-image],[data-select-video]'))send('options',{id:block?.dataset.blockId,field:event.target.closest('[data-select-video]')?'videoUrl':'image'});
-    else if(!block && event.target.closest('[data-edit-region]'))send('select',{id:'brand',field:event.target.closest('[data-edit-region]').dataset.editRegion==='club-instagram'?'instagramUrl':undefined});
+    else if(!block && event.target.closest('[data-edit-region]'))send('select',{id:'brand',field:({'club-instagram':'instagramUrl','host-instagram':'hostInstagramUrl'})[event.target.closest('[data-edit-region]').dataset.editRegion]});
   },true);
   document.addEventListener('keydown',event=>{
     if(event.key==='Tab')document.body.removeAttribute('data-canvas-browsing');
-    if(event.key==='Escape'){finishEditing();selectedBlock()?.focus();event.preventDefault();}
+    if(event.key==='Escape' && !event.defaultPrevented){finishEditing();selectedBlock()?.focus();event.preventDefault();}
     if(editing || locked)return;
+    const date=event.target.closest('[data-edit-date]');
+    if(date && ['Enter',' '].includes(event.key)){event.preventDefault();send('options',{id:'opening',field:date.dataset.editDate});return;}
     const block=event.target.closest('[data-block-id]');
     if(block && event.key==='Enter'){select(block.dataset.blockId);toolbar.querySelector('button').focus();event.preventDefault();}
   });

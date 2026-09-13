@@ -48,11 +48,11 @@ const config={studioOrigin:${JSON.stringify(studioOrigin)},session:id,nonce:snap
             if(!['GET','HEAD'].includes(req.method)){res.writeHead(405);res.end();return;}
             res.setHeader('Cache-Control','no-store');res.setHeader('X-Robots-Tag','noindex, nofollow');res.setHeader('Referrer-Policy','no-referrer');
             res.setHeader('Content-Security-Policy',`default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; frame-src https://www.youtube-nocookie.com; frame-ancestors ${studioOrigin}; form-action 'none'; base-uri 'self'`);
-            const bridges={'/__canvas/bridge.js':['canvas-bridge.js','text/javascript'],'/__canvas/bridge.css':['canvas-bridge.css','text/css']};
+            const bridges={'/__canvas/bridge.js':['studio/canvas-bridge.js','text/javascript'],'/__canvas/bridge.css':['studio/canvas-bridge.css','text/css'],'/__canvas/rich-text-editor.js':['studio/rich-text-editor.js','text/javascript'],'/__canvas/rich-text.mjs':['src/lib/rich-text.mjs','text/javascript']};
             try{
               const pathname=new URL(req.url,origin).pathname;
               if(bridges[pathname]){
-                const [file,type]=bridges[pathname];res.setHeader('Content-Type',type+'; charset=utf-8');res.end(await fs.readFile(path.join(root,'studio',file)));return;
+                const [file,type]=bridges[pathname];res.setHeader('Content-Type',type+'; charset=utf-8');res.end(await fs.readFile(path.join(root,file)));return;
               }
               if(/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(pathname)){
                 const file=path.join(root,'.studio/uploads',path.basename(pathname));

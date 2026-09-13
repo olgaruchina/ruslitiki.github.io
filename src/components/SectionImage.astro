@@ -1,7 +1,10 @@
 ---
-const {section,visualEditing=false}=Astro.props;
+import { labelsFor } from '../lib/labels.mjs';
+import RichText from './RichText.astro';
+const {section,content={},visualEditing=false}=Astro.props;
+const labels=labelsFor(content);
 ---
 <figure class:list={['section-image',`ratio-${section.imageRatio || 'auto'}`]}>
   {section.image ? <img src={section.image} alt={section.imageAlt} width={section.imageWidth} height={section.imageHeight} loading="lazy" decoding="async" /> : visualEditing && <button type="button" class="canvas-image-placeholder" data-select-image>Choose an image</button>}
-  {(section.caption || section.sourceUrl) && <figcaption>{section.caption}{section.sourceUrl && <> <a href={section.sourceUrl} target="_blank" rel="noopener" title="Opens in a new tab">Image source</a></>}</figcaption>}
+  {(section.caption || section.sourceUrl || visualEditing) && <figcaption><RichText content={content} id={section.id} field="caption" value={section.caption??''} visualEditing={visualEditing} data-placeholder="Caption (optional)" />{section.sourceUrl && <> <RichText content={content} id="labels" field="imageSource" value={labels.imageSource} as="a" href={section.sourceUrl} target="_blank" rel="noopener" title={labels.opensNewTab} visualEditing={visualEditing} /></>}</figcaption>}
 </figure>
