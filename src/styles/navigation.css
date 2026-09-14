@@ -20,8 +20,10 @@ ruslitiki-navigation .navigation-drawer [data-nav-link]>span{min-width:0}
 ruslitiki-navigation .navigation-drawer .navigation-jump{min-width:48px;min-height:48px;margin-bottom:.25rem}
 @media(min-width:900px) and (min-height:600px){ruslitiki-navigation{position:sticky;top:0}}
 @media(max-width:899.98px){
+  .landing:has(ruslitiki-navigation[data-enhanced]){position:relative;padding-top:calc(clamp(1.25rem,2vw,2rem) + 3rem)}
   ruslitiki-navigation[data-enhanced] [data-nav-desktop]{display:none}
-  ruslitiki-navigation[data-enhanced] .navigation-mobile-bar{display:flex;justify-content:flex-end;border-bottom:1px solid var(--rule);background:var(--page-bg);padding-block:.25rem}
+  ruslitiki-navigation[data-enhanced] .navigation-mobile-bar{display:flex;position:absolute;top:clamp(1.25rem,2vw,2rem);right:clamp(1.5rem,5vw,5rem);border:0;padding:0}
+  ruslitiki-navigation .navigation-toggle{width:48px;height:48px;padding:0}
 }
 @media(prefers-reduced-motion:no-preference){
   ruslitiki-navigation .navigation-drawer[open]{animation:navigation-enter .2s ease-out}
