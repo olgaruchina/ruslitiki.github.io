@@ -7,6 +7,7 @@ import { readContent, validateContent, selectedImagePaths } from '../src/lib/con
 import { atomicJson, json, digest, fileMap, rendererDigest, checkRevision, saveDraft, savePublication, safeImage } from './studio-store.mjs';
 import { run, publishRelease, validatePublishing, verifyArtifact, checkPublishingConnection, EDITOR_PUBLISHING } from './publish-release.mjs';
 import { createCanvasService } from './studio-canvas.mjs';
+import { applyContactUpdate } from './studio-updates.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const STORAGE=path.join(ROOT,'.studio');
@@ -20,6 +21,7 @@ let busy=false;
 let message='Your changes stay private until you publish.';
 let preview=null;
 let publication=null;
+let contactUpdateReady=Promise.resolve();
 
 await fs.mkdir(STORAGE,{recursive:true,mode:0o700});
 try {await fs.access(path.join(STORAGE,'draft.json'));} catch {await atomicJson(path.join(STORAGE,'draft.json'),readContent(path.join(ROOT,'content/site.json')));}
@@ -107,6 +109,7 @@ try{
 
 const server=http.createServer(async(req,res)=>{
   try{
+    await contactUpdateReady;
     if(req.headers.host!==`127.0.0.1:${PORT}` || (req.headers.origin && req.headers.origin!==ORIGIN)){send(res,403,{error:'Open this editor directly on this laptop.'});return;}
     const url=new URL(req.url,ORIGIN);
     res.setHeader('X-Content-Type-Options','nosniff');
@@ -192,5 +195,15 @@ const server=http.createServer(async(req,res)=>{
   }catch(error){if(!busy)message=error.message;send(res,error.status || 400,{error:error.message});}
 });
 server.on('error',error=>{console.error(error.code==='EADDRINUSE' ? `The editor may already be open: ${ORIGIN}` : error.message);process.exitCode=1;for(const s of previewServers.values())s.close();});
-server.listen(PORT,'127.0.0.1',()=>console.log(`Ruslitiki Studio: ${ORIGIN}\nPrivate drafts stay on this laptop. Keep this window open while editing.`));
+server.listen(PORT,'127.0.0.1',()=>{
+  // Only migrate after binding succeeds: a second launch must not change the
+  // saved draft underneath an editor that is already running on this port.
+  contactUpdateReady=(async()=>{
+    try{
+      const update=await applyContactUpdate(STORAGE,readContent(path.join(ROOT,'content/site.json')));
+      if(update.changed)message='Contact information updated. Your other edits are preserved; review a fresh preview before publishing.';
+    }catch(error){message=`The contact update could not finish: ${error.message}`;}
+    console.log(`Ruslitiki Studio: ${ORIGIN}\nPrivate drafts stay on this laptop. Keep this window open while editing.`);
+  })();
+});
 for(const signal of ['SIGINT','SIGTERM'])process.on(signal,async()=>{for(const s of previewServers.values())s.close();await canvas.stop().catch(()=>{});server.close(()=>process.exit(0));});

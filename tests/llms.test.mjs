@@ -28,6 +28,7 @@ test('AI overview includes the configured signup price and omits absent or empty
 
 test('AI overview excludes hidden content, unused fields and inactive join links', () => {
   const content = readContent();
+  content.email = '';
   content.patreonUrl = 'https://www.patreon.com/unannounced-membership';
   content.sections = [
     { id: 'private-video', type: 'video', visible: false, heading: 'Hidden title', body: 'Hidden notes', videoUrl: 'https://youtu.be/M7lc1UVf-VE' },
