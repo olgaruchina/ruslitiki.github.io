@@ -37,6 +37,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     }
     assert.ok(ready,log || 'Studio did not start.');
     const html=await (await fetch(origin)).text();
+    assert.equal((await fetch(origin+'/anchors.mjs')).status,200,'The editor can load its shared section-link module.');
     const token=html.match(/name="studio-token" content="([a-f0-9]+)"/)[1];
     const api=async(route,data,headers={})=>{
       const response=await fetch(origin+route,{method:'POST',headers:{'Content-Type':'application/json','Origin':origin,'X-Studio-Token':token,...headers},body:JSON.stringify(data)});
@@ -56,6 +57,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(canvasOne.status,200,JSON.stringify(canvasOne.data));
     const firstCanvas=await fetch(canvasOne.data.url);assert.equal(firstCanvas.status,200);
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
+    assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
+    assert.match(canvasHtml,/<span id="section-bb4b953e-a094-43dd-baec-239fd87471e6" class="section-anchor-legacy" tabindex="-1"/,'The original Contact bookmark still has a focusable destination.');
     assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');
     assert.ok(canvasHtml.includes('data-edit-id="labels" data-edit-field="bookLabel"') && canvasHtml.includes('data-edit-date="openingDate"') && canvasHtml.includes('data-edit-date="readingDate"'),'Book labels and both dates are directly editable.');
     assert.match(canvasHtml,/data-edit-id="how-the-club-works" data-edit-field="body" data-rich-text="block"[^>]*><p>/,'Existing multiline text must start with paragraph boundaries in the editing canvas.');
@@ -89,6 +92,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const reboundStatus=await new Promise((resolve,reject)=>{const req=http.get(origin+'/api/state',{headers:{Host:'rebound.example'}},res=>{res.resume();resolve(res.statusCode);});req.on('error',reject);});
     assert.equal(reboundStatus,403);
     const content=structuredClone(initial.content);content.heading='Read the classics together.';
+    content.sections.find(section=>section.id==='membership').anchor='joining-details';
+    content.sections.find(section=>section.id==='section-bb4b953e-a094-43dd-baec-239fd87471e6').navLabel='Contact';
     content.introduction='Read the classics together.\n\nBring your questions.';
     const headingFormat=fromPlainText(content.heading);headingFormat.blocks[0].runs[0].bold=true;
     const answer=content.sections.find(section=>section.type==='faq');answer.body='Read in translation\nDiscuss together';
@@ -110,6 +115,11 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const rendered=await fetch(built.data.preview.url);
     assert.match(rendered.headers.get('x-robots-tag'),/noindex/);
     const previewHtml=await rendered.text();
+    assert.match(previewHtml,/<section id="joining-details"[^>]*data-block-id="membership"/);
+    assert.ok(previewHtml.includes('href="#joining-details"') && previewHtml.includes('href="#contact"'),'Menu links use the public section links.');
+    assert.match(previewHtml,/<span id="membership" class="section-anchor-legacy" tabindex="-1"/);
+    const pageIds=[...previewHtml.matchAll(/\sid="([^"]+)"/g)].map(match=>match[1]);
+    assert.equal(new Set(pageIds).size,pageIds.length,'Public and legacy links must never duplicate an HTML id.');
     assert.ok(previewHtml.includes('<strong>Read the classics together.</strong>') && previewHtml.includes('<ul><li><em>Read in translation</em></li><li>Discuss together</li></ul>'),'Saved emphasis and lists must render in the reviewed production artifact.');
     assert.ok(previewHtml.includes('<p>Read the classics together.</p><p><br></p><p>Bring your questions.</p>'),'Unformatted paragraph breaks must also match the editing canvas.');
     assert.ok(previewHtml.includes('<dialog class="navigation-drawer"') && previewHtml.includes('data-nav-open'),'The public artifact includes the mobile drawer.');
@@ -125,6 +135,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(overview.status,200);
     assert.match(overview.headers.get('content-type'),/text\/plain/);
     const overviewText=await overview.text();
+    assert.ok(overviewText.includes('/#contact') && overviewText.includes('/#joining-details'),'The AI overview uses the same public links as the menu.');
     assert.ok(overviewText.includes('Read the classics together.'),'The AI overview must use the reviewed draft, not public source.');
     assert.ok(overviewText.includes('#meet-ruslitiki') && overviewText.includes('https://www.youtube.com/watch?v=m9CKv9oMYRY'),'The visible club introduction must appear in the AI overview.');
     assert.ok(previewHtml.includes('Onegin speaks to Tatyana'),'Older drafts should display the matching book illustration.');
@@ -133,7 +144,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(faqIntro.includes('Frequently asked questions') && !faqIntro.includes('<p'),'A heading-only introduction publishes without an empty paragraph.');
     const menu=previewHtml.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)[1];
     assert.match(menu,/<ul[^>]*>\s*<li[^>]*><a href="\/"[^>]*><span>Home<\/span><\/a>/,'Home must be first and open the homepage without a section fragment.');
-    for(const id of ['first-book-title','meet-ruslitiki','membership','faq'])assert.ok(menu.includes(`href="#${id}"`));
+    for(const id of ['first-book-title','meet-ruslitiki','joining-details','faq','contact'])assert.ok(menu.includes(`href="#${id}"`));
     assert.ok(!menu.includes('instagram.com') && !menu.includes('Introduction') && !menu.includes('href="#how-the-club-works"'),'The compact menu keeps one How it works link and leaves Instagram to the footer.');
     assert.match(menu,/<a href="#meet-ruslitiki"[^>]*><span>How it works<\/span><\/a>/);
     const footer=previewHtml.match(/<footer class="footer">([\s\S]*?)<\/footer>/)[1];

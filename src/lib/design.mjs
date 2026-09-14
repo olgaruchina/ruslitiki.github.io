@@ -1,4 +1,5 @@
 import { labelsFor } from './labels.mjs';
+import { sectionAnchors, materializeSectionAnchors } from './anchors.mjs';
 
 export const DESIGN_OPTIONS = {
   composition: { split: 'Introduction beside the book', 'book-left': 'Book beside the introduction', stacked: 'One column', centered: 'Centred introduction' },
@@ -73,6 +74,7 @@ export function navigationLabel(section) {
 }
 export function pageNavigation(content) {
   const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
+  const anchors=sectionAnchors([...sections.values()]);
   const labels=labelsFor(content);
   const visibleOrder=designFor(content).blockOrder.filter(id=>id==='opening' || sections.get(id)?.visible);
   return visibleOrder.flatMap((id,index)=>{
@@ -83,12 +85,13 @@ export function pageNavigation(content) {
     const previous=sections.get(visibleOrder[index-1]);
     // An adjacent intro without its own menu label starts the How it works group.
     const target=id==='how-the-club-works' && previous?.id==='meet-ruslitiki' && previous.type==='video' && !navigationLabel(previous) ? previous.id : id;
-    return [{id:target,label,blockId:id,field:'navLabel'}];
+    return [{id:anchors.get(target) ?? target,label,blockId:id,field:'navLabel'}];
   });
 }
 export function editableContent(content) {
   const draft=structuredClone(content);
   draft.sections=normalizedSections(draft.sections);
+  materializeSectionAnchors(draft);
   draft.design=designFor(draft);
   draft.labels=labelsFor(draft);
   return draft;

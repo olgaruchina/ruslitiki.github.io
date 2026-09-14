@@ -4,6 +4,7 @@ import { LABEL_FIELDS } from '/labels.mjs';
 import { VisualCanvas } from '/visual-canvas.js';
 import { setCanvasRichText, pruneRichText, copyRichSection, richMode } from '/rich-fields.mjs';
 import { plainText, validateRichText } from '/rich-text.mjs';
+import { materializeSectionAnchors, sectionAnchors } from '/anchors.mjs';
 const $ = selector => document.querySelector(selector);
 const token = $('meta[name="studio-token"]').content;
 let state=null;
@@ -96,8 +97,9 @@ async function operation(fn){
   }
 }
 async function save(){
+  materializeSectionAnchors(draft);
   state=await request('/api/save',{content:draft,revision:state.revision});
-  draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);lastHistoryGroup=null;dirty=false;update();
+  draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);lastHistoryGroup=null;dirty=false;renderSections();update();
 }
 $('#editor').addEventListener('submit',event=>event.preventDefault());
 $('#editor').addEventListener('input',event=>{
@@ -302,7 +304,9 @@ function selectSection(id,field,{focus=false}={}){
 }
 function duplicateSection(id){
   const section=draft.sections.find(item=>item.id===id);if(!section || draft.sections.length>=MAX_SECTIONS)return;
-  const copy=structuredClone(section);copy.id='section-'+crypto.randomUUID();draft.sections.push(copy);copyRichSection(draft,id,copy.id);draft.design.blockOrder.splice(draft.design.blockOrder.indexOf(id)+1,0,copy.id);activeBlockId=copy.id;changed();renderSections();
+  const copy=structuredClone(section);copy.id='section-'+crypto.randomUUID();delete copy.anchor;draft.sections.push(copy);
+  if(copy.heading?.trim() || copy.buttonLabel?.trim())copy.anchor=sectionAnchors(draft.sections).get(copy.id);
+  copyRichSection(draft,id,copy.id);draft.design.blockOrder.splice(draft.design.blockOrder.indexOf(id)+1,0,copy.id);activeBlockId=copy.id;changed();renderSections();
 }
 function removeSection(id){draft.sections=draft.sections.filter(item=>item.id!==id);draft.design.blockOrder=draft.design.blockOrder.filter(item=>item!==id);changed();renderSections();}
 function canvasIntent(intent){
@@ -386,6 +390,10 @@ function renderSections(){
     textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
     textField('navLabel','Menu label (optional)','input',32,navigationLabel(section));
     fields.append(element('small','Add a short label to link to this section from the menu. Clear it to leave the section out of the menu. Hidden sections never appear in the menu.'));
+    const defaultAnchor=sectionAnchors(draft.sections).get(id);
+    textField('anchor','Section link','input',61,defaultAnchor===id && id.startsWith('section-')?'':defaultAnchor);
+    fields.querySelector('[data-section-field="anchor"]').placeholder='contact or reading-calendar';
+    fields.append(element('small','Use lowercase words and hyphens, without #. Leave blank to use the default link. New sections use their heading when saved. Changing a heading later keeps the saved link; changing this field changes the shareable link.'));
     textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':'Text (optional)','textarea',1400);
     if(section.type==='quote')textField('attribution','Attribution (optional)');
     if(section.type==='video'){

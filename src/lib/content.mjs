@@ -3,6 +3,7 @@ import { validateRichContent } from './rich-fields.mjs';
 import { resolve } from 'node:path';
 import { validateDesign, SECTION_OPTIONS, SECTION_TYPES, MAX_SECTIONS, normalizedSections, safeButtonUrl, youtubeVideoId } from './design.mjs';
 import { LABEL_FIELDS, labelsFor } from './labels.mjs';
+import { validateSectionAnchors } from './anchors.mjs';
 
 export const LIMITS = { heading: 100, description: 180, introduction: 400, bookNote: 300, membershipPrice: 80 };
 const own = (o, key) => Object.hasOwn(o, key);
@@ -70,7 +71,7 @@ export function validateContent(data, {draft = false} = {}) {
   if (!Array.isArray(data.sections) || data.sections.length > MAX_SECTIONS) errors.push(`Use at most ${MAX_SECTIONS} additional sections.`);
   else data.sections.forEach((section, i) => {
     const label = `Section ${i+1}`;
-    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','divider','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
+    if (!keys(section, ['id','anchor','type','heading','body','visible','width','align','tone','layout','divider','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
     if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
     if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','labels','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
     if(own(section,'navLabel'))string(section.navLabel,`${label} menu label`,32,false);
@@ -101,6 +102,7 @@ export function validateContent(data, {draft = false} = {}) {
   if(Array.isArray(data.sections) && data.sections.every(record)){
     const ids=normalizedSections(data.sections).map(section=>section.id);
     if(new Set(ids).size!==ids.length)errors.push('Each content block needs a unique identifier.');
+    errors.push(...validateSectionAnchors(normalizedSections(data.sections)));
     errors.push(...validateDesign(data));
   }
   if (keys(data.seo, ['title','description'], 'Search listing')) {
