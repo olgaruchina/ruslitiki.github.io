@@ -37,7 +37,7 @@ After setup, **Publish website** sends your reviewed page to GitHub, and GitHub 
 
 **FAQ motion:** answers gently slide open and fade in on the public page and Saved preview. They stay open in Edit page so you can work on their text. Visitors who prefer reduced motion get immediate opening and closing.
 
-**Screen sizes:** Phone uses up to 390px, Tablet up to 768px, and Desktop uses the available preview width. These views resize both the editing page and Saved preview; use **Open preview** for more room. Below 900px the page stacks its columns and replaces the desktop menu with a **Menu** button. Tap it to open the drawer from the right; use its close button to return to the page. Check both the menu and page in Phone view before publishing.
+**Screen sizes:** Phone uses up to 390px, Tablet up to 768px, and Desktop uses the available preview width. These views resize both the editing page and Saved preview; use **Open preview** for more room. Below 900px the page stacks its columns and replaces the desktop menu with a three-line button at the top right. Tap it to open the drawer from the right; use its close button to return to the page. The closed mobile menu has no visible label or surrounding rules; one line below the title and tagline separates them from the introduction. Check both the menu and page in Phone view before publishing.
 
 **Section menu:** in **Edit page**, click a menu label to edit its words and use the adjacent **↗** arrow to jump without losing unsaved edits. The Home arrow scrolls to the top. In **Saved preview**, labels navigate normally and Home opens the root homepage. These controls work in the desktop bar and mobile drawer.
 
