@@ -7,10 +7,12 @@ import RichText from './RichText.astro';
 import Navigation from './Navigation.astro';
 import { instagramProfile } from '../lib/content.mjs';
 import { designFor, normalizedSections } from '../lib/design.mjs';
+import { sectionAnchors } from '../lib/anchors.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 const {content,visualEditing=false}=Astro.props;
 const design=designFor(content);
 const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
+const anchors=sectionAnchors([...sections.values()]);
 const labels=labelsFor(content);
 const hostProfile=instagramProfile(content.hostInstagramUrl);
 const clubHandle=instagramProfile(content.instagramUrl)?.handle || labels.instagramFallback;
@@ -40,7 +42,7 @@ const structuredData = {
     </header>
     <Navigation content={content} visualEditing={visualEditing} />
     <main id="main">
-      {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock content={content} section={sections.get(id)} visualEditing={visualEditing} />)}
+      {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock content={content} section={sections.get(id)} anchor={anchors.get(id)} visualEditing={visualEditing} />)}
     </main>
     <footer class="footer">
       <p><RichText {...label('footerMotto')} /><BookImprint kind="stack" placement="footer" /></p>

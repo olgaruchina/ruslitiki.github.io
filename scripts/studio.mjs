@@ -177,7 +177,7 @@ const server=http.createServer(async(req,res)=>{
       const html=(await fs.readFile(path.join(UI,'index.html'),'utf8')).replace('STUDIO_TOKEN',TOKEN);
       res.writeHead(200,{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'});res.end(html);return;
     }
-    if(['/design.mjs','/labels.mjs','/rich-fields.mjs','/rich-text.mjs'].includes(url.pathname)){
+    if(['/design.mjs','/anchors.mjs','/labels.mjs','/rich-fields.mjs','/rich-text.mjs'].includes(url.pathname)){
       res.writeHead(200,{'Content-Type':'text/javascript; charset=utf-8','Cache-Control':'no-store'});
       res.end(await fs.readFile(path.join(ROOT,'src/lib',url.pathname.slice(1))));return;
     }

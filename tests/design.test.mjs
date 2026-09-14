@@ -104,6 +104,22 @@ const introductionNavigationContent=()=>{
   return content;
 };
 
+test('custom section links change navigation while keeping editing targets and saved links stable',()=>{
+  const content=introductionNavigationContent();
+  content.sections[0].anchor='club-introduction';
+  content.sections[1].anchor='our-format';
+  const contact={id:'section-00000000-0000-0000-0000-000000000001',type:'text',heading:'Reading calendar',body:'Dates.',visible:true,navLabel:'Calendar'};
+  content.sections.push(contact);content.design.blockOrder.push(contact.id);
+  const draft=editableContent(content);
+  const saved=draft.sections.at(-1);saved.heading='November dates';
+  assert.equal(saved.anchor,'reading-calendar');
+  assert.deepEqual(pageNavigation(draft)[1],{id:'club-introduction',label:'How it works',blockId:'how-the-club-works',field:'navLabel'});
+  assert.equal(pageNavigation(draft).at(-1).id,'reading-calendar');
+  assert.deepEqual(validateContent(draft),[]);
+  saved.anchor='club-introduction';
+  for(const options of [{},{draft:true}])assert.ok(validateContent(draft,options).some(error=>error.includes('another section link')));
+});
+
 test('How it works includes its adjacent visible introduction without a separate intro menu item',()=>{
   const content=introductionNavigationContent();
   assert.deepEqual(publicNavigation(content),[

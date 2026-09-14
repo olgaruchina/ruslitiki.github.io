@@ -55,8 +55,8 @@
 .composition-centered .first-book{text-align:center}
 .composition-centered .book-artwork,.composition-centered .book-note,.composition-centered figcaption{margin-left:auto;margin-right:auto}
 .content-block{margin-block:var(--section-space);min-width:0;overflow-wrap:anywhere}
-.content-block:where(#how-the-club-works){margin-top:0}
-#how-the-club-works[data-divider=auto]{border-top:1px solid var(--rule);padding-top:var(--section-space)}
+.content-block:where([data-block-id="how-the-club-works"]){margin-top:0}
+[data-block-id="how-the-club-works"][data-divider=auto]{border-top:1px solid var(--rule);padding-top:var(--section-space)}
 .block-width-reading{max-width:70ch}.block-width-narrow{max-width:48ch}.block-width-full{max-width:none}
 .block-align-left{text-align:left;margin-left:0;margin-right:auto}.block-align-center{text-align:center;margin-inline:auto}.block-align-right{text-align:right;margin-left:auto;margin-right:0}
 .content-block h2{font:400 clamp(1.65rem,3vw,2.4rem)/1.25 var(--heading-font);margin:0 0 1rem;text-wrap:balance}
@@ -85,11 +85,12 @@ ruslitiki-faq{display:block}
 .content-block:not(.block-faq):has(+ .block-faq){margin-bottom:1.5rem}
 .opening+.block-video{margin-top:0}
 .opening+.block-video[data-divider=auto]{border-top:1px solid var(--rule);padding-top:calc(var(--section-space)*.5)}
-#meet-ruslitiki:has(+ #how-the-club-works){margin-bottom:calc(var(--section-space)*.75)}
-#meet-ruslitiki + #how-the-club-works[data-divider=auto]{border-top:0;padding-top:0}
+[data-block-id="meet-ruslitiki"]:has(+ [data-block-id="how-the-club-works"]){margin-bottom:calc(var(--section-space)*.75)}
+[data-block-id="meet-ruslitiki"] + [data-block-id="how-the-club-works"][data-divider=auto]{border-top:0;padding-top:0}
 /* Keep dividers outside the content so columns and bordered panels retain their layout. */
-.content-block[data-divider=line],.block-faq+.content-block:not(.block-faq,#how-the-club-works)[data-divider=auto]{margin-top:var(--section-space)}
-.content-block[data-divider=line]::before,.block-faq+.content-block:not(.block-faq,#how-the-club-works)[data-divider=auto]::before{content:"";position:absolute;inset-inline:0;top:calc(var(--section-space)*-.5);border-top:1px solid var(--rule);pointer-events:none}
+.content-block[data-divider=line],.block-faq+.content-block:not(.block-faq,[data-block-id="how-the-club-works"])[data-divider=auto]{margin-top:var(--section-space)}
+.content-block[data-divider=line]::before,.block-faq+.content-block:not(.block-faq,[data-block-id="how-the-club-works"])[data-divider=auto]::before{content:"";position:absolute;inset-inline:0;top:calc(var(--section-space)*-.5);border-top:1px solid var(--rule);pointer-events:none}
+.section-anchor-legacy{position:absolute;top:0;left:0;width:0;height:0;scroll-margin-top:inherit;outline:none}
 .section-video{position:relative;width:100%;max-width:56rem;aspect-ratio:16/9;margin-top:1.5rem;background:var(--ink);border:2px solid var(--indigo)}
 .block-align-center .section-video{margin-inline:auto}
 .block-align-right .section-video{margin-left:auto}
