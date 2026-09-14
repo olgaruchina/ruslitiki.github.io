@@ -141,6 +141,33 @@
       "align": "left",
       "tone": "plain",
       "layout": "single"
+    },
+    {
+      "id": "section-bb4b953e-a094-43dd-baec-239fd87471e6",
+      "type": "text",
+      "heading": "Contact information",
+      "body": "All inquiries at olga@ruslitiki.com or Instagram @ruslitiki.",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single",
+      "divider": "line"
+    },
+    {
+      "id": "section-6a548e93-39c6-412f-a4fc-b3398c69a58d",
+      "type": "button",
+      "heading": "",
+      "body": "",
+      "visible": true,
+      "width": "reading",
+      "align": "left",
+      "tone": "plain",
+      "layout": "single",
+      "divider": "none",
+      "buttonLabel": "Contact us on Instagram",
+      "buttonUrl": "https://www.instagram.com/ruslitiki/",
+      "buttonKind": "primary"
     }
   ],
   "seo": {
