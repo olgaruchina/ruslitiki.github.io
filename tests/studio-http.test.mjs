@@ -17,6 +17,11 @@ test('local editor keeps drafts private, validates requests and builds the exact
     await fs.symlink(path.resolve('node_modules'),path.join(root,'node_modules'),'dir');
     const bin=path.join(root,'test-bin');await fs.mkdir(bin);
     await fs.writeFile(path.join(bin,'gh'),`#!${process.execPath}\nprocess.stderr.write('GitHub is not connected in this isolated test.');process.exit(1);\n`,{mode:0o700});
+    const olderDraft=JSON.parse(await fs.readFile(path.join(root,'content/site.json'),'utf8'));
+    olderDraft.email='';olderDraft.heading='Olga’s saved introduction';
+    olderDraft.sections=olderDraft.sections.filter(section=>!['section-bb4b953e-a094-43dd-baec-239fd87471e6','section-6a548e93-39c6-412f-a4fc-b3398c69a58d'].includes(section.id));
+    await fs.mkdir(path.join(root,'.studio'));
+    await fs.writeFile(path.join(root,'.studio/draft.json'),JSON.stringify(olderDraft));
     const reservation=net.createServer();
     await new Promise(resolve=>reservation.listen(0,'127.0.0.1',resolve));
     const port=reservation.address().port;
@@ -38,6 +43,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
       return {status:response.status,data:await response.json()};
     };
     const initial=await (await fetch(origin+'/api/state')).json();
+    assert.equal(initial.content.email,'olga@ruslitiki.com','An older saved draft receives the approved contact update before the editor loads.');
+    assert.equal(initial.content.heading,olderDraft.heading,'Startup preserves Olga’s other saved text.');
+    assert.equal(initial.content.sections.find(section=>section.id==='section-bb4b953e-a094-43dd-baec-239fd87471e6')?.divider,'line');
     const sourceBefore=await fs.readFile(path.join(root,'content/site.json'),'utf8');
     assert.equal((await api('/api/connect-publishing',{}, {'X-Studio-Token':'wrong'})).status,403);
     const connection=await api('/api/connect-publishing',{});

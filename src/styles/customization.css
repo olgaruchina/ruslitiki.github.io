@@ -55,7 +55,8 @@
 .composition-centered .first-book{text-align:center}
 .composition-centered .book-artwork,.composition-centered .book-note,.composition-centered figcaption{margin-left:auto;margin-right:auto}
 .content-block{margin-block:var(--section-space);min-width:0;overflow-wrap:anywhere}
-#how-the-club-works{border-top:1px solid var(--rule);margin-top:0;padding-top:var(--section-space)}
+.content-block:where(#how-the-club-works){margin-top:0}
+#how-the-club-works[data-divider=auto]{border-top:1px solid var(--rule);padding-top:var(--section-space)}
 .block-width-reading{max-width:70ch}.block-width-narrow{max-width:48ch}.block-width-full{max-width:none}
 .block-align-left{text-align:left;margin-left:0;margin-right:auto}.block-align-center{text-align:center;margin-inline:auto}.block-align-right{text-align:right;margin-left:auto;margin-right:0}
 .content-block h2{font:400 clamp(1.65rem,3vw,2.4rem)/1.25 var(--heading-font);margin:0 0 1rem;text-wrap:balance}
@@ -66,14 +67,14 @@
 .block-tone-panel{padding:clamp(1.25rem,3vw,2.5rem);border:1px solid var(--rule)}
 .block-tone-accent{padding:clamp(1.25rem,3vw,2.5rem);background:var(--indigo);color:var(--button-ink)}
 .block-tone-accent a:focus-visible,.block-tone-accent summary:focus-visible{outline-color:currentColor}
-.block-faq details{border-top:1px solid currentColor;padding-top:1.25rem}
+.block-faq details{padding-top:1.25rem}
 .block-faq summary{cursor:pointer;min-height:44px;font-size:var(--copy-size);font-weight:500;-webkit-tap-highlight-color:transparent}
 ruslitiki-faq{display:block}
 .faq-answer{display:flow-root}
 .block-faq .block-copy{margin-top:1rem}
 .block-faq{margin-block:0;padding-block:0 1.25rem}
-.block-faq details{border-top-color:var(--rule)}
-.block-faq+.block-faq details{border-top:0}
+.block-faq[data-divider=auto] details{border-top:1px solid var(--rule)}
+.block-faq+.block-faq[data-divider=auto] details{border-top:0}
 .rich-copy-formatted{white-space:normal}
 .rich-copy-formatted>p{margin:0}
 .rich-copy-formatted>ul,.rich-copy-formatted>ol{margin:0 0 1em;padding-inline-start:1.4em}
@@ -82,9 +83,13 @@ ruslitiki-faq{display:block}
 .rich-copy-formatted em,[data-rich-text] em,[data-rich-text] i{font-synthesis:style}
 .block-faq:has(+ :not(.block-faq)),.block-faq:last-child{margin-bottom:var(--section-space)}
 .content-block:not(.block-faq):has(+ .block-faq){margin-bottom:1.5rem}
-.opening+.block-video{margin-top:0;border-top:1px solid var(--rule);padding-top:calc(var(--section-space)*.5)}
+.opening+.block-video{margin-top:0}
+.opening+.block-video[data-divider=auto]{border-top:1px solid var(--rule);padding-top:calc(var(--section-space)*.5)}
 #meet-ruslitiki:has(+ #how-the-club-works){margin-bottom:calc(var(--section-space)*.75)}
-#meet-ruslitiki + #how-the-club-works{border-top:0;padding-top:0}
+#meet-ruslitiki + #how-the-club-works[data-divider=auto]{border-top:0;padding-top:0}
+/* Keep dividers outside the content so columns and bordered panels retain their layout. */
+.content-block[data-divider=line],.block-faq+.content-block:not(.block-faq,#how-the-club-works)[data-divider=auto]{margin-top:var(--section-space)}
+.content-block[data-divider=line]::before,.block-faq+.content-block:not(.block-faq,#how-the-club-works)[data-divider=auto]::before{content:"";position:absolute;inset-inline:0;top:calc(var(--section-space)*-.5);border-top:1px solid var(--rule);pointer-events:none}
 .section-video{position:relative;width:100%;max-width:56rem;aspect-ratio:16/9;margin-top:1.5rem;background:var(--ink);border:2px solid var(--indigo)}
 .block-align-center .section-video{margin-inline:auto}
 .block-align-right .section-video{margin-left:auto}

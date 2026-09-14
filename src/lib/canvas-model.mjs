@@ -4,7 +4,7 @@ import { LABEL_FIELDS, labelsFor } from './labels.mjs';
 export function insertSection(content,type,before=null,id='section-'+crypto.randomUUID()) {
   if(typeof type!=='string' || !Object.hasOwn(SECTION_TYPES,type) || content.sections.length>=MAX_SECTIONS)return null;
   if(before!==null && !content.design.blockOrder.includes(before))return null;
-  const section={id,type,heading:'',body:'',visible:true,width:'reading',align:'left',tone:'plain',layout:'single'};
+  const section={id,type,heading:'',body:'',visible:true,width:'reading',align:'left',tone:'plain',layout:'single',divider:['faq','button'].includes(type)?'auto':'line'};
   if(type==='quote')section.attribution='';
   if(type==='image')Object.assign(section,{image:'',imageAlt:'',imageWidth:0,imageHeight:0,caption:'',sourceUrl:'',imageLayout:'left',imageRatio:'auto'});
   if(type==='button')Object.assign(section,{buttonLabel:'',buttonUrl:'',buttonKind:'primary'});
