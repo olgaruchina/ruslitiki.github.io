@@ -29,6 +29,24 @@ test('inline text cannot change arbitrary fields and over-limit pastes are prese
   assert.equal(setCanvasText(content,'opening','heading','Read together.'),true);assert.deepEqual(validateContent(content),[]);
 });
 
+test('new sections get separators while questions and buttons stay grouped; choices survive saving and reordering',async()=>{
+  const folder=await fs.mkdtemp(path.join(os.tmpdir(),'ruslitiki-dividers-'));
+  try{
+    const original=readContent();await atomicJson(path.join(folder,'draft.json'),original);
+    const content=editableContent(original);content.sections=[];content.design.blockOrder=['opening'];
+    for(const type of ['text','image','video','quote','faq','button']){
+      const section=insertSection(content,type,null,'section-'+type);
+      assert.equal(section.divider,['faq','button'].includes(type)?'auto':'line');
+    }
+    content.sections[0].divider='none';
+    moveSectionBefore(content,'section-text',null);
+    await saveDraft(folder,content,digest(original));
+    const restored=editableContent(await json(path.join(folder,'draft.json')));
+    assert.deepEqual(restored,content);
+    assert.equal(restored.sections[0].divider,'none');
+  }finally{await fs.rm(folder,{recursive:true,force:true});}
+});
+
 test('the signup price can be edited or hidden inline without changing other fields',()=>{
   const content=editableContent(readContent());delete content.membershipPrice;
   assert.equal(editableField(content,'opening','membershipPrice').max,80);

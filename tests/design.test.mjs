@@ -12,9 +12,23 @@ test('legacy content receives stable layout defaults without changing saved data
   assert.equal(JSON.stringify(content),before);
   assert.deepEqual(editable.design,{...DESIGN_DEFAULTS,blockOrder:['opening','section-1']});
   assert.equal(editable.sections[0].id,'section-1');
+  assert.equal(editable.sections[0].divider,'auto');
   assert.deepEqual(editableContent(editable),editable);
   assert.deepEqual(validateContent(content),[]);
   assert.deepEqual(validateContent(editable),[]);
+});
+
+test('section separators accept explicit overrides and reject unsupported values in drafts and releases',()=>{
+  const content=readContent();
+  for(const value of ['auto','line','none']){
+    content.sections[0].divider=value;
+    for(const options of [{},{draft:true}])assert.deepEqual(validateContent(content,options),[]);
+    assert.equal(editableContent(content).sections[0].divider,value);
+  }
+  for(const value of [true,false,null,[],{},'solid','line;display:none']){
+    content.sections[0].divider=value;
+    for(const options of [{},{draft:true}])assert.ok(validateContent(content,options).some(error=>error.includes('supported divider')));
+  }
 });
 
 test('background book drawings default off for older drafts and accept only boolean settings',()=>{

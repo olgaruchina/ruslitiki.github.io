@@ -407,8 +407,9 @@ function renderSections(){
     }
     buttons.append(selectControl('','Button appearance',SECTION_OPTIONS.buttonKind,section.buttonKind || 'primary',value=>{section.buttonKind=value;changed();}));fields.append(buttons);
     const appearance=element('div');appearance.className='design-controls';
-    for(const [key,label] of [['width','Block width'],['align','Alignment'],['tone','Background'],...(section.type==='text'?[['layout','Text layout']]:[])])appearance.append(selectControl('',label,SECTION_OPTIONS[key],section[key],value=>{section[key]=value;changed();}));
+    for(const [key,label] of [['width','Block width'],['align','Alignment'],['tone','Background'],['divider','Separator above'],...(section.type==='text'?[['layout','Text layout']]:[])])appearance.append(selectControl('',label,SECTION_OPTIONS[key],section[key],value=>{section[key]=value;changed();}));
     fields.append(appearance);
+    fields.append(element('small','Separator above: Show line adds a horizontal divider; No line removes it. Automatic keeps grouped sections together and separates the next section after the FAQs.'));
     const controls2=element('div');controls2.className='section-controls';
     const visibility=element('label');const checkbox=element('input');checkbox.type='checkbox';checkbox.checked=section.visible;
     checkbox.addEventListener('change',()=>{section.visible=checkbox.checked;changed();name.textContent=(section.heading || SECTION_TYPES[section.type])+(section.visible?'':' (hidden)');});visibility.append(checkbox,document.createTextNode('Show on page'));controls2.append(visibility);

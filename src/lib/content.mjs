@@ -70,7 +70,7 @@ export function validateContent(data, {draft = false} = {}) {
   if (!Array.isArray(data.sections) || data.sections.length > MAX_SECTIONS) errors.push(`Use at most ${MAX_SECTIONS} additional sections.`);
   else data.sections.forEach((section, i) => {
     const label = `Section ${i+1}`;
-    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
+    if (!keys(section, ['id','type','heading','body','visible','width','align','tone','layout','divider','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
     if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
     if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','labels','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
     if(own(section,'navLabel'))string(section.navLabel,`${label} menu label`,32,false);

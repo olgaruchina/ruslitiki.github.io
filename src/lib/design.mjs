@@ -23,6 +23,7 @@ export const PALETTES = {
   night:{label:'Evening reading',background:'#161b2c',ink:'#f5f7fc',accent:'#c3d7ff'},
 };
 export const SECTION_OPTIONS = {
+  divider:{auto:'Automatic',line:'Show line',none:'No line'},
   width:{reading:'Reading width',full:'Full width',narrow:'Narrow'},
   align:{left:'Left',center:'Centre',right:'Right'},
   tone:{plain:'Plain',panel:'Bordered',accent:'Accent colour'},
@@ -56,7 +57,7 @@ export function safeButtonUrl(value) {
 }
 
 export function normalizedSections(sections=[]) {
-  return sections.map((section,index)=>({width:'reading',align:'left',tone:'plain',layout:'single',...section,id:section.id || `section-${index+1}`}));
+  return sections.map((section,index)=>({width:'reading',align:'left',tone:'plain',layout:'single',divider:'auto',...section,id:section.id || `section-${index+1}`}));
 }
 export function designFor(content) {
   const ids=normalizedSections(content.sections).map(section=>section.id);
