@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readContent, validateContent } from '../src/lib/content.mjs';
+import { readContent, validateContent, showWaitlistMembershipNote } from '../src/lib/content.mjs';
 import { DEFAULT_LABELS } from '../src/lib/labels.mjs';
 import { plainText } from '../src/lib/rich-text.mjs';
 import { atomicJson, json } from '../scripts/studio-store.mjs';
@@ -51,6 +51,8 @@ test('open membership copy updates exact stale text and preserves the owner’s 
   assert.equal(updated.heading,original.heading);
   assert.ok(!membership.body.includes('Joining the waitlist'));
   assert.ok(!membership.body.includes('The price will be indicated in your local currency'));
+  updated.joinMode='waitlist';
+  assert.equal(showWaitlistMembershipNote(updated,membership),true);
   assert.equal(updated.richText['membership:body'].blocks[3].type,'bullet');
   assert.equal(updated.richText['membership:body'].blocks[3].runs[0].bold,true);
   assert.equal(plainText(updated.richText['membership:body']),membership.body);

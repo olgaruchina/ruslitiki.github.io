@@ -119,6 +119,8 @@ ruslitiki-faq{display:block}
 .content-block[data-block-id="membership"].block-layout-split{max-width:90ch}
 .content-block[data-block-id="membership"].block-tone-panel{border:0;border-top:1px solid var(--rule);padding:clamp(1.5rem,3vw,2.25rem) 0 0}
 .content-block[data-block-id="membership"]>.join-button{margin-bottom:1.5rem}
+.content-block[data-block-id="membership"]>.membership-waitlist-note{grid-column:1/-1;max-width:55ch;margin:1.5rem 0 0;font:400 1rem/1.6 var(--body-font)}
+.membership-waitlist-note>p{margin:0}
 .content-block[data-block-id="membership"] .block-copy>p:first-child{font-size:max(1.125rem,var(--copy-size));font-weight:500;line-height:1.5}
 .content-block[data-block-id="membership"].block-layout-split:has(>.block-copy>ul){max-width:none}
 .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul){display:grid;grid-template-columns:minmax(0,1fr);align-items:start;column-gap:clamp(2rem,6vw,6rem);row-gap:.75rem}

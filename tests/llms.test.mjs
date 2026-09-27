@@ -13,6 +13,7 @@ test('AI overview includes the configured signup price and omits absent or empty
     assert.ok(!renderLlms(content, site).includes('Membership price:'));
   }
   content.membershipPrice='$15 USD / month';
+  assert.ok(renderLlms(content,site).includes('Joining the waitlist is free. Paid membership is a separate step through Patreon.'));
   for(const status of ['coming-soon','membership-open','reading']){
     content.status=status;content.joinMode=status==='coming-soon'?'waitlist':'patreon';content.patreonUrl='https://www.patreon.com/ruslitiki';
     const output=renderLlms(content, site);

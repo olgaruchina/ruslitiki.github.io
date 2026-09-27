@@ -48,7 +48,7 @@
       "id": "membership",
       "type": "text",
       "heading": "Membership",
-      "body": "Standard membership: $15 USD per month\nEarly birds: $9.99 USD per month\n\nBoth include the weekly videos, reading guides and materials, the member chat and the guided discussion at the end of the month. Joining the waitlist is free; paid membership is a separate step on Patreon.",
+      "body": "Membership fee: $15 USD per month\n\nMembership includes the weekly videos, reading guides and materials, the member chat and the guided discussion at the end of the month.",
       "visible": true,
       "width": "full",
       "align": "left",

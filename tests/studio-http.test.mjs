@@ -60,6 +60,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
     const joinDestinations=html=>[...html.matchAll(/<a class="join-button" href="([^"]+)"/g)].map(match=>match[1]);
     assert.deepEqual(joinDestinations(canvasHtml),Array(2).fill(initial.content.waitlistUrl),'The hero and Membership use the current waitlist link.');
+    assert.match(canvasHtml,/data-edit-field="waitlistMembershipNote" data-rich-text="block"/,'The waitlist note supports formatted editing while the waitlist is selected.');
     assert.match(canvasHtml,/<footer class="footer">[\s\S]*?data-edit-field="footerMotto"/,'The footer motto is available in the visual editor.');
     assert.match(canvasHtml,/<section id="membership"[^>]*>[\s\S]*?<a class="join-button"/,'Membership includes its own join button.');
     assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
@@ -77,10 +78,12 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(canvasTwoHtml.includes('A different unsaved tab'));
     assert.ok(!canvasTwoHtml.includes('class="status"'),'The masthead does not repeat membership status.');
     assert.deepEqual(joinDestinations(canvasTwoHtml),Array(2).fill(tabTwo.patreonUrl),'Each join button switches to the editor’s Patreon destination.');
+    assert.ok(!canvasTwoHtml.includes('data-edit-field="waitlistMembershipNote"'),'The waitlist note does not crowd the open-membership version.');
     const waitlistAgain={...tabTwo,joinMode:'waitlist'};
     const canvasWaitlist=await api('/api/canvas',{sequence:1,generation:1,content:waitlistAgain});assert.equal(canvasWaitlist.status,200);
     const waitlistHtml=await (await fetch(canvasWaitlist.data.url)).text();
     assert.deepEqual(joinDestinations(waitlistHtml),Array(2).fill(tabTwo.waitlistUrl),'The editor can return both buttons to the waitlist without changing the club phase.');
+    assert.match(waitlistHtml,/data-edit-field="waitlistMembershipNote"/);
     assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('data-book-imprints="off"'),'Drawing visibility remains private to each canvas snapshot.');
     assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));
     const badNonce=new URL(canvasOne.data.url);badNonce.searchParams.set('nonce','wrong');

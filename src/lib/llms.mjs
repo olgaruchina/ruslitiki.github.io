@@ -1,4 +1,4 @@
-import { ctaFor, formatDate, instagramProfile } from './content.mjs';
+import { ctaFor, formatDate, instagramProfile, showWaitlistMembershipNote } from './content.mjs';
 import { designFor, normalizedSections, youtubeVideoId } from './design.mjs';
 import { labelsFor } from './labels.mjs';
 import { sectionAnchors } from './anchors.mjs';
@@ -31,6 +31,7 @@ export function renderLlms(content, site) {
     const section = sections.get(id);
     if (!section?.visible) continue;
     const details = [section.body];
+    if (showWaitlistMembershipNote(content,section)) details.push(labels.waitlistMembershipNote);
     if (section.type === 'quote' && section.attribution) details.push(`Attribution: ${section.attribution}`);
     if (section.type === 'image' && section.caption) details.push(section.caption);
     lines.push(link(section.heading || section.buttonLabel, absolute(`/#${anchors.get(id)}`), details.filter(Boolean).join(' ')));

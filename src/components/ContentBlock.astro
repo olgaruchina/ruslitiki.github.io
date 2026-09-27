@@ -5,11 +5,15 @@ import SectionVideo from './SectionVideo.astro';
 import BookImprint from './BookImprint.astro';
 import RichText from './RichText.astro';
 import JoinButton from './JoinButton.astro';
+import { showWaitlistMembershipNote } from '../lib/content.mjs';
+import { labelsFor } from '../lib/labels.mjs';
 const {content,section,anchor=section.id,visualEditing=false}=Astro.props;
 const imageLayout=section.imageLayout || 'left';
 const rich=field=>({content,id:section.id,field,value:section[field]??'',visualEditing});
 const hasButton=section.type==='button' || !!section.buttonLabel || !!section.buttonUrl;
 const isMembership=section.id==='membership';
+const waitlistNote=showWaitlistMembershipNote(content,section);
+const labels=labelsFor(content);
 ---
 <section id={anchor} tabindex="-1" class:list={['content-block',`block-${section.type}`,`block-width-${section.width}`,`block-align-${section.align}`,`block-tone-${section.tone}`,`block-layout-${section.layout}`,{'is-editing':visualEditing}]} data-divider={section.divider ?? 'auto'} data-block-id={section.id} data-block-label={visualEditing?(section.heading || section.type):undefined}>
   {anchor!==section.id && <span id={section.id} class="section-anchor-legacy" tabindex="-1" />}
@@ -23,7 +27,7 @@ const isMembership=section.id==='membership';
     {imageLayout!=='right' && <SectionImage content={content} section={section} visualEditing={visualEditing} />}
     <div><RichText {...rich('heading')} as="h2" data-placeholder="Heading" />{(section.body || visualEditing) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}</div>
     {imageLayout==='right' && <SectionImage content={content} section={section} visualEditing={visualEditing} />}
-  </div> : <>{(section.heading || section.type!=='button') && <RichText {...rich('heading')} as="h2" data-placeholder="Heading" />}{isMembership && <JoinButton content={content} visualEditing={visualEditing} />}{(section.body || (visualEditing && section.type==='text')) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}</>}
+  </div> : <>{(section.heading || section.type!=='button') && <RichText {...rich('heading')} as="h2" data-placeholder="Heading" />}{isMembership && <JoinButton content={content} visualEditing={visualEditing} />}{(section.body || (visualEditing && section.type==='text')) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}{waitlistNote && <RichText content={content} id="labels" field="waitlistMembershipNote" value={labels.waitlistMembershipNote} as="div" mode="block" class="membership-waitlist-note" visualEditing={visualEditing} />}</>}
   {hasButton && <SectionButton content={content} section={section} visualEditing={visualEditing} />}
   {section.id==='meet-ruslitiki' && <BookImprint kind="open" placement="video" />}
   {section.id==='how-the-club-works' && <BookImprint kind="stack" placement="how" />}
