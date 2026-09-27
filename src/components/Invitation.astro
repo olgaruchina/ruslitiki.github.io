@@ -1,16 +1,15 @@
 ---
-import { ctaFor, formatDate } from '../lib/content.mjs';
+import { formatDate } from '../lib/content.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 import RichText from './RichText.astro';
+import JoinButton from './JoinButton.astro';
 const {content,visualEditing=false}=Astro.props;
-const action=ctaFor(content);
 const labels=labelsFor(content);
-const ctaField=content.status==='coming-soon'?'waitlistCta':'patreonCta';
 ---
 <div class="invitation" data-part="introduction">
   <RichText content={content} id="opening" field="heading" value={content.heading} as="h1" visualEditing={visualEditing} />
   <RichText content={content} id="opening" field="introduction" value={content.introduction} as="div" mode="block" class="introduction" visualEditing={visualEditing} />
-  <a class="join-button" href={action.url} target="_blank" rel="noopener" title={labels.opensNewTab}><RichText content={content} id="labels" field={ctaField} value={action.label} class="join-label" visualEditing={visualEditing} /><span aria-hidden="true">↗</span></a>
+  <JoinButton content={content} visualEditing={visualEditing} />
   <div class="signup-details">
     <dl class="dates">
       <div><RichText content={content} id="labels" field="membershipOpens" value={labels.membershipOpens} as="dt" visualEditing={visualEditing} /><dd><time datetime={content.openingDate} data-edit-date={visualEditing?'openingDate':undefined} data-edit-region={visualEditing?'dates':undefined} tabindex={visualEditing?0:undefined} role={visualEditing?'button':undefined}>{formatDate(content.openingDate)}</time></dd></div>

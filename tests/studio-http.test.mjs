@@ -57,6 +57,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(canvasOne.status,200,JSON.stringify(canvasOne.data));
     const firstCanvas=await fetch(canvasOne.data.url);assert.equal(firstCanvas.status,200);
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
+    const joinDestinations=html=>[...html.matchAll(/<a class="join-button" href="([^"]+)"/g)].map(match=>match[1]);
+    assert.deepEqual(joinDestinations(canvasHtml),Array(2).fill(initial.content.waitlistUrl),'The hero and Membership use the current waitlist link.');
+    assert.match(canvasHtml,/<section id="membership"[^>]*>[\s\S]*?<a class="join-button"/,'Membership includes its own join button.');
     assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
     assert.match(canvasHtml,/<span id="section-bb4b953e-a094-43dd-baec-239fd87471e6" class="section-anchor-legacy" tabindex="-1"/,'The original Contact bookmark still has a focusable destination.');
     assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');
@@ -65,10 +68,12 @@ test('local editor keeps drafts private, validates requests and builds the exact
     for(const route of ['/__canvas/rich-text-editor.js','/__canvas/rich-text.mjs'])assert.equal((await fetch(new URL(route,canvasOne.data.origin))).status,200);
     assert.match(canvasHtml,/<span\b[^>]*data-edit-field="description"[^>]*>[^<]*<\/span>/,'The editable description must not include the host link.');
     assert.ok(canvasHtml.includes('href="https://www.instagram.com/books_olgaruchina/"'));
-    const tabTwo={...initial.content,heading:'A different unsaved tab',design:{...initial.content.design,bookImprints:false}};
+    const tabTwo={...initial.content,heading:'A different unsaved tab',status:'membership-open',patreonUrl:'https://www.patreon.com/c/books_olgaruchina/membership',design:{...initial.content.design,bookImprints:false}};
     const canvasTwo=await api('/api/canvas',{sequence:1,generation:1,content:tabTwo});assert.equal(canvasTwo.status,200);
     assert.notEqual(canvasTwo.data.session,canvasOne.data.session);
-    assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('A different unsaved tab'));
+    const canvasTwoHtml=await (await fetch(canvasTwo.data.url)).text();
+    assert.ok(canvasTwoHtml.includes('A different unsaved tab'));
+    assert.deepEqual(joinDestinations(canvasTwoHtml),Array(2).fill(tabTwo.patreonUrl),'Each join button switches to the editor’s Patreon destination.');
     assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('data-book-imprints="off"'),'Drawing visibility remains private to each canvas snapshot.');
     assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));
     const badNonce=new URL(canvasOne.data.url);badNonce.searchParams.set('nonce','wrong');

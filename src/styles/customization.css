@@ -17,7 +17,7 @@
   .section-nav li{flex:none}
   .content-block,#first-book-title{scroll-margin-top:6rem}
 }
-.wordmark{width:75%;max-width:calc(var(--logo-width)*.75);margin-bottom:1rem}
+.wordmark{width:68%;max-width:calc(var(--logo-width)*.68);margin-bottom:1rem}
 .wordmark-original{background:var(--blue)}
 .opening{padding-block:calc(var(--section-space)*.75) var(--section-space);align-items:start;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 .opening>*,.image-block>*{min-width:0}
@@ -60,7 +60,7 @@
 .block-width-reading{max-width:70ch}.block-width-narrow{max-width:48ch}.block-width-full{max-width:none}
 .block-align-left{text-align:left;margin-left:0;margin-right:auto}.block-align-center{text-align:center;margin-inline:auto}.block-align-right{text-align:right;margin-left:auto;margin-right:0}
 .content-block h2{font:400 clamp(1.65rem,3vw,2.4rem)/1.25 var(--heading-font);margin:0 0 1rem;text-wrap:balance}
-.block-copy{white-space:pre-line;font:400 var(--copy-size)/1.7 var(--body-font)}
+.block-copy{white-space:pre-line;font-family:var(--body-font);font-size:max(1rem,calc(var(--copy-size)*.9));font-weight:400;line-height:1.65}
 .block-width-full .block-copy{max-width:70ch}
 .block-width-full.block-align-center .block-copy{margin-inline:auto}
 .block-width-full.block-align-right .block-copy{margin-left:auto}
@@ -77,6 +77,8 @@ ruslitiki-faq{display:block}
 .block-faq+.block-faq[data-divider=auto] details{border-top:0}
 .rich-copy-formatted{white-space:normal}
 .rich-copy-formatted>p{margin:0}
+.content-block:not(.is-editing) .block-copy.rich-copy-formatted>p:has(>br:only-child){display:none}
+.content-block:not(.is-editing) .block-copy.rich-copy-formatted>:is(p,ul,ol)+:is(p,ul,ol){margin-top:.85rem}
 .rich-copy-formatted>ul,.rich-copy-formatted>ol{margin:0 0 1em;padding-inline-start:1.4em}
 .rich-copy-formatted>p:last-child,.rich-copy-formatted>ul:last-child,.rich-copy-formatted>ol:last-child{margin-bottom:0}
 .rich-copy-formatted li+li{margin-top:.3em}
@@ -114,12 +116,20 @@ ruslitiki-faq{display:block}
 .section-image.ratio-square img{aspect-ratio:1;height:auto;object-fit:cover}
 .section-image.ratio-portrait img{aspect-ratio:3/4;height:auto;object-fit:cover}
 .section-image figcaption{font:400 .875rem/1.6 var(--body-font);margin-top:.75rem}
+.content-block[data-block-id="membership"].block-layout-split{max-width:90ch}
+.content-block[data-block-id="membership"].block-tone-panel{border:0;border-top:1px solid var(--rule);padding:clamp(1.5rem,3vw,2.25rem) 0 0}
+.content-block[data-block-id="membership"]>.join-button{margin-bottom:1.5rem}
+.content-block[data-block-id="membership"] .block-copy>p:first-child{font-size:max(1.125rem,var(--copy-size));font-weight:500;line-height:1.5}
 @media(min-width:900px){
   .block-layout-columns.block-text .block-copy{columns:18rem 2;column-gap:2.5rem}
   .block-text.block-layout-split{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);column-gap:clamp(2rem,5vw,5rem);align-items:start}
   .block-text.block-layout-split>h2{grid-column:1;grid-row:1;max-width:16ch;margin-bottom:0}
   .block-text.block-layout-split>.block-copy{grid-column:2;grid-row:1}
   .block-text.block-layout-split>.section-button{grid-column:2;justify-self:start}
+  .block-text.block-layout-split[data-block-id="membership"]{display:grid;grid-template-columns:minmax(0,1fr) max-content;column-gap:clamp(2rem,4vw,4rem);row-gap:.75rem}
+  .block-text.block-layout-split[data-block-id="membership"]>h2{grid-column:1;grid-row:1;max-width:none}
+  .block-text.block-layout-split[data-block-id="membership"]>.block-copy{grid-column:1;grid-row:2;max-width:54ch}
+  .block-text.block-layout-split[data-block-id="membership"]>.join-button{grid-column:2;grid-row:1 / span 2;align-self:start;margin:0}
 }
 @media(max-width:899.98px){
   .section-nav ul{column-gap:.5rem}
@@ -135,7 +145,7 @@ ruslitiki-faq{display:block}
 
 .book-imprint{display:none;pointer-events:none;user-select:none;background:currentColor;opacity:.21;-webkit-mask:var(--book-mask) center/contain no-repeat;mask:var(--book-mask) center/contain no-repeat}
 .masthead,.content-block{position:relative}
-.masthead{--wordmark-half-width:min(37.5%,calc(var(--logo-width)*.375))}
+.masthead{--wordmark-half-width:min(34%,calc(var(--logo-width)*.34))}
 [data-book-imprints=on] .imprint-header,[data-book-imprints=on] .imprint-footer{display:block}
 .imprint-header{position:absolute;left:calc(50% + var(--wordmark-half-width) + .25rem);top:0;width:min(clamp(2rem,9.2vw,8rem),calc(50% - var(--wordmark-half-width) - .25rem));aspect-ratio:1;transform:rotate(9deg)}
 .footer>p{display:flex;align-items:center;gap:1rem}
@@ -143,9 +153,11 @@ ruslitiki-faq{display:block}
 [data-book-imprints=on] .block-video.block-align-center>.imprint-video{display:block;position:absolute;left:.5rem;top:50%;width:clamp(0px,calc((100% - 56rem)/2 - 1.5rem),7rem);aspect-ratio:1;transform:rotate(-12deg)}
 @media(min-width:900px){
   [data-book-imprints=on] .block-text.block-layout-split:has(>.book-imprint)>.block-copy{grid-row:1 / span 2}
+  [data-book-imprints=on] .block-text.block-layout-split[data-block-id="membership"]>.block-copy{grid-row:2}
   [data-book-imprints=on] .block-text.block-layout-split:has(>.book-imprint)>.section-button{grid-row:3}
   [data-book-imprints=on] .block-text.block-layout-split>.imprint-how,[data-book-imprints=on] .block-text.block-layout-split>.imprint-membership{display:block;grid-column:1;grid-row:2;align-self:end;justify-self:start;width:min(9.25rem,100%);aspect-ratio:37/32;margin-top:1rem}
   .imprint-how{transform:rotate(-9deg)}
   .imprint-membership{transform:rotate(8deg)}
+  [data-book-imprints=on] .block-text.block-layout-split[data-block-id="membership"]>.imprint-membership{position:absolute;top:8rem;right:0;grid-column:auto;grid-row:auto;margin:0;width:8rem}
 }
-@media(max-width:700px){.imprint-footer{width:3.125rem;height:2rem}}
+@media(max-width:700px){.wordmark{width:75%;max-width:calc(var(--logo-width)*.75)}.masthead{--wordmark-half-width:min(37.5%,calc(var(--logo-width)*.375))}.imprint-footer{width:3.125rem;height:2rem}}
