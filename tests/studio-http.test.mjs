@@ -203,9 +203,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
       assert.ok(!bookFeature.includes('class="dates"'),'The launch dates belong with signup, not the book.');
       assert.equal((html.match(/class="dates"/g)||[]).length,1);
       const hero=html.match(/<div class="hero-action">([\s\S]*?)<\/a><\/div>/)?.[1];
-      assert.ok(hero && hero.indexOf('membership-price')<hero.indexOf('class="join-button"'),'Every composition keeps the price immediately before its signup action.');
+      assert.ok(hero && hero.indexOf('membership-price')<hero.indexOf('class="dates"') && hero.indexOf('class="dates"')<hero.indexOf('class="join-button"'),'Every composition groups the price and opening date before the signup action.');
       assert.equal((hero.match(/class="membership-price"/g)||[]).length,1,'The hero price appears once.');
-      assert.match(html,/<\/a><\/div>\s*<div class="signup-details">\s*<dl class="dates">/,'Dates follow the price and action group.');
+      assert.match(hero,/<div class="signup-details">[\s\S]*<dl class="dates">[\s\S]*<\/dl><\/div>\s*<a class="join-button"/,'Price and date share one group above the joining button.');
       assert.ok(html.includes('Read with Ruslitiki') && html.includes('section-button-outline'));
       const customButton=html.match(/<a\b[^>]*class="section-button [^"]*"[^>]*>/)[0];
       assert.equal(customButton.includes('target="_blank"'),composition!=='split','External buttons open a new tab; section buttons stay on the page.');

@@ -11,12 +11,12 @@ const ctaField=joinModeFor(content)==='waitlist'?'waitlistCta':'patreonCta';
   <RichText content={content} id="opening" field="heading" value={content.heading} as="h1" visualEditing={visualEditing} />
   <RichText content={content} id="opening" field="introduction" value={content.introduction} as="div" mode="block" class="introduction" visualEditing={visualEditing} />
   <div class="hero-action">
-    {(content.membershipPrice?.trim() || visualEditing) && <p class="membership-price"><RichText content={content} id="labels" field="membership" value={labels.membership} visualEditing={visualEditing} /><RichText content={content} id="opening" field="membershipPrice" value={content.membershipPrice??''} as="strong" visualEditing={visualEditing} data-placeholder="Add a membership price" /></p>}
+    <div class="signup-details">
+      {(content.membershipPrice?.trim() || visualEditing) && <p class="membership-price"><RichText content={content} id="labels" field="membership" value={labels.membership} visualEditing={visualEditing} /><RichText content={content} id="opening" field="membershipPrice" value={content.membershipPrice??''} as="strong" visualEditing={visualEditing} data-placeholder="Add a membership price" /></p>}
+      <dl class="dates">
+        <div><RichText content={content} id="labels" field="membershipOpens" value={labels.membershipOpens} as="dt" visualEditing={visualEditing} /><dd><time datetime={content.openingDate} data-edit-date={visualEditing?'openingDate':undefined} data-edit-region={visualEditing?'dates':undefined} tabindex={visualEditing?0:undefined} role={visualEditing?'button':undefined}>{formatDate(content.openingDate)}</time></dd></div>
+      </dl>
+    </div>
     <a class="join-button" href={action.url} target="_blank" rel="noopener" title={labels.opensNewTab}><RichText content={content} id="labels" field={ctaField} value={action.label} class="join-label" visualEditing={visualEditing} /><span aria-hidden="true">↗</span></a>
-  </div>
-  <div class="signup-details">
-    <dl class="dates">
-      <div><RichText content={content} id="labels" field="membershipOpens" value={labels.membershipOpens} as="dt" visualEditing={visualEditing} /><dd><time datetime={content.openingDate} data-edit-date={visualEditing?'openingDate':undefined} data-edit-region={visualEditing?'dates':undefined} tabindex={visualEditing?0:undefined} role={visualEditing?'button':undefined}>{formatDate(content.openingDate)}</time></dd></div>
-    </dl>
   </div>
 </div>
