@@ -394,6 +394,7 @@ function renderSections(){
     textField('anchor','Section link','input',61,defaultAnchor===id && id.startsWith('section-')?'':defaultAnchor);
     fields.querySelector('[data-section-field="anchor"]').placeholder='contact or reading-calendar';
     fields.append(element('small','Use lowercase words and hyphens, without #. Leave blank to use the default link. New sections use their heading when saved. Changing a heading later keeps the saved link; changing this field changes the shareable link.'));
+    if(section.type==='text' || section.type==='button')textField('lead',section.type==='button'?'Text before link (optional)':'Lead line (optional)');
     textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':'Text (optional)','textarea',1400);
     if(section.type==='quote')textField('attribution','Attribution (optional)');
     if(section.type==='video'){

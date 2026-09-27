@@ -1,8 +1,9 @@
+import {readContent} from './fixtures/legacy-content.mjs';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {youtubeVideoId,editableContent} from '../src/lib/design.mjs';
 import {insertSection} from '../src/lib/canvas-model.mjs';
-import {readContent,validateContent} from '../src/lib/content.mjs';
+import {validateContent} from '../src/lib/content.mjs';
 
 test('YouTube links accept supported share formats but cannot supply arbitrary embed sources',()=>{
   const id='M7lc1UVf-VE';

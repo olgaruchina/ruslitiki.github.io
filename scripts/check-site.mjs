@@ -23,7 +23,7 @@ assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must no
 assert.ok(!home.includes('googletagmanager') && !home.includes('google-analytics'),'Unexpected tracking code.');
 const menu=home.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
 assert.ok(menu,'The section menu is missing.');
-assert.match(menu,/<a\b[^>]*href="\/"[^>]*>/,'The home menu link must return to the root route.');
+assert.match(home,/<a\b[^>]*href="#main"[^>]*class="wordmark/,'The wordmark must return to the main content.');
 for(const [,id] of menu.matchAll(/href="#([a-z][a-z0-9-]*)"/g)){
   assert.equal([...home.matchAll(new RegExp(`\\sid="${id}"`,'g'))].length,1,`Menu target ${id} must exist exactly once.`);
 }

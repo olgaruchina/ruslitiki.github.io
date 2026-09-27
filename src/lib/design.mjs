@@ -77,15 +77,12 @@ export function pageNavigation(content) {
   const anchors=sectionAnchors([...sections.values()]);
   const labels=labelsFor(content);
   const visibleOrder=designFor(content).blockOrder.filter(id=>id==='opening' || sections.get(id)?.visible);
-  return visibleOrder.flatMap((id,index)=>{
+  return visibleOrder.flatMap(id=>{
     if(id==='opening')return [{id:'first-book-title',label:labels.firstBookNav,blockId:'labels',field:'firstBookNav'}];
     const section=sections.get(id);
     const label=section.navLabel??navigationLabel(section);
     if(!label.trim())return [];
-    const previous=sections.get(visibleOrder[index-1]);
-    // An adjacent intro without its own menu label starts the How it works group.
-    const target=id==='how-the-club-works' && previous?.id==='meet-ruslitiki' && previous.type==='video' && !navigationLabel(previous) ? previous.id : id;
-    return [{id:anchors.get(target) ?? target,label,blockId:id,field:'navLabel'}];
+    return [{id:anchors.get(id) ?? id,label,blockId:id,field:'navLabel'}];
   });
 }
 export function editableContent(content) {
@@ -129,14 +126,28 @@ export function designVariables(design) {
   const heading={literata:"'Literata',Georgia,serif",golos:"'Golos Text',system-ui,sans-serif"};
   const values={
     '--page-bg':design.background,'--ink':design.ink,'--indigo':design.accent,
+    '--muted-ink':design.ink==='#141321' && design.background==='#b4cdf6'?'#434454':'color-mix(in srgb,var(--ink) 78%,var(--page-bg))',
     '--button-ink':contrast(design.accent,'#ffffff')>=contrast(design.accent,'#000000')?'#ffffff':'#000000',
     '--heading-font':heading[design.headingFont],'--body-font':heading[design.bodyFont],
     '--copy-size':`${design.bodySize/16}rem`,
-    '--page-width':{compact:'1050px',standard:'1440px',wide:'1680px'}[design.width],
-    '--logo-width':{small:'40rem',medium:'56rem',large:'70rem'}[design.logoSize],
+    '--page-width':{compact:'1050px',standard:'1280px',wide:'1680px'}[design.width],
+    '--logo-width':{small:'22.5rem',medium:'28rem',large:'34rem'}[design.logoSize],
     '--section-space':{compact:'clamp(1.75rem,3vw,3rem)',comfortable:'clamp(2.5rem,5vw,4.8rem)',airy:'clamp(3.5rem,7vw,6.5rem)'}[design.spacing],
-    '--heading-size':{modest:'clamp(2.2rem,3.5vw,3rem)',large:'clamp(2.4rem,4.2vw,3.85rem)',display:'clamp(2.7rem,5.5vw,4.8rem)'}[design.headingSize],
+    '--heading-size':{modest:'clamp(2.2rem,3.5vw,3rem)',large:'clamp(2.5rem,4.4vw,3.75rem)',display:'clamp(2.7rem,5.5vw,4.8rem)'}[design.headingSize],
     '--art-width':{small:'58%',medium:'78%',full:'100%'}[design.artworkSize],
   };
   return Object.entries(values).map(([key,value])=>`${key}:${value}`).join(';');
+}
+
+// Group only adjacent visible FAQ questions, without reordering any blocks.
+export function groupedSections(content) {
+  const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
+  const groups=[];
+  for(const id of designFor(content).blockOrder){
+    if(id!=='opening' && !sections.get(id)?.visible)continue;
+    const previous=groups.at(-1);
+    if(sections.get(id)?.type==='faq' && previous?.[0]==='faq' && sections.get('faq')?.type==='text')previous.push(id);
+    else groups.push([id]);
+  }
+  return groups;
 }

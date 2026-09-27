@@ -1,9 +1,10 @@
+import {readContent} from './fixtures/legacy-content.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readContent, validateContent } from '../src/lib/content.mjs';
+import {validateContent} from '../src/lib/content.mjs';
 import { plainText, fromPlainText } from '../src/lib/rich-text.mjs';
 import { atomicJson, json } from '../scripts/studio-store.mjs';
 import { applyContactUpdate } from '../scripts/studio-updates.mjs';

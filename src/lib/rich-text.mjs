@@ -55,7 +55,7 @@ export function renderRichText(doc,{inline=false}={}){
   for(const block of doc.blocks){
     const next=block.type==='bullet'?'ul':block.type==='number'?'ol':null;
     if(list!==next){if(list)html+=`</${list}>`;if(next)html+=`<${next}>`;list=next;}
-    html+=next?`<li>${runs(block)||'<br>'}</li>`:`<p>${runs(block)||'<br>'}</p>`;
+    html+=next?`<li>${runs(block)||'<br>'}</li>`:`<p${block.runs.length && block.runs.every(run=>run.bold)?' class="emphasis-paragraph"':''}>${runs(block)||'<br>'}</p>`;
   }
   if(list)html+=`</${list}>`;
   return html;

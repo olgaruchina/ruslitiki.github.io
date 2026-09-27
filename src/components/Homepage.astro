@@ -6,7 +6,7 @@ import BookImprint from './BookImprint.astro';
 import RichText from './RichText.astro';
 import Navigation from './Navigation.astro';
 import { instagramProfile } from '../lib/content.mjs';
-import { designFor, normalizedSections } from '../lib/design.mjs';
+import { designFor, normalizedSections, groupedSections } from '../lib/design.mjs';
 import { sectionAnchors } from '../lib/anchors.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 const {content,visualEditing=false}=Astro.props;
@@ -14,6 +14,7 @@ const design=designFor(content);
 const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
 const anchors=sectionAnchors([...sections.values()]);
 const labels=labelsFor(content);
+const groups=groupedSections(content);
 const hostProfile=instagramProfile(content.hostInstagramUrl);
 const clubHandle=instagramProfile(content.instagramUrl)?.handle || labels.instagramFallback;
 const statusKey={ 'coming-soon':'statusComingSoon','membership-open':'statusMembershipOpen',reading:'statusReading' }[content.status];
@@ -32,9 +33,9 @@ const structuredData = {
   <div class="landing" id="canvas-content" data-book-imprints={design.bookImprints?'on':'off'}>
     <header class="masthead" aria-label={content.brand} tabindex={visualEditing?-1:undefined} data-edit-region={visualEditing?"home":undefined}>
       <BookImprint kind="closed" placement="header" />
-      <div class:list={['wordmark', {'wordmark-original': content.logoPresentation === 'original-banner'}]}>
+      <a href="#main" aria-label={`${content.brand} home`} class:list={['wordmark', {'wordmark-original': content.logoPresentation === 'original-banner'}]}>
         <img src={content.logo} alt={content.brand} width="2500" height="1000" fetchpriority="high" />
-      </div>
+      </a>
       <div class="masthead-meta">
         <p><RichText content={content} id="brand" field="description" value={content.description} visualEditing={visualEditing} />{hostProfile && <> (<a href={hostProfile.url} target="_blank" rel="noopener" title={labels.opensNewTab} data-edit-region={visualEditing?'host-instagram':undefined}>{hostProfile.handle}</a>)</>}</p>
         {content.status!=='coming-soon' && <p class="status"><RichText {...label(statusKey)} /><span aria-hidden="true"> ↗</span></p>}
@@ -42,7 +43,11 @@ const structuredData = {
     </header>
     <Navigation content={content} visualEditing={visualEditing} />
     <main id="main">
-      {design.blockOrder.map(id=>id==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : sections.get(id)?.visible && <ContentBlock content={content} section={sections.get(id)} anchor={anchors.get(id)} visualEditing={visualEditing} />)}
+      {groups.map(group=>group[0]==='opening' ? <Opening content={content} design={design} visualEditing={visualEditing} /> : group.length>1 ?
+        <div class="faq-layout">
+          <ContentBlock content={content} section={sections.get(group[0])} anchor={anchors.get(group[0])} visualEditing={visualEditing} />
+          <div class="faq-questions">{group.slice(1).map(id=><ContentBlock content={content} section={sections.get(id)} anchor={anchors.get(id)} visualEditing={visualEditing} />)}</div>
+        </div> : <ContentBlock content={content} section={sections.get(group[0])} anchor={anchors.get(group[0])} visualEditing={visualEditing} />)}
     </main>
     <footer class="footer">
       <p><RichText {...label('footerMotto')} /><BookImprint kind="stack" placement="footer" /></p>
@@ -59,4 +64,5 @@ const structuredData = {
 <script>
   import '../scripts/navigation.js';
   import '../scripts/faq.js';
+  import '../scripts/current-section.js';
 </script>

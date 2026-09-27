@@ -1,6 +1,7 @@
+import {readContent} from './fixtures/legacy-content.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readContent, validateContent, selectedImagePaths } from '../src/lib/content.mjs';
+import {validateContent, selectedImagePaths} from '../src/lib/content.mjs';
 import { DESIGN_DEFAULTS, PALETTES, designFor, editableContent, pageNavigation } from '../src/lib/design.mjs';
 const publicNavigation=content=>pageNavigation(content).map(({id,label})=>({id,label}));
 
@@ -113,24 +114,24 @@ test('custom section links change navigation while keeping editing targets and s
   const draft=editableContent(content);
   const saved=draft.sections.at(-1);saved.heading='November dates';
   assert.equal(saved.anchor,'reading-calendar');
-  assert.deepEqual(pageNavigation(draft)[1],{id:'club-introduction',label:'How it works',blockId:'how-the-club-works',field:'navLabel'});
+  assert.deepEqual(pageNavigation(draft)[1],{id:'our-format',label:'How it works',blockId:'how-the-club-works',field:'navLabel'});
   assert.equal(pageNavigation(draft).at(-1).id,'reading-calendar');
   assert.deepEqual(validateContent(draft),[]);
   saved.anchor='club-introduction';
   for(const options of [{},{draft:true}])assert.ok(validateContent(draft,options).some(error=>error.includes('another section link')));
 });
 
-test('How it works includes its adjacent visible introduction without a separate intro menu item',()=>{
+test('How it works targets its own explanation even beside the introduction',()=>{
   const content=introductionNavigationContent();
   assert.deepEqual(publicNavigation(content),[
     {id:'first-book-title',label:"October's Book"},
-    {id:'meet-ruslitiki',label:'How it works'},
+    {id:'how-the-club-works',label:'How it works'},
     {id:'membership',label:'Membership'},
   ]);
   const separator={id:'extra-note',type:'text',heading:'More context',body:'An optional note.',visible:false};
   content.sections.push(separator);
   content.design.blockOrder.splice(2,0,separator.id);
-  assert.equal(publicNavigation(content)[1].id,'meet-ruslitiki','Hidden sections do not separate a visible group.');
+  assert.equal(publicNavigation(content)[1].id,'how-the-club-works','Hidden sections do not separate a visible group.');
   separator.visible=true;
   assert.equal(publicNavigation(content)[1].id,'how-the-club-works','Visible sections separate the group even without a menu label.');
 });
@@ -165,7 +166,7 @@ test('explicit introduction and How it works menu labels remain editable',()=>{
     {id:'how-the-club-works',label:'Our format'},
   ]);
   content.sections[0].navLabel='';
-  assert.deepEqual(publicNavigation(content)[1],{id:'meet-ruslitiki',label:'Our format'});
+  assert.deepEqual(publicNavigation(content)[1],{id:'how-the-club-works',label:'Our format'});
   content.sections[1].navLabel='';
   assert.deepEqual(publicNavigation(content).map(item=>item.id),['first-book-title','membership']);
 });

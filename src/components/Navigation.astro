@@ -2,12 +2,10 @@
 import { pageNavigation } from '../lib/design.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 import RichText from './RichText.astro';
-import '../styles/navigation.css';
 
 const {content,visualEditing=false}=Astro.props;
 const labels=labelsFor(content);
 const links=[
-  {href:'/',label:labels.homeNav,blockId:'labels',field:'homeNav'},
   ...pageNavigation(content).map(item=>({...item,href:`#${item.id}`})),
 ];
 ---

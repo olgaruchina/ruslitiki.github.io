@@ -1,8 +1,9 @@
+import {readContent} from './fixtures/legacy-content.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { fromPlainText, plainText, renderRichText, validateRichText } from '../src/lib/rich-text.mjs';
 import { setCanvasRichText, validateRichContent, pruneRichText, copyRichSection } from '../src/lib/rich-fields.mjs';
-import { readContent, validateContent } from '../src/lib/content.mjs';
+import {validateContent} from '../src/lib/content.mjs';
 import { editableContent, pageNavigation } from '../src/lib/design.mjs';
 import { setCanvasText } from '../src/lib/canvas-model.mjs';
 
@@ -38,10 +39,10 @@ test('formatting updates persist alongside canonical text, including labels and 
   const label={blocks:[{type:'paragraph',runs:[{text:'This month’s book',italic:true}]}]};
   assert.equal(setCanvasRichText(content,'labels','bookLabel',plainText(label),label),true);
   assert.equal(content.labels.bookLabel,'This month’s book');
-  const nav=pageNavigation(content).find(item=>item.id==='meet-ruslitiki');
+  const nav=pageNavigation(content).find(item=>item.id==='how-the-club-works');
   assert.equal(nav.blockId,'how-the-club-works');assert.equal(nav.field,'navLabel');
   assert.equal(setCanvasText(content,nav.blockId,nav.field,'Our reading rhythm'),true);
-  assert.equal(pageNavigation(content).find(item=>item.id==='meet-ruslitiki').label,'Our reading rhythm');
+  assert.equal(pageNavigation(content).find(item=>item.id==='how-the-club-works').label,'Our reading rhythm');
   assert.deepEqual(validateRichContent(content),[]);assert.deepEqual(validateContent(content),[]);
   assert.deepEqual(validateContent(JSON.parse(JSON.stringify(content))),[]);
   assert.equal(setCanvasRichText(content,'labels','bookLabel','Different text',label),false);

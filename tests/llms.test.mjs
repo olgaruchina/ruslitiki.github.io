@@ -1,6 +1,7 @@
+import {readContent} from './fixtures/legacy-content.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readContent } from '../src/lib/content.mjs';
+
 import { renderLlms } from '../src/lib/llms.mjs';
 
 const site = 'https://www.ruslitiki.com/';

@@ -5,4 +5,5 @@ const {section,content={},visualEditing=false}=Astro.props;
 const labels=labelsFor(content);
 const newTab=section.buttonUrl && section.buttonUrl!=='/' && !section.buttonUrl.startsWith('#') && !section.buttonUrl.startsWith('mailto:');
 ---
+{section.type==='button' && section.lead && <><RichText content={content} id={section.id} field="lead" value={section.lead} visualEditing={visualEditing} />{' '}</>}
 <RichText content={content} id={section.id} field="buttonLabel" value={section.buttonLabel??''} as="a" class={`section-button section-button-${section.buttonKind || 'primary'}`} href={section.buttonUrl || undefined} target={newTab?'_blank':undefined} rel={newTab?'noopener':undefined} title={newTab?labels.opensNewTab:undefined} visualEditing={visualEditing} data-placeholder={visualEditing?'Button label':undefined} />

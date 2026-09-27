@@ -1,9 +1,10 @@
+import {readContent} from './fixtures/legacy-content.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { readContent, validateContent, ctaFor, instagramProfile } from '../src/lib/content.mjs';
+import {validateContent, ctaFor, instagramProfile} from '../src/lib/content.mjs';
 import { atomicJson, digest, saveDraft, fileMap, safeImage } from '../scripts/studio-store.mjs';
 import { validatePublishing, verifyArtifact } from '../scripts/publish-release.mjs';
 const fresh=()=>structuredClone(readContent());
