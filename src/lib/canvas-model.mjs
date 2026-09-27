@@ -28,7 +28,7 @@ export function editableField(content,id,field) {
   }
   const section=content.sections.find(item=>item.id===id);if(!section)return null;
   if(field==='navLabel')return {object:{navLabel:section.navLabel??navigationLabel(section)},key:field,max:32};
-  const limits={heading:150,body:1400,...(section.type==='quote'?{attribution:150}:{}),...(section.type==='image'?{caption:300}:{}),...((section.type==='button' || section.buttonLabel || section.buttonUrl)?{buttonLabel:70}:{})};
+  const limits={heading:150,body:1400,lead:150,...(section.type==='quote'?{attribution:150}:{}),...(section.type==='image'?{caption:300}:{}),...((section.type==='button' || section.buttonLabel || section.buttonUrl)?{buttonLabel:70}:{})};
   return Object.hasOwn(limits,field)?{object:section,key:field,max:limits[field]}:null;
 }
 export function setCanvasText(content,id,field,value) {

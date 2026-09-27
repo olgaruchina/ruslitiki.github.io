@@ -4,7 +4,7 @@ import { LABEL_FIELDS } from '/labels.mjs';
 import { VisualCanvas } from '/visual-canvas.js';
 import { setCanvasRichText, pruneRichText, copyRichSection, richMode } from '/rich-fields.mjs';
 import { plainText, validateRichText } from '/rich-text.mjs';
-import { materializeSectionAnchors, sectionAnchors } from '/anchors.mjs';
+import { materializeSectionAnchors, sectionAnchors, publicSectionAnchors, hasHowItWorksVideoBookmark } from '/anchors.mjs';
 const $ = selector => document.querySelector(selector);
 const token = $('meta[name="studio-token"]').content;
 let state=null;
@@ -230,6 +230,7 @@ function buildDesignControls(){
 function buildLabelControls(){
   const groups=new Map();
   for(const [key,definition] of Object.entries(LABEL_FIELDS)){
+    if(['statusComingSoon','statusMembershipOpen','statusReading','readingStarts'].includes(key))continue;
     let fields=groups.get(definition.group);
     if(!fields){
       const group=element('details');group.className='section-item';group.open=groups.size===0;
@@ -389,11 +390,13 @@ function renderSections(){
     };
     textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
     textField('navLabel','Menu label (optional)','input',32,navigationLabel(section));
-    fields.append(element('small','Add a short label to link to this section from the menu. Clear it to leave the section out of the menu. Hidden sections never appear in the menu.'));
-    const defaultAnchor=sectionAnchors(draft.sections).get(id);
+    const videoBookmark=id==='how-the-club-works' && hasHowItWorksVideoBookmark(draft.sections);
+    fields.append(element('small',videoBookmark?'This menu label opens the Meet Ruslitiki video. The Section link below opens this written section.':'Add a short label to link to this section from the menu. Clear it to leave the section out of the menu. Hidden sections never appear in the menu.'));
+    const defaultAnchor=publicSectionAnchors(draft.sections).get(id);
     textField('anchor','Section link','input',61,defaultAnchor===id && id.startsWith('section-')?'':defaultAnchor);
     fields.querySelector('[data-section-field="anchor"]').placeholder='contact or reading-calendar';
-    fields.append(element('small','Use lowercase words and hyphens, without #. Leave blank to use the default link. New sections use their heading when saved. Changing a heading later keeps the saved link; changing this field changes the shareable link.'));
+    fields.append(element('small',videoBookmark?'This written section opens at #'+defaultAnchor+'. #how-the-club-works is kept for the video. Leave blank to keep the default written-section link.':'Use lowercase words and hyphens, without #. Leave blank to use the default link. New sections use their heading when saved. Changing a heading later keeps the saved link; changing this field changes the shareable link.'));
+    if(section.type==='text' || section.type==='button')textField('lead',section.type==='button'?'Text before link (optional)':'Lead line (optional)');
     textField('body',section.type==='faq'?'Answer':section.type==='quote'?'Quote':'Text (optional)','textarea',1400);
     if(section.type==='quote')textField('attribution','Attribution (optional)');
     if(section.type==='video'){

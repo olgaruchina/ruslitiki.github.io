@@ -16,17 +16,24 @@ for(const [,id] of llms.matchAll(/https:\/\/www\.ruslitiki\.com\/#([a-z][a-z0-9-
 }
 assert.equal((home.match(/<h1(?:\s|>)/g)||[]).length,1,'Homepage must have one H1.');
 assert.ok(home.includes(ctaFor(content).url),'The active signup link is missing.');
-assert.ok(home.includes(content.openingDate) && home.includes(content.readingDate),'The saved dates are missing.');
+assert.ok(home.includes(`<time datetime="${content.openingDate}"`),'The membership opening date is missing.');
+assert.ok(!home.includes(`<time datetime="${content.readingDate}"`),'The reading start date should not appear on the page.');
+assert.ok(!home.match(/<header class="masthead"[\s\S]*?<\/header>/)?.[0].includes('Membership is open'),'The masthead should not repeat the membership state.');
+assert.ok(home.includes('WE ARE OPEN! JOIN NOW!'),'The approved introduction line is missing.');
+assert.ok(home.includes('Joining the waitlist is free. Paid membership is a separate step through Patreon.'),'The membership explanation is missing or out of date.');
 assert.ok(home.includes('https://www.ruslitiki.com/'),'Canonical origin is missing.');
 assert.ok(!home.includes('mailto:') || Boolean(content.email),'Do not publish an unconfigured mailbox.');
 assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must not ship on the public page.');
 assert.ok(!home.includes('googletagmanager') && !home.includes('google-analytics'),'Unexpected tracking code.');
 const menu=home.match(/<nav class="section-nav"[^>]*>([\s\S]*?)<\/nav>/)?.[1];
 assert.ok(menu,'The section menu is missing.');
-assert.match(menu,/<a\b[^>]*href="\/"[^>]*>/,'The home menu link must return to the root route.');
+assert.match(home,/<a\b[^>]*href="#main"[^>]*class="wordmark/,'The wordmark must return to the main content.');
 for(const [,id] of menu.matchAll(/href="#([a-z][a-z0-9-]*)"/g)){
   assert.equal([...home.matchAll(new RegExp(`\\sid="${id}"`,'g'))].length,1,`Menu target ${id} must exist exactly once.`);
 }
+const introduction=home.match(/<section id="meet-ruslitiki"[^>]*>([\s\S]*?)<\/section>/)?.[1];
+assert.ok(introduction?.includes('<span id="how-the-club-works" class="section-anchor-legacy"'),'The How it works bookmark must land at the introduction video.');
+assert.ok(home.includes('<section id="how-the-club-works-details"'),'The written explanation must retain a separate link.');
 const videos=content.sections.filter(section=>section.type==='video' && section.visible);
 const frames=[...home.matchAll(/<iframe\b([^>]*)>/g)];
 assert.equal(frames.length,videos.length,'Only configured visible videos may render a player.');

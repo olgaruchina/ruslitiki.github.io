@@ -1,6 +1,7 @@
+import {readContent} from './fixtures/legacy-content.mjs';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { readContent, validateContent } from '../src/lib/content.mjs';
+import {validateContent} from '../src/lib/content.mjs';
 import { editableContent, safeButtonUrl } from '../src/lib/design.mjs';
 import { insertSection, moveSectionBefore, setCanvasText, editableField } from '../src/lib/canvas-model.mjs';
 import { saveDraft, atomicJson, digest, json } from '../scripts/studio-store.mjs';

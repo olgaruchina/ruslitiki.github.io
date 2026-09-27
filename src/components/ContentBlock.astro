@@ -4,13 +4,19 @@ import SectionButton from './SectionButton.astro';
 import SectionVideo from './SectionVideo.astro';
 import BookImprint from './BookImprint.astro';
 import RichText from './RichText.astro';
-const {content,section,anchor=section.id,visualEditing=false}=Astro.props;
+import { ctaFor, joinModeFor } from '../lib/content.mjs';
+import { labelsFor } from '../lib/labels.mjs';
+const {content,section,anchor=section.id,videoAlias=false,suppressLegacyAnchor=false,visualEditing=false}=Astro.props;
 const imageLayout=section.imageLayout || 'left';
 const rich=field=>({content,id:section.id,field,value:section[field]??'',visualEditing});
+const membership=section.id==='membership' && section.type==='text';
+const action=ctaFor(content);
+const labels=labelsFor(content);
 const hasButton=section.type==='button' || !!section.buttonLabel || !!section.buttonUrl;
 ---
-<section id={anchor} tabindex="-1" class:list={['content-block',`block-${section.type}`,`block-width-${section.width}`,`block-align-${section.align}`,`block-tone-${section.tone}`,`block-layout-${section.layout}`]} data-divider={section.divider ?? 'auto'} data-block-id={section.id} data-block-label={visualEditing?(section.heading || section.type):undefined}>
-  {anchor!==section.id && <span id={section.id} class="section-anchor-legacy" tabindex="-1" />}
+<section id={anchor} tabindex="-1" class:list={['content-block',`block-${section.type}`,`block-width-${section.width}`,`block-align-${section.align}`,`block-tone-${section.tone}`,`block-layout-${section.layout}`,{'membership-offer':membership}]} data-divider={section.divider ?? 'auto'} data-block-id={section.id} data-block-label={visualEditing?(section.heading || section.type):undefined}>
+  {videoAlias && <span id="how-the-club-works" class="section-anchor-legacy" tabindex="-1" />}
+  {anchor!==section.id && !suppressLegacyAnchor && <span id={section.id} class="section-anchor-legacy" tabindex="-1" />}
   {section.type==='faq' ? <ruslitiki-faq data-visual-editing={visualEditing?'true':undefined}><details open={visualEditing}><RichText {...rich('heading')} as="summary" data-placeholder="Question" /><div class="faq-answer"><RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Write an answer" /></div></details></ruslitiki-faq> : section.type==='quote' ? <>
     <RichText {...rich('heading')} as="h2" data-placeholder="Heading" /><blockquote><RichText {...rich('body')} as="div" mode="block" class="quote-copy" data-placeholder="Write a quote" />{(section.attribution || visualEditing) && <RichText {...rich('attribution')} as="cite" data-placeholder="Attribution" />}</blockquote>
   </> : section.type==='video' ? <>
@@ -21,7 +27,8 @@ const hasButton=section.type==='button' || !!section.buttonLabel || !!section.bu
     {imageLayout!=='right' && <SectionImage content={content} section={section} visualEditing={visualEditing} />}
     <div><RichText {...rich('heading')} as="h2" data-placeholder="Heading" />{(section.body || visualEditing) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}</div>
     {imageLayout==='right' && <SectionImage content={content} section={section} visualEditing={visualEditing} />}
-  </div> : <>{(section.heading || section.type!=='button') && <RichText {...rich('heading')} as="h2" data-placeholder="Heading" />}{(section.body || (visualEditing && section.type==='text')) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}</>}
+  </div> : <>{(section.heading || section.type!=='button') && <RichText {...rich('heading')} as="h2" data-placeholder="Heading" />}{((section.lead && section.type!=='button') || (visualEditing && section.type==='text')) && <RichText {...rich('lead')} as="p" class="section-lead" data-placeholder="Lead line (optional)" />}{(section.body || (visualEditing && section.type==='text')) && <RichText {...rich('body')} as="div" mode="block" class="block-copy" data-placeholder="Optional text" />}</>}
+  {membership && !hasButton && <a class="join-button membership-join" href={action.url} target="_blank" rel="noopener" title={labels.opensNewTab}><RichText content={content} id="labels" field={joinModeFor(content)==='waitlist'?'waitlistCta':'patreonCta'} value={action.label} class="join-label" visualEditing={visualEditing} /><span aria-hidden="true">↗</span></a>}
   {hasButton && <SectionButton content={content} section={section} visualEditing={visualEditing} />}
   {section.id==='meet-ruslitiki' && <BookImprint kind="open" placement="video" />}
   {section.id==='how-the-club-works' && <BookImprint kind="stack" placement="how" />}

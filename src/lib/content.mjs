@@ -39,7 +39,7 @@ export function validateContent(data, {draft = false} = {}) {
       if (url.protocol !== 'https:' || url.username || url.password || (hosts.length && !hosts.includes(url.hostname))) throw new Error();
     } catch { errors.push(`${label}: enter a valid HTTPS link${hosts.length ? ` on ${hosts.join(' or ')}` : ''}.`); }
   };
-  if (!keys(data, ['brand','status','heading','description','hostInstagramUrl','introduction','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design','labels','richText'], 'Website')) return errors;
+  if (!keys(data, ['brand','status','joinMode','heading','description','hostInstagramUrl','introduction','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design','labels','richText'], 'Website')) return errors;
   if (own(data,'labels') && keys(data.labels,Object.keys(LABEL_FIELDS),'Page labels')) {
     for (const [key,field] of Object.entries(LABEL_FIELDS)) if (own(data.labels,key)) string(data.labels[key],field.title,field.max,!draft);
   }
@@ -49,13 +49,14 @@ export function validateContent(data, {draft = false} = {}) {
   string(data.introduction, 'Introduction', LIMITS.introduction);
   if (own(data, 'membershipPrice')) string(data.membershipPrice, 'Membership price', LIMITS.membershipPrice, false);
   if (!['coming-soon','membership-open','reading'].includes(data.status)) errors.push('Choose a valid membership state.');
+  if (own(data,'joinMode') && !['waitlist','patreon'].includes(data.joinMode)) errors.push('Join button: choose the waitlist or Patreon.');
   for (const [key,label] of [['openingDate','Membership opening'],['readingDate','Reading start']]) {
     const value = data[key];
     if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(Date.parse(value)) || new Date(value).toISOString().slice(0,10) !== value) errors.push(`${label}: use a valid calendar date.`);
   }
   if (data.openingDate > data.readingDate) errors.push('Membership must open on or before the reading start.');
   https(data.waitlistUrl, 'Waitlist');
-  https(data.patreonUrl, 'Patreon', data.status !== 'coming-soon', ['patreon.com','www.patreon.com']);
+  https(data.patreonUrl, 'Patreon', joinModeFor(data)==='patreon', ['patreon.com','www.patreon.com']);
   https(data.instagramUrl, 'Instagram', true, ['instagram.com','www.instagram.com']);
   if (own(data, 'hostInstagramUrl') && data.hostInstagramUrl !== '' && !instagramProfile(data.hostInstagramUrl)) errors.push('Host Instagram: paste an HTTPS Instagram profile link, or leave it empty.');
   string(data.email, 'Email', 254, false);
@@ -71,11 +72,12 @@ export function validateContent(data, {draft = false} = {}) {
   if (!Array.isArray(data.sections) || data.sections.length > MAX_SECTIONS) errors.push(`Use at most ${MAX_SECTIONS} additional sections.`);
   else data.sections.forEach((section, i) => {
     const label = `Section ${i+1}`;
-    if (!keys(section, ['id','anchor','type','heading','body','visible','width','align','tone','layout','divider','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
+    if (!keys(section, ['id','anchor','type','heading','body','lead','visible','width','align','tone','layout','divider','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
     if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
     if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','labels','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
     if(own(section,'navLabel'))string(section.navLabel,`${label} menu label`,32,false);
     string(section.heading, `${label} heading`, 150, !draft && section.type!=='button');
+    if(own(section,'lead'))string(section.lead,`${label} lead`,150,false);
     string(section.body, `${label} text`, 1400, !draft && !['text','image','video','button'].includes(section.type));
     if (typeof section.visible !== 'boolean') errors.push(`${label}: visibility must be on or off.`);
     for(const [key,choices] of Object.entries(SECTION_OPTIONS))if(own(section,key) && (typeof section[key]!=='string' || !Object.hasOwn(choices,section[key])))errors.push(`${label}: choose a supported ${key}.`);
@@ -124,9 +126,13 @@ export function readContent(file = process.env.RUSLITIKI_CONTENT_FILE || resolve
   return data;
 }
 
+export function joinModeFor(data) {
+  return data.joinMode==='waitlist' || data.joinMode==='patreon' ? data.joinMode : data.status==='coming-soon' ? 'waitlist' : 'patreon';
+}
+
 export function ctaFor(data) {
   const labels=labelsFor(data);
-  return data.status === 'coming-soon'
+  return joinModeFor(data) === 'waitlist'
     ? { label: labels.waitlistCta, url: data.waitlistUrl }
     : { label: labels.patreonCta, url: data.patreonUrl };
 }
