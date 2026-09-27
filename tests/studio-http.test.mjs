@@ -73,6 +73,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.notEqual(canvasTwo.data.session,canvasOne.data.session);
     const canvasTwoHtml=await (await fetch(canvasTwo.data.url)).text();
     assert.ok(canvasTwoHtml.includes('A different unsaved tab'));
+    assert.ok(!canvasTwoHtml.includes('class="status"'),'The masthead does not repeat membership status.');
     assert.deepEqual(joinDestinations(canvasTwoHtml),Array(2).fill(tabTwo.patreonUrl),'Each join button switches to the editor’s Patreon destination.');
     assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('data-book-imprints="off"'),'Drawing visibility remains private to each canvas snapshot.');
     assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));

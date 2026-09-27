@@ -16,7 +16,6 @@ const anchors=sectionAnchors([...sections.values()]);
 const labels=labelsFor(content);
 const hostProfile=instagramProfile(content.hostInstagramUrl);
 const clubHandle=instagramProfile(content.instagramUrl)?.handle || labels.instagramFallback;
-const statusKey={ 'coming-soon':'statusComingSoon','membership-open':'statusMembershipOpen',reading:'statusReading' }[content.status];
 const label=field=>({content,id:'labels',field,value:labels[field],visualEditing});
 const structuredData = {
   '@context':'https://schema.org',
@@ -37,7 +36,6 @@ const structuredData = {
       </div>
       <div class="masthead-meta">
         <p><RichText content={content} id="brand" field="description" value={content.description} visualEditing={visualEditing} />{hostProfile && <> (<a href={hostProfile.url} target="_blank" rel="noopener" title={labels.opensNewTab} data-edit-region={visualEditing?'host-instagram':undefined}>{hostProfile.handle}</a>)</>}</p>
-        {content.status!=='coming-soon' && <p class="status"><RichText {...label(statusKey)} /><span aria-hidden="true"> ↗</span></p>}
       </div>
     </header>
     <Navigation content={content} visualEditing={visualEditing} />
