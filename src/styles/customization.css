@@ -120,6 +120,15 @@ ruslitiki-faq{display:block}
 .content-block[data-block-id="membership"].block-tone-panel{border:0;border-top:1px solid var(--rule);padding:clamp(1.5rem,3vw,2.25rem) 0 0}
 .content-block[data-block-id="membership"]>.join-button{margin-bottom:1.5rem}
 .content-block[data-block-id="membership"] .block-copy>p:first-child{font-size:max(1.125rem,var(--copy-size));font-weight:500;line-height:1.5}
+.content-block[data-block-id="membership"].block-layout-split:has(>.block-copy>ul){max-width:none}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul){display:grid;grid-template-columns:minmax(0,1fr);align-items:start;column-gap:clamp(2rem,6vw,6rem);row-gap:.75rem}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy{display:contents}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>h2{grid-column:1;grid-row:1;margin-bottom:.75rem}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>p:first-child{grid-column:1;grid-row:2;font-size:clamp(1.4rem,2vw,1.6rem);font-weight:400;line-height:1.35}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.join-button{grid-column:1;grid-row:3;justify-self:start;align-self:start;margin:.75rem 0 0}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>p:has(+ul){grid-column:1;grid-row:4;margin-top:1.75rem;font-weight:500}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>ul{grid-column:1;grid-row:5;max-width:46ch}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>ul~p:not(:has(>br:only-child)){grid-column:1;max-width:55ch;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--rule);font-size:1rem;line-height:1.6}
 @media(min-width:900px){
   .block-layout-columns.block-text .block-copy{columns:18rem 2;column-gap:2.5rem}
   .block-text.block-layout-split{display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);column-gap:clamp(2rem,5vw,5rem);align-items:start}
@@ -130,6 +139,14 @@ ruslitiki-faq{display:block}
   .block-text.block-layout-split[data-block-id="membership"]>h2{grid-column:1;grid-row:1;max-width:none}
   .block-text.block-layout-split[data-block-id="membership"]>.block-copy{grid-column:1;grid-row:2;max-width:54ch}
   .block-text.block-layout-split[data-block-id="membership"]>.join-button{grid-column:2;grid-row:1 / span 2;align-self:start;margin:0}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul){grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy{display:contents}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>h2{grid-column:1;grid-row:1}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>p:first-child{grid-column:1;grid-row:2}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.join-button{grid-column:1;grid-row:3;margin:.75rem 0 0}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>p:has(+ul){grid-column:2;grid-row:1;margin:0}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>ul{grid-column:2;grid-row:2 / span 2}
+  .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.block-copy>ul~p:not(:has(>br:only-child)){grid-column:span 1}
 }
 @media(max-width:899.98px){
   .section-nav ul{column-gap:.5rem}
@@ -159,5 +176,8 @@ ruslitiki-faq{display:block}
   .imprint-how{transform:rotate(-9deg)}
   .imprint-membership{transform:rotate(8deg)}
   [data-book-imprints=on] .block-text.block-layout-split[data-block-id="membership"]>.imprint-membership{position:absolute;top:8rem;right:0;grid-column:auto;grid-row:auto;margin:0;width:8rem}
+  [data-book-imprints=on] .block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy>ul)>.imprint-membership{display:none}
 }
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy[contenteditable]){display:block}
+.block-text.block-layout-split[data-block-id="membership"]:has(>.block-copy[contenteditable])>.block-copy[contenteditable]{display:block}
 @media(max-width:700px){.wordmark{width:75%;max-width:calc(var(--logo-width)*.75)}.masthead{--wordmark-half-width:min(37.5%,calc(var(--logo-width)*.375))}.imprint-footer{width:3.125rem;height:2rem}}
