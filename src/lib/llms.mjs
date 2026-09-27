@@ -12,13 +12,11 @@ export function renderLlms(content, site) {
   const absolute = value => new URL(value, site).href;
   const sections = new Map(normalizedSections(content.sections).map(section => [section.id, section]));
   const anchors = sectionAnchors([...sections.values()]);
-  const status = { 'coming-soon': labels.statusComingSoon, 'membership-open': labels.statusMembershipOpen, reading: labels.statusReading }[content.status];
   const lines = [
     `# ${text(content.brand)}`, '',
     `> ${text(content.description)}`, '',
     text(content.heading), '',
     text(content.introduction), '',
-    `Status: ${status}.`,
     `Membership opening date: ${formatDate(content.openingDate)}.`,
     `Reading start date: ${formatDate(content.readingDate)}.`, '',
     '## Website', '',

@@ -1,6 +1,7 @@
 {
   "brand": "Ruslitiki",
   "status": "coming-soon",
+  "joinMode": "waitlist",
   "heading": "Russian literature, but make it fun.",
   "description": "An online Russian literature book club with Olga.",
   "introduction": "Read the classics with context, conversation, and a guide to what gets lost in translation.",
@@ -135,7 +136,7 @@
       "id": "faq-waitlist-and-price",
       "type": "faq",
       "heading": "Does joining the waitlist sign me up for a paid membership?",
-      "body": "No. Joining the waitlist is free and does not subscribe you to Patreon or take a payment. When membership opens, you can choose to join separately for $15 USD per month, or $9.99 USD per month for early birds.",
+      "body": "No. Joining the waitlist is free and does not subscribe you to Patreon or take a payment. When membership opens, you can join for $15 USD per month.",
       "visible": true,
       "width": "full",
       "align": "left",

@@ -1,10 +1,10 @@
 ---
-import { ctaFor } from '../lib/content.mjs';
+import { ctaFor, joinModeFor } from '../lib/content.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 import RichText from './RichText.astro';
 const {content,visualEditing=false}=Astro.props;
 const action=ctaFor(content);
 const labels=labelsFor(content);
-const ctaField=content.status==='coming-soon'?'waitlistCta':'patreonCta';
+const ctaField=joinModeFor(content)==='waitlist'?'waitlistCta':'patreonCta';
 ---
 <a class="join-button" href={action.url} target="_blank" rel="noopener" title={labels.opensNewTab}><RichText content={content} id="labels" field={ctaField} value={action.label} class="join-label" visualEditing={visualEditing} /><span aria-hidden="true">↗</span></a>

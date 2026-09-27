@@ -14,7 +14,7 @@ test('AI overview includes the configured signup price and omits absent or empty
   }
   content.membershipPrice='$15 USD / month';
   for(const status of ['coming-soon','membership-open','reading']){
-    content.status=status;content.patreonUrl='https://www.patreon.com/ruslitiki';
+    content.status=status;content.joinMode=status==='coming-soon'?'waitlist':'patreon';content.patreonUrl='https://www.patreon.com/ruslitiki';
     const output=renderLlms(content, site);
     assert.ok(output.includes('Membership price: $15 USD / month.'));
     assert.ok(output.indexOf('Membership price:')>output.indexOf('## Join and contact'));
@@ -40,10 +40,15 @@ test('AI overview excludes hidden content, unused fields and inactive join links
   assert.ok(output.includes(content.waitlistUrl));
   for (const privateValue of ['private-video', 'Hidden title', 'Hidden notes', 'M7lc1UVf-VE', 'Unused caption', 'Unused attribution', 'abcdefghijk', content.patreonUrl, 'mailto:']) assert.ok(!output.includes(privateValue), privateValue);
   content.status = 'membership-open';
+  content.joinMode = 'patreon';
   content.email = 'olga@example.com';
   const opened = renderLlms(content, site);
   assert.ok(opened.includes(content.patreonUrl) && opened.includes('mailto:olga@example.com'));
   assert.ok(!opened.includes(content.waitlistUrl));
+  content.joinMode='waitlist';
+  const closed=renderLlms(content,site);
+  assert.ok(closed.includes(content.waitlistUrl));
+  assert.ok(!closed.includes(content.patreonUrl));
 });
 
 test('AI overview follows custom block order and resolves public buttons and videos', () => {

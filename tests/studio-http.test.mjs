@@ -37,6 +37,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     }
     assert.ok(ready,log || 'Studio did not start.');
     const html=await (await fetch(origin)).text();
+    assert.match(html,/<select name="joinMode"><option value="waitlist">Waitlist form<\/option><option value="patreon">Patreon membership<\/option>/,'The editor exposes the join-link choice.');
     assert.equal((await fetch(origin+'/anchors.mjs')).status,200,'The editor can load its shared section-link module.');
     const token=html.match(/name="studio-token" content="([a-f0-9]+)"/)[1];
     const api=async(route,data,headers={})=>{
@@ -59,6 +60,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
     const joinDestinations=html=>[...html.matchAll(/<a class="join-button" href="([^"]+)"/g)].map(match=>match[1]);
     assert.deepEqual(joinDestinations(canvasHtml),Array(2).fill(initial.content.waitlistUrl),'The hero and Membership use the current waitlist link.');
+    assert.match(canvasHtml,/<footer class="footer">[\s\S]*?data-edit-field="footerMotto"/,'The footer motto is available in the visual editor.');
     assert.match(canvasHtml,/<section id="membership"[^>]*>[\s\S]*?<a class="join-button"/,'Membership includes its own join button.');
     assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
     assert.match(canvasHtml,/<span id="section-bb4b953e-a094-43dd-baec-239fd87471e6" class="section-anchor-legacy" tabindex="-1"/,'The original Contact bookmark still has a focusable destination.');
@@ -68,13 +70,17 @@ test('local editor keeps drafts private, validates requests and builds the exact
     for(const route of ['/__canvas/rich-text-editor.js','/__canvas/rich-text.mjs'])assert.equal((await fetch(new URL(route,canvasOne.data.origin))).status,200);
     assert.match(canvasHtml,/<span\b[^>]*data-edit-field="description"[^>]*>[^<]*<\/span>/,'The editable description must not include the host link.');
     assert.ok(canvasHtml.includes('href="https://www.instagram.com/books_olgaruchina/"'));
-    const tabTwo={...initial.content,heading:'A different unsaved tab',status:'membership-open',patreonUrl:'https://www.patreon.com/c/books_olgaruchina/membership',design:{...initial.content.design,bookImprints:false}};
+    const tabTwo={...initial.content,heading:'A different unsaved tab',status:'membership-open',joinMode:'patreon',patreonUrl:'https://www.patreon.com/c/books_olgaruchina/membership',design:{...initial.content.design,bookImprints:false}};
     const canvasTwo=await api('/api/canvas',{sequence:1,generation:1,content:tabTwo});assert.equal(canvasTwo.status,200);
     assert.notEqual(canvasTwo.data.session,canvasOne.data.session);
     const canvasTwoHtml=await (await fetch(canvasTwo.data.url)).text();
     assert.ok(canvasTwoHtml.includes('A different unsaved tab'));
     assert.ok(!canvasTwoHtml.includes('class="status"'),'The masthead does not repeat membership status.');
     assert.deepEqual(joinDestinations(canvasTwoHtml),Array(2).fill(tabTwo.patreonUrl),'Each join button switches to the editor’s Patreon destination.');
+    const waitlistAgain={...tabTwo,joinMode:'waitlist'};
+    const canvasWaitlist=await api('/api/canvas',{sequence:1,generation:1,content:waitlistAgain});assert.equal(canvasWaitlist.status,200);
+    const waitlistHtml=await (await fetch(canvasWaitlist.data.url)).text();
+    assert.deepEqual(joinDestinations(waitlistHtml),Array(2).fill(tabTwo.waitlistUrl),'The editor can return both buttons to the waitlist without changing the club phase.');
     assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('data-book-imprints="off"'),'Drawing visibility remains private to each canvas snapshot.');
     assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));
     const badNonce=new URL(canvasOne.data.url);badNonce.searchParams.set('nonce','wrong');
