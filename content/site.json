@@ -4,7 +4,7 @@
   "joinMode": "patreon",
   "heading": "Russian literature, but make it fun",
   "description": "An online Russian literature book club with Olga Ruchina",
-  "introduction": "Fall in love with Russian classics, one book at a time. Discover the stories behind the stories.\nWE ARE OPEN! JOIN NOW!",
+  "introduction": "Fall in love with Russian classics, one book at a time. Discover the stories behind the stories.",
   "openingDate": "2026-09-25",
   "readingDate": "2026-10-01",
   "membershipPrice": "$15 USD / month",
@@ -210,14 +210,6 @@
           "runs": [
             {
               "text": "Fall in love with Russian classics, one book at a time. Discover the stories behind the stories."
-            }
-          ]
-        },
-        {
-          "type": "paragraph",
-          "runs": [
-            {
-              "text": "WE ARE OPEN! JOIN NOW!"
             }
           ]
         }
