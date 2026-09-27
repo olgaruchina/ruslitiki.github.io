@@ -51,11 +51,18 @@ test('host Instagram is optional for older drafts and only accepts safe profile 
 });
 
 test('opening membership requires a real Patreon link; no silent broken CTA',()=>{
-  const content=fresh();content.status='membership-open';
+  const content=fresh();content.status='membership-open';content.joinMode='patreon';
   assert.ok(validateContent(content).some(error=>error.startsWith('Patreon:')));
   content.patreonUrl='https://www.patreon.com/ruslitiki';
   assert.deepEqual(validateContent(content),[]);
   assert.equal(ctaFor(content).url,content.patreonUrl);
+  content.joinMode='waitlist';content.patreonUrl='';
+  assert.deepEqual(validateContent(content),[]);
+  assert.equal(ctaFor(content).url,content.waitlistUrl);
+  content.joinMode='unknown';
+  assert.ok(validateContent(content).some(error=>error.startsWith('Join button:')));
+  delete content.joinMode;content.patreonUrl='https://www.patreon.com/ruslitiki';
+  assert.equal(ctaFor(content).url,content.patreonUrl,'Older active drafts keep their Patreon button until Olga chooses otherwise.');
 });
 test('rejects unsafe destinations and email header injection',()=>{
   const content=fresh();content.waitlistUrl='javascript:alert(1)';content.email='olga@example.com\r\nBcc:other@example.com';

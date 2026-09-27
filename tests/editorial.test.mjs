@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {readContent,validateContent,ctaFor} from '../src/lib/content.mjs';
+import {readContent,validateContent,ctaFor,showMembershipWaitlistNote} from '../src/lib/content.mjs';
 import {editableContent,groupedSections} from '../src/lib/design.mjs';
 import {setCanvasRichText} from '../src/lib/rich-fields.mjs';
 import {fromPlainText,renderRichText} from '../src/lib/rich-text.mjs';
@@ -13,6 +13,8 @@ test('approved content and editable lead survive a content round-trip',()=>{
   const membership=content.sections.find(section=>section.id==='membership');
   assert.equal(membership.lead,'Membership fee: $15 USD per month');
   assert.ok(!membership.body.includes('Membership fee:'));
+  assert.equal(showMembershipWaitlistNote(membership),true);
+  assert.equal(content.labels.membershipWaitlistNote,'Joining the waitlist is free.');
   const lead=fromPlainText('Membership fee: $20 USD per month');lead.blocks[0].runs[0].bold=true;
   assert.equal(setCanvasRichText(content,'membership','lead','Membership fee: $20 USD per month',lead),true);
   const restored=JSON.parse(JSON.stringify(content));

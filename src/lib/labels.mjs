@@ -9,6 +9,7 @@ export const LABEL_FIELDS = Object.freeze({
   membership: {default:'Membership',title:'Signup price label',max:80,group:'Dates and membership'},
   waitlistCta: {default:'Join the waitlist',title:'Waitlist button',max:70,group:'Dates and membership'},
   patreonCta: {default:'Join on Patreon',title:'Patreon button',max:70,group:'Dates and membership'},
+  membershipWaitlistNote: {default:'Joining the waitlist is free.',title:'Membership waitlist note',max:300,group:'Dates and membership'},
   statusComingSoon: {default:'Coming soon',title:'Coming soon status',max:80,group:'Dates and membership'},
   statusMembershipOpen: {default:'Membership is open',title:'Membership open status',max:80,group:'Dates and membership'},
   statusReading: {default:'Reading together',title:'Reading status',max:80,group:'Dates and membership'},

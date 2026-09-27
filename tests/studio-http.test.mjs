@@ -37,6 +37,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     }
     assert.ok(ready,log || 'Studio did not start.');
     const html=await (await fetch(origin)).text();
+    assert.match(html,/<select name="joinMode"><option value="waitlist">Waitlist form<\/option><option value="patreon">Patreon membership<\/option>/);
     assert.equal((await fetch(origin+'/anchors.mjs')).status,200,'The editor can load its shared section-link module.');
     const token=html.match(/name="studio-token" content="([a-f0-9]+)"/)[1];
     const api=async(route,data,headers={})=>{
@@ -60,15 +61,30 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
     assert.match(canvasHtml,/<span id="section-bb4b953e-a094-43dd-baec-239fd87471e6" class="section-anchor-legacy" tabindex="-1"/,'The original Contact bookmark still has a focusable destination.');
     assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');
-    assert.ok(canvasHtml.includes('data-edit-id="labels" data-edit-field="bookLabel"') && canvasHtml.includes('data-edit-date="openingDate"') && canvasHtml.includes('data-edit-date="readingDate"'),'Book labels and both dates are directly editable.');
+    assert.ok(canvasHtml.includes('data-edit-id="labels" data-edit-field="bookLabel"') && canvasHtml.includes('data-edit-date="openingDate"'),'The book label and opening date are directly editable.');
+    assert.ok(!canvasHtml.includes('data-edit-date="readingDate"'),'The reading date no longer appears on the page.');
+    assert.ok(!canvasHtml.includes('Membership is open'),'The masthead omits the membership state.');
+    assert.ok(canvasHtml.includes('Joining the waitlist is free'),'Older saved drafts retain their existing waitlist explanation.');
+    assert.ok(!canvasHtml.includes('data-edit-field="membershipWaitlistNote"'),'Older drafts do not show a duplicate waitlist explanation.');
+    assert.match(canvasHtml,/<section id="contact"[^>]*>[\s\S]*?Contact information/,'The original Contact information section is retained.');
     assert.match(canvasHtml,/data-edit-id="how-the-club-works" data-edit-field="body" data-rich-text="block"[^>]*><p>/,'Existing multiline text must start with paragraph boundaries in the editing canvas.');
     for(const route of ['/__canvas/rich-text-editor.js','/__canvas/rich-text.mjs'])assert.equal((await fetch(new URL(route,canvasOne.data.origin))).status,200);
     assert.match(canvasHtml,/<span\b[^>]*data-edit-field="description"[^>]*>[^<]*<\/span>/,'The editable description must not include the host link.');
     assert.ok(canvasHtml.includes('href="https://www.instagram.com/books_olgaruchina/"'));
-    const tabTwo={...initial.content,heading:'A different unsaved tab',design:{...initial.content.design,bookImprints:false}};
+    const publishedSource=JSON.parse(sourceBefore);
+    const tabTwo={...initial.content,heading:'A different unsaved tab',joinMode:'patreon',patreonUrl:publishedSource.patreonUrl,design:{...initial.content.design,bookImprints:false}};
     const canvasTwo=await api('/api/canvas',{sequence:1,generation:1,content:tabTwo});assert.equal(canvasTwo.status,200);
     assert.notEqual(canvasTwo.data.session,canvasOne.data.session);
-    assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('A different unsaved tab'));
+    const canvasTwoHtml=await (await fetch(canvasTwo.data.url)).text();
+    assert.ok(canvasTwoHtml.includes('A different unsaved tab'));
+    const joinDestinations=html=>[...html.matchAll(/<a class="join-button[^\"]*" href="([^"]+)"/g)].map(match=>match[1]);
+    assert.deepEqual(joinDestinations(canvasHtml),Array(2).fill(initial.content.waitlistUrl));
+    assert.deepEqual(joinDestinations(canvasTwoHtml),Array(2).fill(tabTwo.patreonUrl),'Both join buttons switch without changing the membership state.');
+    assert.ok(canvasTwoHtml.includes('Joining the waitlist is free'),'The explanation remains visible in Patreon mode.');
+    const currentCanvas=await api('/api/canvas',{sequence:1,generation:1,content:publishedSource});
+    assert.equal(currentCanvas.status,200,JSON.stringify(currentCanvas.data));
+    const currentHtml=await (await fetch(currentCanvas.data.url)).text();
+    assert.match(currentHtml,/data-edit-field="membershipWaitlistNote" data-rich-text="block"/,'The current membership explanation is editable.');
     assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('data-book-imprints="off"'),'Drawing visibility remains private to each canvas snapshot.');
     assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));
     const badNonce=new URL(canvasOne.data.url);badNonce.searchParams.set('nonce','wrong');
@@ -216,12 +232,12 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal((approvedHtml.match(/href="https:\/\/www.patreon.com\/c\/books_olgaruchina\/membership"/g)||[]).length,2);
     assert.match(approvedHtml,/class="faq-layout"/);
     assert.match(approvedHtml,/href="mailto:olga@ruslitiki.com"/);
-    assert.match(approvedHtml,/>contact us on Instagram<\/a>/);
+    assert.match(approvedHtml,/>Contact us on Instagram<\/a>/);
     const approvedCanvas=await api('/api/canvas',{sequence:50,generation:50,content:approved});
     assert.equal(approvedCanvas.status,200,JSON.stringify(approvedCanvas.data));
     const approvedCanvasHtml=await (await fetch(approvedCanvas.data.url)).text();
     assert.match(approvedCanvasHtml,/data-edit-id="membership" data-edit-field="lead"/);
-    assert.match(approvedCanvasHtml,/data-edit-field="buttonLabel"[^>]*>olga@ruslitiki.com/);
+    assert.match(approvedCanvasHtml,/data-edit-field="buttonLabel"[^>]*>Contact us on Instagram/);
     const customMembership=structuredClone(approved);
     Object.assign(customMembership.sections.find(section=>section.id==='membership'),{buttonLabel:'Ask about joining',buttonUrl:'mailto:olga@ruslitiki.com',buttonKind:'text'});
     const customSaved=await api('/api/save',{content:customMembership,revision});

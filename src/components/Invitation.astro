@@ -1,11 +1,11 @@
 ---
-import { ctaFor, formatDate } from '../lib/content.mjs';
+import { ctaFor, formatDate, joinModeFor } from '../lib/content.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 import RichText from './RichText.astro';
 const {content,visualEditing=false}=Astro.props;
 const action=ctaFor(content);
 const labels=labelsFor(content);
-const ctaField=content.status==='coming-soon'?'waitlistCta':'patreonCta';
+const ctaField=joinModeFor(content)==='waitlist'?'waitlistCta':'patreonCta';
 ---
 <div class="invitation" data-part="introduction">
   <RichText content={content} id="opening" field="heading" value={content.heading} as="h1" visualEditing={visualEditing} />
@@ -17,7 +17,6 @@ const ctaField=content.status==='coming-soon'?'waitlistCta':'patreonCta';
   <div class="signup-details">
     <dl class="dates">
       <div><RichText content={content} id="labels" field="membershipOpens" value={labels.membershipOpens} as="dt" visualEditing={visualEditing} /><dd><time datetime={content.openingDate} data-edit-date={visualEditing?'openingDate':undefined} data-edit-region={visualEditing?'dates':undefined} tabindex={visualEditing?0:undefined} role={visualEditing?'button':undefined}>{formatDate(content.openingDate)}</time></dd></div>
-      <div><RichText content={content} id="labels" field="readingStarts" value={labels.readingStarts} as="dt" visualEditing={visualEditing} /><dd><time datetime={content.readingDate} data-edit-date={visualEditing?'readingDate':undefined} data-edit-region={visualEditing?'dates':undefined} tabindex={visualEditing?0:undefined} role={visualEditing?'button':undefined}>{formatDate(content.readingDate)}</time></dd></div>
     </dl>
   </div>
 </div>

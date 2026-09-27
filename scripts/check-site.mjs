@@ -16,7 +16,9 @@ for(const [,id] of llms.matchAll(/https:\/\/www\.ruslitiki\.com\/#([a-z][a-z0-9-
 }
 assert.equal((home.match(/<h1(?:\s|>)/g)||[]).length,1,'Homepage must have one H1.');
 assert.ok(home.includes(ctaFor(content).url),'The active signup link is missing.');
-assert.ok(home.includes(content.openingDate) && home.includes(content.readingDate),'The saved dates are missing.');
+assert.ok(home.includes(`<time datetime="${content.openingDate}"`),'The membership opening date is missing.');
+assert.ok(!home.includes(`<time datetime="${content.readingDate}"`),'The reading start date should not appear on the page.');
+assert.ok(!home.match(/<header class="masthead"[\s\S]*?<\/header>/)?.[0].includes('Membership is open'),'The masthead should not repeat the membership state.');
 assert.ok(home.includes('https://www.ruslitiki.com/'),'Canonical origin is missing.');
 assert.ok(!home.includes('mailto:') || Boolean(content.email),'Do not publish an unconfigured mailbox.');
 assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must not ship on the public page.');

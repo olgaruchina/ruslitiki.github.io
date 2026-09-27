@@ -87,6 +87,7 @@ export function pageNavigation(content) {
 }
 export function editableContent(content) {
   const draft=structuredClone(content);
+  if(draft.joinMode===undefined)draft.joinMode=draft.status==='coming-soon'?'waitlist':'patreon';
   draft.sections=normalizedSections(draft.sections);
   materializeSectionAnchors(draft);
   draft.design=designFor(draft);

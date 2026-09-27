@@ -1,6 +1,7 @@
 {
   "brand": "Ruslitiki",
   "status": "membership-open",
+  "joinMode": "patreon",
   "heading": "Russian literature, but make it fun",
   "description": "An online Russian literature book club with Olga Ruchina",
   "introduction": "Fall in love with Russian classics, one book at a time. Discover the stories behind the stories.\nWE ARE OPEN! JOIN NOW!",
@@ -113,7 +114,7 @@
       "id": "faq-first-read",
       "type": "faq",
       "heading": "What are we reading, and when do we start?",
-      "body": "The book for the next month is chosen in advance, and you’ll find out what it is at least one week before the new month begins. This gives you time to get a copy of the book and decide whether you’d like to stay in the book club for the next month.\nIf you decide to stay for another month, you don’t need to do anything or pay again manually. Your membership will renew automatically, and the monthly payment will be charged to your payment method through Patreon. If you decide to leave the book club, please cancel your subscription before the next renewal date.\nOn the 25th of every month, membership opens for new Ruslitiki for the following month. It will remain open for five days and then close again.\nThe book club month begins on the first Monday of the month.",
+      "body": "The book for the next month is chosen in advance, and you’ll find out what it is at least one week before the new month begins. This gives you time to get a copy of the book and decide whether you’d like to stay in the book club for the next month.\nIf you decide to stay for another month, you don’t need to do anything or pay again manually. Your membership will renew automatically, and the monthly payment will be charged to your payment method through Patreon. If you decide to leave the book club, please cancel your subscription before the next renewal date.\nOn the 25th of every month, membership opens for new Ruslitiki for the following month.\nThe book club month begins on the first Monday of the month.",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -149,7 +150,7 @@
       "id": "faq-waitlist-and-price",
       "type": "faq",
       "heading": "Does joining the waitlist sign me up for a paid membership?",
-      "body": "No. Joining the waitlist is free and does not subscribe you to Patreon or take a payment. Membership is open. You can join on Patreon for $15 USD per month. ",
+      "body": "No. Joining the waitlist is free and does not subscribe you to Patreon or take a payment. When membership is open, you can join on Patreon for $15 USD per month.",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -161,18 +162,15 @@
       "id": "section-bb4b953e-a094-43dd-baec-239fd87471e6",
       "anchor": "contact",
       "type": "text",
-      "heading": "Contact Olga",
-      "body": "",
+      "heading": "Contact information",
+      "body": "All inquiries at olga@ruslitiki.com or Instagram @ruslitiki.",
       "visible": true,
-      "width": "full",
+      "width": "reading",
       "align": "left",
       "tone": "plain",
       "layout": "single",
       "divider": "line",
-      "navLabel": "Contact",
-      "buttonLabel": "olga@ruslitiki.com",
-      "buttonUrl": "mailto:olga@ruslitiki.com",
-      "buttonKind": "text"
+      "navLabel": "Contact"
     },
     {
       "id": "section-6a548e93-39c6-412f-a4fc-b3398c69a58d",
@@ -185,16 +183,15 @@
       "tone": "plain",
       "layout": "single",
       "divider": "none",
-      "buttonLabel": "contact us on Instagram",
+      "buttonLabel": "Contact us on Instagram",
       "buttonUrl": "https://www.instagram.com/ruslitiki/",
-      "buttonKind": "text",
-      "anchor": "contact-us-on-instagram",
-      "lead": "Or"
+      "buttonKind": "primary",
+      "anchor": "contact-us-on-instagram"
     }
   ],
   "seo": {
     "title": "Ruslitiki | Online Russian Literature Book Club",
-    "description": "Read Russian classics with Olga Ruchina. Explore the context, characters and translations. Join the Ruslitiki waitlist; reading begins 1 October 2026."
+    "description": "Read Russian classics with Olga Ruchina. Explore the context, characters and translations in the Ruslitiki online book club."
   },
   "design": {
     "logoSize": "small",
@@ -536,7 +533,7 @@
               "bold": true
             },
             {
-              "text": ", membership opens for new Ruslitiki for the following month. It will remain open for five days and then close again."
+              "text": ", membership opens for new Ruslitiki for the following month."
             }
           ]
         },
@@ -636,14 +633,14 @@
           "type": "paragraph",
           "runs": [
             {
-              "text": "No. Joining the waitlist is free and does not subscribe you to Patreon or take a payment. Membership is open. You can join on Patreon for "
+              "text": "No. Joining the waitlist is free and does not subscribe you to Patreon or take a payment. When membership is open, you can join on Patreon for "
             },
             {
               "text": "$15 USD per month",
               "bold": true
             },
             {
-              "text": ". "
+              "text": "."
             }
           ]
         }

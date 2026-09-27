@@ -230,6 +230,7 @@ function buildDesignControls(){
 function buildLabelControls(){
   const groups=new Map();
   for(const [key,definition] of Object.entries(LABEL_FIELDS)){
+    if(['statusComingSoon','statusMembershipOpen','statusReading','readingStarts'].includes(key))continue;
     let fields=groups.get(definition.group);
     if(!fields){
       const group=element('details');group.className='section-item';group.open=groups.size===0;

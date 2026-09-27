@@ -1,7 +1,7 @@
 import { editableField, setCanvasText } from './canvas-model.mjs';
 import { plainText, validateRichText } from './rich-text.mjs';
 
-export const richMode = field => ['body','introduction','book.note'].includes(field) ? 'block' : 'inline';
+export const richMode = field => ['body','introduction','book.note','membershipWaitlistNote'].includes(field) ? 'block' : 'inline';
 const targetFor=(content,key)=>{
   if(typeof key!=='string' || !/^[a-z][a-z0-9-]*:[a-zA-Z][a-zA-Z0-9.]*$/.test(key))return null;
   const [id,field]=key.split(':');
