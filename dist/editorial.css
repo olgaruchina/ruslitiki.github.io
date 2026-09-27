@@ -94,3 +94,28 @@
 .section-nav[data-nav-desktop]{border-block:1px solid var(--rule)}
 .section-nav[data-nav-desktop] ul{display:flex;justify-content:center;gap:clamp(24px,4vw,56px)}
 }
+
+/* Keep the price and joining action together before secondary dates. */
+.hero-action{margin-top:24px;display:flex;flex-direction:column;align-items:flex-start;gap:12px}
+.hero-action .membership-price{margin:0}
+.invitation .hero-action .join-button{background:var(--indigo);color:#fff;min-height:52px}
+.invitation .hero-action .join-button:hover{background:var(--ink)}
+.faq-layout{margin-block:72px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:48px;align-items:start;border-top:1px solid var(--rule);padding-top:32px}
+.faq-layout #faq{margin:0;padding:0}
+.faq-questions{min-width:0}
+.faq-questions .block-faq{margin:0;padding:0}
+.faq-questions .block-faq details,.faq-questions .block-faq+.block-faq[data-divider=auto] details{padding:0;border-top:1px solid var(--rule)}
+.faq-questions .block-faq:first-child details{border-top:0}
+.faq-questions .block-faq:last-child{border-bottom:1px solid var(--rule)}
+.faq-questions summary{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:56px;padding:14px 0;list-style:none}
+.faq-questions summary::-webkit-details-marker{display:none}
+.faq-questions summary::after{content:"+";flex:none;color:var(--indigo);font-size:22px;font-weight:400}
+.faq-questions details[open]>summary::after{content:"−"}
+.faq-questions .block-copy{margin-top:8px;padding-bottom:24px;max-width:60ch}
+@media(max-width:899.98px){
+.hero-action{margin-top:20px;align-items:stretch}
+.hero-action .join-button{width:100%;font-size:18px}
+.faq-layout{display:block;margin-block:48px;padding-top:28px}
+.faq-layout #faq{margin-bottom:20px}
+.faq-questions summary{gap:16px}
+}
