@@ -31,6 +31,9 @@ assert.match(home,/<a\b[^>]*href="#main"[^>]*class="wordmark/,'The wordmark must
 for(const [,id] of menu.matchAll(/href="#([a-z][a-z0-9-]*)"/g)){
   assert.equal([...home.matchAll(new RegExp(`\\sid="${id}"`,'g'))].length,1,`Menu target ${id} must exist exactly once.`);
 }
+const introduction=home.match(/<section id="meet-ruslitiki"[^>]*>([\s\S]*?)<\/section>/)?.[1];
+assert.ok(introduction?.includes('<span id="how-the-club-works" class="section-anchor-legacy"'),'The How it works bookmark must land at the introduction video.');
+assert.ok(home.includes('<section id="how-the-club-works-details"'),'The written explanation must retain a separate link.');
 const videos=content.sections.filter(section=>section.type==='video' && section.visible);
 const frames=[...home.matchAll(/<iframe\b([^>]*)>/g)];
 assert.equal(frames.length,videos.length,'Only configured visible videos may render a player.');

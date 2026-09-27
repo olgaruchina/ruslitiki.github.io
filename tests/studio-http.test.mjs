@@ -162,12 +162,16 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(!menu.includes('>Home<'),'The wordmark replaces the redundant Home menu link.');
     assert.match(previewHtml,/<a href="#main"[^>]*class="wordmark/);
     for(const id of ['first-book-title','how-the-club-works','joining-details','faq','contact'])assert.ok(menu.includes(`href="#${id}"`));
-    assert.ok(!menu.includes('instagram.com') && !menu.includes('href="#meet-ruslitiki"'),'The compact menu targets the written explanation directly.');
+    assert.ok(!menu.includes('instagram.com') && !menu.includes('href="#meet-ruslitiki"'),'The compact menu uses the introduction video bookmark.');
     const footer=previewHtml.match(/<footer class="footer">([\s\S]*?)<\/footer>/)[1];
     assert.match(footer,/<a [^>]*href="https:\/\/www\.instagram\.com\/ruslitiki\/"[^>]*target="_blank"[^>]*><span>Instagram:<\/span> @ruslitiki/);
     assert.ok(previewHtml.includes('https://www.youtube-nocookie.com/embed/m9CKv9oMYRY'),'The supplied club introduction must render its privacy-enhanced player.');
     const introPosition=previewHtml.indexOf('<section id="meet-ruslitiki"');
-    assert.ok(previewHtml.indexOf('id="first-book-title"')<introPosition && introPosition<previewHtml.indexOf('<section id="how-the-club-works"'),'The introduction video belongs after the opening and before How the club works.');
+    const explanationPosition=previewHtml.indexOf('<section id="how-the-club-works-details"');
+    assert.ok(previewHtml.indexOf('id="first-book-title"')<introPosition && introPosition<explanationPosition,'The introduction video belongs after the opening and before the written explanation.');
+    assert.ok(previewHtml.slice(introPosition,explanationPosition).includes('<span id="how-the-club-works" class="section-anchor-legacy"'),'The How it works bookmark must land inside the video section.');
+    assert.equal(pageIds.filter(id=>id==='how-the-club-works').length,1,'The video bookmark must have one target.');
+    assert.ok(overviewText.includes('/#how-the-club-works-details'),'The written explanation remains directly linkable.');
     assert.equal((await fetch(new URL(stagedPath,built.data.preview.url))).status,404,'Unselected upload must not be included in a release.');
     const manifest=JSON.parse(await fs.readFile(path.join(root,'.studio/previews',built.data.preview.id,'manifest.json')));
     assert.equal((await fetch(new URL('/favicon.svg',built.data.preview.url))).status,200);

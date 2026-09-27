@@ -7,12 +7,13 @@ import RichText from './RichText.astro';
 import Navigation from './Navigation.astro';
 import { instagramProfile } from '../lib/content.mjs';
 import { designFor, normalizedSections, groupedSections } from '../lib/design.mjs';
-import { sectionAnchors } from '../lib/anchors.mjs';
+import { publicSectionAnchors, hasHowItWorksVideoBookmark } from '../lib/anchors.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 const {content,visualEditing=false}=Astro.props;
 const design=designFor(content);
 const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
-const anchors=sectionAnchors([...sections.values()]);
+const anchors=publicSectionAnchors([...sections.values()]);
+const clubVideo=hasHowItWorksVideoBookmark([...sections.values()]);
 const labels=labelsFor(content);
 const groups=groupedSections(content);
 const hostProfile=instagramProfile(content.hostInstagramUrl);
@@ -45,7 +46,7 @@ const structuredData = {
         <div class="faq-layout">
           <ContentBlock content={content} section={sections.get(group[0])} anchor={anchors.get(group[0])} visualEditing={visualEditing} />
           <div class="faq-questions">{group.slice(1).map(id=><ContentBlock content={content} section={sections.get(id)} anchor={anchors.get(id)} visualEditing={visualEditing} />)}</div>
-        </div> : <ContentBlock content={content} section={sections.get(group[0])} anchor={anchors.get(group[0])} visualEditing={visualEditing} />)}
+        </div> : <ContentBlock content={content} section={sections.get(group[0])} anchor={anchors.get(group[0])} videoAlias={clubVideo && group[0]==='meet-ruslitiki'} suppressLegacyAnchor={clubVideo && group[0]==='how-the-club-works'} visualEditing={visualEditing} />)}
     </main>
     <footer class="footer">
       <p><RichText {...label('footerMotto')} /><BookImprint kind="stack" placement="footer" /></p>

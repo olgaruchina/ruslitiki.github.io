@@ -1,5 +1,5 @@
 import { labelsFor } from './labels.mjs';
-import { sectionAnchors, materializeSectionAnchors } from './anchors.mjs';
+import { sectionAnchors, publicSectionAnchors, hasHowItWorksVideoBookmark, materializeSectionAnchors } from './anchors.mjs';
 
 export const DESIGN_OPTIONS = {
   composition: { split: 'Introduction beside the book', 'book-left': 'Book beside the introduction', stacked: 'One column', centered: 'Centred introduction' },
@@ -74,7 +74,8 @@ export function navigationLabel(section) {
 }
 export function pageNavigation(content) {
   const sections=new Map(normalizedSections(content.sections).map(section=>[section.id,section]));
-  const anchors=sectionAnchors([...sections.values()]);
+  const anchors=publicSectionAnchors([...sections.values()]);
+  const clubVideo=hasHowItWorksVideoBookmark([...sections.values()]);
   const labels=labelsFor(content);
   const visibleOrder=designFor(content).blockOrder.filter(id=>id==='opening' || sections.get(id)?.visible);
   return visibleOrder.flatMap(id=>{
@@ -82,7 +83,7 @@ export function pageNavigation(content) {
     const section=sections.get(id);
     const label=section.navLabel??navigationLabel(section);
     if(!label.trim())return [];
-    return [{id:anchors.get(id) ?? id,label,blockId:id,field:'navLabel'}];
+    return [{id:id==='how-the-club-works' && clubVideo?'how-the-club-works':anchors.get(id) ?? id,label,blockId:id,field:'navLabel'}];
   });
 }
 export function editableContent(content) {

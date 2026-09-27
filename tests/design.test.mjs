@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {validateContent, selectedImagePaths} from '../src/lib/content.mjs';
 import { DESIGN_DEFAULTS, PALETTES, designFor, editableContent, pageNavigation } from '../src/lib/design.mjs';
+import { publicSectionAnchors } from '../src/lib/anchors.mjs';
 const publicNavigation=content=>pageNavigation(content).map(({id,label})=>({id,label}));
 
 test('legacy content receives stable layout defaults without changing saved data',()=>{
@@ -114,15 +115,17 @@ test('custom section links change navigation while keeping editing targets and s
   const draft=editableContent(content);
   const saved=draft.sections.at(-1);saved.heading='November dates';
   assert.equal(saved.anchor,'reading-calendar');
-  assert.deepEqual(pageNavigation(draft)[1],{id:'our-format',label:'How it works',blockId:'how-the-club-works',field:'navLabel'});
+  assert.deepEqual(pageNavigation(draft)[1],{id:'how-the-club-works',label:'How it works',blockId:'how-the-club-works',field:'navLabel'});
+  assert.equal(publicSectionAnchors(draft.sections).get('how-the-club-works'),'our-format');
   assert.equal(pageNavigation(draft).at(-1).id,'reading-calendar');
   assert.deepEqual(validateContent(draft),[]);
   saved.anchor='club-introduction';
   for(const options of [{},{draft:true}])assert.ok(validateContent(draft,options).some(error=>error.includes('another section link')));
 });
 
-test('How it works targets its own explanation even beside the introduction',()=>{
+test('How it works targets the introduction video while its explanation has a separate link',()=>{
   const content=introductionNavigationContent();
+  assert.equal(publicSectionAnchors(content.sections).get('how-the-club-works'),'how-the-club-works-details');
   assert.deepEqual(publicNavigation(content),[
     {id:'first-book-title',label:"October's Book"},
     {id:'how-the-club-works',label:'How it works'},
@@ -136,7 +139,7 @@ test('How it works targets its own explanation even beside the introduction',()=
   assert.equal(publicNavigation(content)[1].id,'how-the-club-works','Visible sections separate the group even without a menu label.');
 });
 
-test('How it works retains its own target when the introduction is hidden, missing or no longer a video',()=>{
+test('How it works targets its explanation when the introduction is hidden, missing or no longer a video',()=>{
   const content=introductionNavigationContent();
   content.sections[0].visible=false;
   assert.equal(publicNavigation(content)[1].id,'how-the-club-works');
@@ -145,6 +148,15 @@ test('How it works retains its own target when the introduction is hidden, missi
   content.sections.shift();
   content.design.blockOrder=content.design.blockOrder.filter(id=>id!=='meet-ruslitiki');
   assert.equal(publicNavigation(content)[1].id,'how-the-club-works');
+});
+
+test('a different section can use the How it works link after the explanation is removed',()=>{
+  const content=introductionNavigationContent();
+  content.sections=content.sections.filter(section=>section.id!=='how-the-club-works');
+  content.design.blockOrder=content.design.blockOrder.filter(id=>id!=='how-the-club-works');
+  content.sections[1].anchor='how-the-club-works';
+  assert.deepEqual(validateContent(content),[]);
+  assert.equal(publicSectionAnchors(content.sections).get('membership'),'how-the-club-works');
 });
 
 test('reordering the introduction keeps navigation in the visible section order',()=>{

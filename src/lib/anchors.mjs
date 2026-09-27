@@ -37,6 +37,29 @@ export function sectionAnchors(sections=[]){
   return anchors;
 }
 
+export function hasClubIntroductionVideo(sections=[]){
+  return sections.some(section=>section.id==='meet-ruslitiki' && section.type==='video' && section.visible);
+}
+
+export function hasHowItWorksVideoBookmark(sections=[]){
+  if(!hasClubIntroductionVideo(sections))return false;
+  return ![...sectionAnchors(sections)].some(([id,anchor])=>id!=='how-the-club-works' && anchor==='how-the-club-works');
+}
+
+/** The How it works bookmark introduces the video; its written section keeps a separate link. */
+export function publicSectionAnchors(sections=[]){
+  const anchors=sectionAnchors(sections);
+  if(!hasHowItWorksVideoBookmark(sections))return anchors;
+  const explanation=sections.find(section=>section.id==='how-the-club-works');
+  if(!explanation || anchors.get(explanation.id)!=='how-the-club-works')return anchors;
+  const occupied=new Set([...sections.map(section=>section.id),...anchors.values()]);
+  const base='how-the-club-works-details';
+  let candidate=base,number=2;
+  while(occupied.has(candidate))candidate=`${base}-${number++}`;
+  anchors.set(explanation.id,candidate);
+  return anchors;
+}
+
 /** Lock a readable default when loading or saving a named section, never while typing. */
 export function materializeSectionAnchors(content){
   const sections=content.sections || [];

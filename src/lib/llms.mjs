@@ -1,7 +1,7 @@
 import { ctaFor, formatDate, instagramProfile } from './content.mjs';
 import { designFor, normalizedSections, youtubeVideoId } from './design.mjs';
 import { labelsFor } from './labels.mjs';
-import { sectionAnchors } from './anchors.mjs';
+import { publicSectionAnchors } from './anchors.mjs';
 
 // Editor fields are plain text. Keep their punctuation from creating Markdown links or headings.
 const text = value => String(value ?? '').trim().replace(/\s+/g, ' ').replace(/[\\`*_[\]<>#!|]/g, '\\$&');
@@ -11,7 +11,7 @@ export function renderLlms(content, site) {
   const labels=labelsFor(content);
   const absolute = value => new URL(value, site).href;
   const sections = new Map(normalizedSections(content.sections).map(section => [section.id, section]));
-  const anchors = sectionAnchors([...sections.values()]);
+  const anchors = publicSectionAnchors([...sections.values()]);
   const lines = [
     `# ${text(content.brand)}`, '',
     `> ${text(content.description)}`, '',
