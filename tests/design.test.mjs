@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {validateContent, selectedImagePaths} from '../src/lib/content.mjs';
 import { DESIGN_DEFAULTS, PALETTES, designFor, editableContent, pageNavigation } from '../src/lib/design.mjs';
-import { publicSectionAnchors } from '../src/lib/anchors.mjs';
+import { publicSectionAnchors, materializeSectionAnchors } from '../src/lib/anchors.mjs';
 const publicNavigation=content=>pageNavigation(content).map(({id,label})=>({id,label}));
 
 test('legacy content receives stable layout defaults without changing saved data',()=>{
@@ -137,6 +137,23 @@ test('How it works targets the introduction video while its explanation has a se
   assert.equal(publicNavigation(content)[1].id,'how-the-club-works','Hidden sections do not separate a visible group.');
   separator.visible=true;
   assert.equal(publicNavigation(content)[1].id,'how-the-club-works','Visible sections separate the group even without a menu label.');
+});
+
+test('the editor turns an older How it works link into the written section link',()=>{
+  const content=introductionNavigationContent();
+  const original=JSON.stringify(content);
+  const editable=editableContent(content);
+  const explanation=editable.sections.find(section=>section.id==='how-the-club-works');
+  assert.equal(explanation.anchor,'how-the-club-works-details');
+  assert.equal(JSON.stringify(content),original,'Loading an older draft does not change the saved file.');
+  explanation.anchor='how-the-club-works';
+  materializeSectionAnchors(editable);
+  assert.equal(explanation.anchor,'how-the-club-works-details','Saving replaces the old link with its actual destination.');
+  content.sections[1].anchor='our-reading-format';
+  assert.equal(editableContent(content).sections[1].anchor,'our-reading-format','A custom written-section link stays intact.');
+  content.sections[0].visible=false;
+  content.sections[1].anchor='how-the-club-works';
+  assert.equal(editableContent(content).sections[1].anchor,'how-the-club-works','The old link belongs to the explanation when the video is hidden.');
 });
 
 test('How it works targets its explanation when the introduction is hidden, missing or no longer a video',()=>{

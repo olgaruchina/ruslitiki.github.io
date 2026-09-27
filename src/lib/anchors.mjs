@@ -63,7 +63,11 @@ export function publicSectionAnchors(sections=[]){
 /** Lock a readable default when loading or saving a named section, never while typing. */
 export function materializeSectionAnchors(content){
   const sections=content.sections || [];
-  const anchors=sectionAnchors(sections);
+  const anchors=publicSectionAnchors(sections);
+  const explanation=sections.find(section=>section.id==='how-the-club-works');
+  if(explanation && hasHowItWorksVideoBookmark(sections) && (!hasAnchor(explanation) || explanation.anchor==='how-the-club-works')){
+    explanation.anchor=anchors.get(explanation.id);
+  }
   for(const section of sections){
     if((!Object.hasOwn(section,'anchor') || section.anchor==='') && GENERATED_ID.test(section.id) && title(section))section.anchor=anchors.get(section.id);
   }
