@@ -19,7 +19,8 @@ assert.ok(home.includes(ctaFor(content).url),'The active signup link is missing.
 assert.ok(home.includes(`<time datetime="${content.openingDate}"`),'The membership opening date is missing.');
 assert.ok(!home.includes(`<time datetime="${content.readingDate}"`),'The reading start date should not appear on the page.');
 assert.ok(!home.match(/<header class="masthead"[\s\S]*?<\/header>/)?.[0].includes('Membership is open'),'The masthead should not repeat the membership state.');
-assert.ok(!home.includes('WE ARE OPEN! JOIN NOW!'),'The introduction should not repeat the membership announcement.');
+assert.ok(home.includes('WE ARE OPEN! JOIN NOW!'),'The approved introduction line is missing.');
+assert.ok(home.includes('Joining the waitlist is free. Paid membership is a separate step through Patreon.'),'The membership explanation is missing or out of date.');
 assert.ok(home.includes('https://www.ruslitiki.com/'),'Canonical origin is missing.');
 assert.ok(!home.includes('mailto:') || Boolean(content.email),'Do not publish an unconfigured mailbox.');
 assert.ok(!home.includes('/studio') && !home.includes('.studio'),'Editor must not ship on the public page.');

@@ -69,8 +69,6 @@
 :is(#membership,[data-block-id="membership"])::before{content:"";position:absolute;top:0;left:0;width:100%;border-top:1px solid var(--rule)}
 
 :is(#membership,[data-block-id="membership"])>.block-copy>p:nth-last-child(-n+2){font-size:15px;line-height:1.7;color:var(--muted-ink)}
-:is(#membership,[data-block-id="membership"])>.membership-waitlist-note{margin-top:0;font-size:15px;line-height:1.7;color:var(--muted-ink)}
-:is(#membership,[data-block-id="membership"])>.membership-waitlist-note>p{margin:0}
 
 /* Editorial columns: offer at left, supporting detail at right. */
 @media(min-width:900px){
@@ -79,7 +77,6 @@
 :is(#membership,[data-block-id="membership"])>.section-lead{grid-column:1;grid-row:2;margin-bottom:0}
 :is(#membership,[data-block-id="membership"])>.block-copy{grid-column:2;grid-row:1 / 5;border-left:1px solid var(--rule);padding-left:32px;max-width:none}
 :is(#membership,[data-block-id="membership"])>.membership-join{grid-column:1;grid-row:3;justify-self:start;margin-top:24px}
-:is(#membership,[data-block-id="membership"])>.membership-waitlist-note{grid-column:2;grid-row:5;border-left:1px solid var(--rule);padding-left:32px}
 }
 
 [data-block-id="how-the-club-works"] .block-copy>.emphasis-paragraph+p{margin-top:8px}
@@ -130,4 +127,3 @@
 .opening.composition-stacked,.opening.composition-centered{grid-template-columns:minmax(0,1fr)}
 .composition-centered .hero-action{align-items:center}
 [data-button-style=outline] .invitation .hero-action .join-button{background:transparent;color:var(--indigo)}
-@media(max-width:899.98px){:is(#membership,[data-block-id="membership"])>.membership-waitlist-note{border:0;padding-left:0}}

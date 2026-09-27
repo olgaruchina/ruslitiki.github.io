@@ -130,10 +130,6 @@ export function joinModeFor(data) {
   return data.joinMode==='waitlist' || data.joinMode==='patreon' ? data.joinMode : data.status==='coming-soon' ? 'waitlist' : 'patreon';
 }
 
-export function showMembershipWaitlistNote(section) {
-  return section?.id==='membership' && !section.body?.includes('Joining the waitlist is free');
-}
-
 export function ctaFor(data) {
   const labels=labelsFor(data);
   return joinModeFor(data) === 'waitlist'

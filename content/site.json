@@ -4,7 +4,7 @@
   "joinMode": "patreon",
   "heading": "Russian literature, but make it fun",
   "description": "An online Russian literature book club with Olga Ruchina",
-  "introduction": "Fall in love with Russian classics, one book at a time. Discover the stories behind the stories.",
+  "introduction": "Fall in love with Russian classics, one book at a time. Discover the stories behind the stories.\nWE ARE OPEN! JOIN NOW!",
   "openingDate": "2026-09-25",
   "readingDate": "2026-10-01",
   "membershipPrice": "$15 USD / month",
@@ -51,7 +51,7 @@
       "id": "membership",
       "type": "text",
       "heading": "Membership",
-      "body": "It includes:\nWeekly videos\nReading guides and additional materials\nAccess to the member chat\nA guided discussion at the end of the month\nPaid membership is through Patreon. The price will be indicated in your local currency (equal to $15 USD)\nThe book itself is not included. A physical copy is not provided. You can buy it separately, borrow it from a friend or a library, or find a free, legal version online.",
+      "body": "It includes:\nWeekly videos\nReading guides and additional materials\nAccess to the member chat\nA guided discussion at the end of the month\nJoining the waitlist is free. Paid membership is a separate step through Patreon. The price will be indicated in your local currency (equal to $15 USD)\nThe book itself is not included. A physical copy is not provided. You can buy it separately, borrow it from a friend or a library, or find a free, legal version online.",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -212,6 +212,14 @@
               "text": "Fall in love with Russian classics, one book at a time. Discover the stories behind the stories."
             }
           ]
+        },
+        {
+          "type": "paragraph",
+          "runs": [
+            {
+              "text": "WE ARE OPEN! JOIN NOW!"
+            }
+          ]
         }
       ]
     },
@@ -349,7 +357,7 @@
           "type": "paragraph",
           "runs": [
             {
-              "text": "Paid membership is through Patreon. The price will be indicated in your local currency (equal to $15 USD)"
+              "text": "Joining the waitlist is free. Paid membership is a separate step through Patreon. The price will be indicated in your local currency (equal to $15 USD)"
             }
           ]
         },

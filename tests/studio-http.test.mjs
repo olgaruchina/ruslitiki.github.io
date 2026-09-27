@@ -65,7 +65,6 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.ok(!canvasHtml.includes('data-edit-date="readingDate"'),'The reading date no longer appears on the page.');
     assert.ok(!canvasHtml.includes('Membership is open'),'The masthead omits the membership state.');
     assert.ok(canvasHtml.includes('Joining the waitlist is free'),'Older saved drafts retain their existing waitlist explanation.');
-    assert.ok(!canvasHtml.includes('data-edit-field="membershipWaitlistNote"'),'Older drafts do not show a duplicate waitlist explanation.');
     assert.match(canvasHtml,/<section id="contact"[^>]*>[\s\S]*?Contact information/,'The original Contact information section is retained.');
     assert.match(canvasHtml,/data-edit-id="how-the-club-works" data-edit-field="body" data-rich-text="block"[^>]*><p>/,'Existing multiline text must start with paragraph boundaries in the editing canvas.');
     for(const route of ['/__canvas/rich-text-editor.js','/__canvas/rich-text.mjs'])assert.equal((await fetch(new URL(route,canvasOne.data.origin))).status,200);
@@ -84,7 +83,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const currentCanvas=await api('/api/canvas',{sequence:1,generation:1,content:publishedSource});
     assert.equal(currentCanvas.status,200,JSON.stringify(currentCanvas.data));
     const currentHtml=await (await fetch(currentCanvas.data.url)).text();
-    assert.match(currentHtml,/data-edit-field="membershipWaitlistNote" data-rich-text="block"/,'The current membership explanation is editable.');
+    assert.match(currentHtml,/data-edit-id="membership" data-edit-field="body" data-rich-text="block"/,'The membership explanation is editable with its other body text.');
+    assert.ok(currentHtml.includes('Joining the waitlist is free. Paid membership is a separate step through Patreon.'));
     assert.ok((await (await fetch(canvasTwo.data.url)).text()).includes('data-book-imprints="off"'),'Drawing visibility remains private to each canvas snapshot.');
     assert.ok(!(await (await fetch(canvasOne.data.url)).text()).includes('A different unsaved tab'));
     const badNonce=new URL(canvasOne.data.url);badNonce.searchParams.set('nonce','wrong');
