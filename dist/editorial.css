@@ -119,3 +119,17 @@
 .faq-layout #faq{margin-bottom:20px}
 .faq-questions summary{gap:16px}
 }
+
+/* A quiet contact close, aligned with the FAQ columns. */
+#contact{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);column-gap:48px;align-items:start;border-top:1px solid var(--rule);padding-top:32px;margin-block:64px 48px}
+#contact::before{display:none}
+#contact>h2{grid-column:1;margin:0}
+#contact>.contact-channels{grid-column:2;min-width:0}
+#contact .contact-email>a{display:block;width:fit-content;font-size:clamp(22px,2.5vw,28px);line-height:1.5;margin-top:4px;overflow-wrap:anywhere}
+#contact .contact-instagram{margin-top:20px;font-size:16px}
+#contact .contact-instagram>a{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:899.98px){
+#contact{display:block;margin-block:48px 36px;padding-top:28px}
+#contact>h2{margin-bottom:20px}
+#contact .contact-instagram{margin-top:12px}
+}
