@@ -49,7 +49,8 @@
           <label>Book title<input name="book.title" maxlength="120" required></label>
           <label>Author<input name="book.author" maxlength="100" required></label>
           <label>A short invitation to this book<textarea name="book.note" rows="5" maxlength="300" required></textarea></label>
-          <label class="artwork-toggle"><input name="book.showArtwork" type="checkbox"> Show the Eugene Onegin illustration<small>The illustration is hidden automatically when you change the first book.</small></label>
+          <fieldset class="logo-field"><legend>Book cover</legend><p id="book-cover-description">Choose a cover for the current book.</p><img id="book-cover-preview" class="book-cover-preview" alt="Selected book cover" hidden><label class="file-label">Choose a book cover<input id="book-cover-upload" type="file" accept="image/png,image/jpeg,image/webp"></label><small>PNG, JPEG or WebP, up to 2 MB. The complete cover is shown without cropping.</small><button id="remove-book-cover" class="text-button" type="button">Hide book image</button><p id="book-cover-status" role="status"></p></fieldset>
+          <label class="artwork-toggle"><input name="book.showArtwork" type="checkbox"> Show book image<small>Changing the book title does not change an uploaded cover. Choose a new cover for each book.</small></label>
         </div>
         <div role="tabpanel" id="panel-details" aria-labelledby="tab-details" hidden>
           <label>Join buttons link to<select name="joinMode"><option value="waitlist">Waitlist form</option><option value="patreon">Patreon membership</option></select><small>This changes both join buttons after you save, preview and publish. It does not close Patreon membership itself.</small></label>

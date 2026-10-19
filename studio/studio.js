@@ -33,6 +33,22 @@ function renderFields(){
   }
   renderSections();
   renderDesignState();
+  renderBookCover();
+}
+function currentBookCover(){
+  const book=draft?.book;
+  if(!book)return null;
+  if(book.coverImage)return book.coverImage;
+  if(book.title.trim().toLowerCase()==='dead souls' && book.author.trim().toLowerCase()==='nikolai gogol')return '/images/dead-souls-vintage-cover.jpg';
+  return null;
+}
+function renderBookCover(){
+  const cover=currentBookCover();
+  const preview=$('#book-cover-preview');
+  preview.hidden=!cover;
+  if(cover && /^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(cover))preview.src='/media/'+cover.split('/').pop();
+  else preview.removeAttribute('src');
+  $('#book-cover-description').textContent=draft.book.showArtwork===false ? 'The book image is hidden. Select Show book image to display it.' : cover ? 'This cover is selected for the current book.' : 'No cover is selected. Choose an image for this book.';
 }
 function changed(historyGroup=null,{deferCanvas=false}={}){
   pruneRichText(draft);
@@ -40,7 +56,7 @@ function changed(historyGroup=null,{deferCanvas=false}={}){
   if(lastSnapshot && snapshot!==lastSnapshot){if(!historyGroup || historyGroup!==lastHistoryGroup){past.push(JSON.parse(lastSnapshot));if(past.length>40)past.shift();}future=[];}
   lastHistoryGroup=historyGroup;
   lastSnapshot=snapshot;dirty=snapshot!==JSON.stringify(editableContent(state.content));$('#error').hidden=true;renderDesignState();update();
-  canvas.schedule(draft,{defer:deferCanvas});
+  renderBookCover();canvas.schedule(draft,{defer:deferCanvas});
 }
 async function historyMove(from,to){
   if(working || state?.busy || !from.length)return;
@@ -171,6 +187,21 @@ $('#logo-upload').addEventListener('change',event=>{
   });
 });
 $('#original-logo').addEventListener('click',()=>{draft.logo='/images/ruslitiki-original.png';draft.logoPresentation='original-banner';changed();$('#image-status').textContent='Original wordmark selected.';});
+$('#book-cover-upload').addEventListener('change',event=>{
+  const file=event.target.files[0];if(!file)return;
+  operation(async()=>{
+    if(file.size>2*1024*1024)throw new Error('Choose an image smaller than 2 MB.');
+    let bitmap;
+    try{bitmap=await createImageBitmap(file);}catch{throw new Error('This image could not be opened. Choose a PNG, JPEG or WebP.');}
+    const width=bitmap.width,height=bitmap.height;bitmap.close();
+    if(width>12000 || height>12000)throw new Error('Choose an image no larger than 12,000 pixels on either side.');
+    const base64=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result.split(',')[1]);reader.onerror=()=>reject(new Error('The image could not be read.'));reader.readAsDataURL(file);});
+    const result=await request('/api/upload',{base64});
+    Object.assign(draft.book,{coverImage:result.path,coverWidth:width,coverHeight:height,showArtwork:true});
+    changed();renderFields();$('#book-cover-status').textContent='Cover added. Save and prepare a preview to see it on the website.';
+  });
+});
+$('#remove-book-cover').addEventListener('click',()=>{Object.assign(draft.book,{coverImage:'',showArtwork:false});changed();renderFields();$('#book-cover-status').textContent='Book image hidden. Save and preview before publishing.';});
 function element(tag,text){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;return node;}
 let renderedConnection=null;
 function renderConnection(){

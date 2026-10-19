@@ -1,4 +1,6 @@
-# Eugene Onegin artwork
+# Book artwork
+
+The supplied Vintage Classics *Dead Souls* cover is stored at `public/images/dead-souls-vintage-cover.jpg`. It is displayed for the matching title and author unless a different cover is selected in the editor or the book image is hidden. The complete cover is shown without cropping. The supplied file is kept unchanged.
 
 The coming-soon page features **Onegin and Tatyana**, an illustration by Elena Petrovna Samokish-Sudkovskaya from a 1908 edition of *Eugene Onegin*. It shows their meeting beside a white garden bench.
 
@@ -10,4 +12,4 @@ The coming-soon page features **Onegin and Tatyana**, an illustration by Elena P
 
 The visible caption credits the artist and year and links to the source. The image has descriptive alternative text and intrinsic dimensions. It is served with the website, without a third-party image request.
 
-In the editor, **First book → Show the Eugene Onegin illustration** controls visibility. Older drafts without this field display the artwork by default when the title is Eugene Onegin and the author is Alexander Pushkin. Changing either book identity field hides this specific illustration automatically. A different first book should receive artwork appropriate to that book.
+In the editor, **First book → Show book image** controls visibility. Older drafts without this field display the historical illustration by default when the title is Eugene Onegin and the author is Alexander Pushkin. Changing either book identity field hides that specific illustration. An uploaded cover remains selected until it is replaced or hidden, so update it when changing books.

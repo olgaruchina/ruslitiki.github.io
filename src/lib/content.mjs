@@ -63,11 +63,13 @@ export function validateContent(data, {draft = false} = {}) {
   if (data.email && !/^[^\s<>@\r\n]+@[^\s<>@\r\n]+\.[^\s<>@\r\n]+$/.test(data.email)) errors.push('Enter a working email address, or leave the field empty.');
   if (typeof data.logo !== 'string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(data.logo)) errors.push('Logo: choose a PNG, JPEG or WebP in the image library.');
   if (!['original-banner','image'].includes(data.logoPresentation)) errors.push('Choose the logo presentation.');
-  if (keys(data.book, ['title','author','note','showArtwork'], 'First book')) {
+  if (keys(data.book, ['title','author','note','showArtwork','coverImage','coverWidth','coverHeight'], 'First book')) {
     string(data.book.title, 'Book title', 120);
     string(data.book.author, 'Author', 100);
     string(data.book.note, 'Book note', LIMITS.bookNote);
     if (own(data.book,'showArtwork') && typeof data.book.showArtwork !== 'boolean') errors.push('Book illustration: visibility must be on or off.');
+    if (own(data.book,'coverImage') && data.book.coverImage !== '' && (typeof data.book.coverImage !== 'string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(data.book.coverImage))) errors.push('Book cover: upload a PNG, JPEG or WebP image.');
+    for (const key of ['coverWidth','coverHeight']) if (own(data.book,key) && (!Number.isInteger(data.book[key]) || data.book[key]<1 || data.book[key]>12000)) errors.push('Book cover: choose an image no larger than 12,000 pixels on either side.');
   }
   if (!Array.isArray(data.sections) || data.sections.length > MAX_SECTIONS) errors.push(`Use at most ${MAX_SECTIONS} additional sections.`);
   else data.sections.forEach((section, i) => {
@@ -116,7 +118,13 @@ export function validateContent(data, {draft = false} = {}) {
 }
 
 export function selectedImagePaths(data) {
-  return [...new Set([data.logo,...data.sections.filter(section=>section.type==='image' && section.visible && section.image).map(section=>section.image)])];
+  return [...new Set([data.logo,...(data.book.coverImage ? [data.book.coverImage] : []),...data.sections.filter(section=>section.type==='image' && section.visible && section.image).map(section=>section.image)])];
+}
+
+export function bookCoverFor(book) {
+  if (book.coverImage) return book.coverImage;
+  if (book.title.trim().toLowerCase()==='dead souls' && book.author.trim().toLowerCase()==='nikolai gogol') return '/images/dead-souls-vintage-cover.jpg';
+  return null;
 }
 
 export function readContent(file = process.env.RUSLITIKI_CONTENT_FILE || resolve('content/site.json')) {

@@ -4,10 +4,25 @@ import assert from 'node:assert/strict';
 import { promises as fs } from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {validateContent, ctaFor, instagramProfile} from '../src/lib/content.mjs';
+import {validateContent, ctaFor, instagramProfile, bookCoverFor, selectedImagePaths} from '../src/lib/content.mjs';
 import { atomicJson, digest, saveDraft, fileMap, safeImage } from '../scripts/studio-store.mjs';
 import { validatePublishing, verifyArtifact } from '../scripts/publish-release.mjs';
 const fresh=()=>structuredClone(readContent());
+
+test('the current book gets its supplied cover while other books retain their own artwork',()=>{
+  const content=fresh();
+  assert.equal(bookCoverFor(content.book),null);
+  content.book={...content.book,title:'Dead Souls',author:'Nikolai Gogol'};
+  assert.equal(bookCoverFor(content.book),'/images/dead-souls-vintage-cover.jpg');
+  content.book.coverImage='/images/new-cover.webp';content.book.coverWidth=600;content.book.coverHeight=900;
+  assert.deepEqual(validateContent(content),[]);
+  assert.ok(selectedImagePaths(content).includes('/images/new-cover.webp'));
+  assert.equal(bookCoverFor(content.book),'/images/new-cover.webp');
+  content.book.title='A later book';
+  assert.equal(bookCoverFor(content.book),'/images/new-cover.webp','The editor must show a previously selected cover until it is changed or hidden.');
+  content.book.coverImage='/images/../../secret.jpg';
+  assert.ok(validateContent(content).some(error=>error.startsWith('Book cover:')));
+});
 
 test('membership price is optional for older drafts and validates plain text up to 80 characters',()=>{
   const content=fresh();delete content.membershipPrice;

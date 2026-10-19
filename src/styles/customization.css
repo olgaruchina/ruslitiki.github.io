@@ -44,6 +44,7 @@
 [data-button-style=outline] .join-button{background:transparent;color:var(--indigo)}
 [data-button-style=outline] .join-button:hover{background:var(--indigo);color:var(--button-ink)}
 .book-artwork{max-width:var(--art-width);min-width:min(100%,14rem)}
+.book-cover{max-width:min(100%,var(--art-width),16rem);min-width:0}
 .composition-book-left{grid-template-columns:minmax(0,1fr) minmax(0,1.3fr)}
 .composition-book-left .first-book{border-left:0;padding-left:0;border-right:1px solid var(--rule);padding-right:clamp(2rem,4vw,4rem)}
 .composition-stacked,.composition-centered{grid-template-columns:minmax(0,1fr);gap:var(--section-space)}
