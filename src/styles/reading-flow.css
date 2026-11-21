@@ -47,7 +47,6 @@ button.book-cover-trigger{cursor:pointer}
   .opening .opening-title h1{font-size:clamp(32px,8.5vw,42px);max-width:21ch}
   .opening .first-book,.opening.composition-book-left .first-book{padding:0;border:0;max-width:none}
   .opening .first-book h2{font-size:28px;max-width:24ch}
-  .opening .book-cover{max-width:min(100%,var(--art-width),11.5rem)}
   .opening .book-label{margin-bottom:8px}
   .opening .author{margin:8px 0 16px}
   .opening .book-artwork{margin-bottom:12px}
