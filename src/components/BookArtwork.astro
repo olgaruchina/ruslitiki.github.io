@@ -3,9 +3,26 @@ import { Image } from 'astro:assets';
 import artwork from '../assets/onegin-and-tatyana-1908.jpg';
 import { labelsFor } from '../lib/labels.mjs';
 import RichText from './RichText.astro';
+import BookDescription from './BookDescription.astro';
+import {bookDescriptionFor} from '../lib/opening.mjs';
 const {content={},coverImage=null,visualEditing=false}=Astro.props;
 const labels=labelsFor(content);
+const interactive=!!bookDescriptionFor(content.book).trim() || visualEditing;
+const Trigger=interactive?'button':'div';
+const width=coverImage?(content.book.coverWidth || 773):1047;
+const height=coverImage?(content.book.coverHeight || 1200):878;
 ---
+<ruslitiki-book-preview>
 <figure class:list={['book-artwork',{'book-cover':coverImage}]}>
-  {coverImage ? <img src={coverImage} alt={`Cover of ${content.book.title} by ${content.book.author}`} width={content.book.coverWidth || 773} height={content.book.coverHeight || 1200} loading="eager" decoding="async" /> : <><Image src={artwork} alt={labels.artworkAlt} widths={[480,800,1047]} sizes="(min-width: 900px) 45vw, calc(100vw - 3rem)" format="webp" quality={85} loading="eager" decoding="async" /><figcaption><RichText content={content} id="labels" field="artworkCaption" value={labels.artworkCaption} visualEditing={visualEditing} /> <RichText content={content} id="labels" field="artworkCredit" value={labels.artworkCredit} as="a" href="https://commons.wikimedia.org/wiki/File:Onegin_and_Tatyana.jpg" target="_blank" rel="noopener" title={labels.opensNewTab} visualEditing={visualEditing} />.</figcaption></>}
+  <div class="book-cover-card" style={`--cover-ratio:${width}/${height}`}>
+    <div class="book-cover-faces">
+      <Trigger type={interactive?'button':undefined} class="book-cover-trigger" data-book-open={interactive?true:undefined} aria-expanded={interactive?'false':undefined} aria-controls={interactive?'book-description':undefined} aria-label={interactive?`${labels.bookDescriptionHint}: ${content.book.title}`:undefined}>
+        {coverImage ? <img src={coverImage} alt={`Cover of ${content.book.title} by ${content.book.author}`} width={width} height={height} loading="eager" decoding="async" /> : <Image src={artwork} alt={labels.artworkAlt} widths={[480,800,1047]} sizes="(min-width: 900px) 45vw, calc(100vw - 3rem)" format="webp" quality={85} loading="eager" decoding="async" />}
+        {interactive && <span class="book-description-hint"><span aria-hidden="true">↻</span> {labels.bookDescriptionHint}</span>}
+      </Trigger>
+      {interactive && <BookDescription content={content} visualEditing={visualEditing} />}
+    </div>
+  </div>
+  {!coverImage && <figcaption><RichText content={content} id="labels" field="artworkCaption" value={labels.artworkCaption} visualEditing={visualEditing} /> <RichText content={content} id="labels" field="artworkCredit" value={labels.artworkCredit} as="a" href="https://commons.wikimedia.org/wiki/File:Onegin_and_Tatyana.jpg" target="_blank" rel="noopener" title={labels.opensNewTab} visualEditing={visualEditing} />.</figcaption>}
 </figure>
+</ruslitiki-book-preview>

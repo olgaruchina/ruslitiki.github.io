@@ -19,7 +19,8 @@ assert.ok(home.includes(ctaFor(content).url),'The active signup link is missing.
 assert.ok(home.includes(`<time datetime="${content.openingDate}"`),'The membership opening date is missing.');
 assert.ok(!home.includes(`<time datetime="${content.readingDate}"`),'The reading start date should not appear on the page.');
 assert.ok(!home.match(/<header class="masthead"[\s\S]*?<\/header>/)?.[0].includes('Membership is open'),'The masthead should not repeat the membership state.');
-assert.ok(home.includes('WE ARE OPEN! JOIN NOW!'),'The approved introduction line is missing.');
+assert.ok(!home.includes('Fall in love with Russian classics, one book at a time.'),'The removed introduction must stay off the page.');
+assert.ok(home.indexOf('data-part="introduction"')<home.indexOf('data-part="book"') && home.indexOf('data-part="book"')<home.indexOf('data-part="signup"'),'The document must present the heading, book, then signup.');
 assert.ok(home.includes('Joining the waitlist is free. Paid membership is a separate step through Patreon.'),'The membership explanation is missing or out of date.');
 assert.ok(home.includes('https://www.ruslitiki.com/'),'Canonical origin is missing.');
 assert.ok(!home.includes('mailto:') || Boolean(content.email),'Do not publish an unconfigured mailbox.');
@@ -54,9 +55,10 @@ for(const entry of ['studio','scripts','content','.studio','.git']){
   assert.equal(await fs.access(path.join(root,entry)).then(()=>true,()=>false),false,`${entry} must not ship.`);
 }
 const scripts=[...home.matchAll(/<script([^>]*)>([\s\S]*?)<\/script>/g)].filter(match=>!match[1].includes('application/ld+json'));
-assert.equal(scripts.length,1,'Only the public navigation and FAQ module should run on the page.');
+assert.equal(scripts.length,1,'Public interactions should share one module.');
 const scriptSource=scripts[0][1].match(/src="(\/[^"?#]+)"/)?.[1];
 const script=scriptSource?await fs.readFile(path.join(root,scriptSource),'utf8'):scripts[0][2];
 assert.ok(scripts[0][1].includes('type="module"') && script.includes('ruslitiki-navigation') && script.includes('ruslitiki-faq'),'The public script must provide the mobile drawer and FAQ animation.');
-assert.ok(script.length<12000 && !home.includes('canvas-rich-tools') && !script.includes('canvas-rich-tools'),'The public page must not include the editor runtime.');
+assert.ok(script.includes('ruslitiki-book-preview'),'The cover must open the book description.');
+assert.ok(script.length<15000 && !home.includes('canvas-rich-tools') && !script.includes('canvas-rich-tools'),'The public page must not include the editor runtime.');
 console.log('Built-page checks passed: content, AI overview, dates, canonical, links, assets, privacy boundary and isolated public interaction script.');

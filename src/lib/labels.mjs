@@ -1,6 +1,8 @@
 export const LABEL_FIELDS = Object.freeze({
   bookLabel: {default:'Our first book',title:'First book label',max:80,group:'Book and illustration'},
   authorPrefix: {default:'by',title:'Before the author name',max:40,group:'Book and illustration'},
+  bookDescriptionHint: {default:'Tap to read',title:'Book cover description hint',max:80,group:'Book and illustration'},
+  closeBookDescription: {default:'Back to cover',title:'Return to the book cover',max:80,group:'Book and illustration'},
   artworkCaption: {default:'Onegin and Tatyana.',title:'Onegin illustration caption',max:300,group:'Book and illustration'},
   artworkCredit: {default:'Elena Samokish-Sudkovskaya, 1908',title:'Onegin illustration credit',max:150,group:'Book and illustration'},
   artworkAlt: {default:'Onegin speaks to Tatyana beside a white bench in a flowering garden.',title:'Onegin illustration description',max:300,group:'Book and illustration'},

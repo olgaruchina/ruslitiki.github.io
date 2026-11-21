@@ -7,7 +7,8 @@ import net from 'node:net';
 import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { designFor, PALETTES } from '../src/lib/design.mjs';
-import { fromPlainText } from '../src/lib/rich-text.mjs';
+import { fromPlainText, plainText } from '../src/lib/rich-text.mjs';
+import {setCanvasRichText} from '../src/lib/rich-fields.mjs';
 
 test('local editor keeps drafts private, validates requests and builds the exact selected preview', {timeout:60000}, async()=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'ruslitiki-http-'));
@@ -39,6 +40,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const html=await (await fetch(origin)).text();
     assert.match(html,/<select name="joinMode"><option value="waitlist">Waitlist form<\/option><option value="patreon">Patreon membership<\/option>/);
     assert.equal((await fetch(origin+'/anchors.mjs')).status,200,'The editor can load its shared section-link module.');
+    assert.equal((await fetch(origin+'/opening.mjs')).status,200,'The editor can load the shared book and signup defaults.');
     const token=html.match(/name="studio-token" content="([a-f0-9]+)"/)[1];
     const api=async(route,data,headers={})=>{
       const response=await fetch(origin+route,{method:'POST',headers:{'Content-Type':'application/json','Origin':origin,'X-Studio-Token':token,...headers},body:JSON.stringify(data)});
@@ -223,7 +225,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
       const bookFeature=html.match(/<aside[^>]*data-part="book"[^>]*>([\s\S]*?)<\/aside>/)[1];
       assert.ok(!bookFeature.includes('class="dates"'),'The launch dates belong with signup, not the book.');
       assert.equal((html.match(/class="dates"/g)||[]).length,1);
-      const hero=html.match(/<div class="hero-action">([\s\S]*?)<\/a><\/div>/)?.[1];
+      const hero=html.match(/<div class="hero-action">([\s\S]*?)<\/section>/)?.[1];
       assert.ok(hero && hero.indexOf('membership-price')<hero.indexOf('class="dates"') && hero.indexOf('class="dates"')<hero.indexOf('class="join-button"'),'Every composition groups the price and opening date before the signup action.');
       assert.equal((hero.match(/class="membership-price"/g)||[]).length,1,'The hero price appears once.');
       assert.match(hero,/<div class="signup-details">[\s\S]*<dl class="dates">[\s\S]*<\/dl><\/div>\s*<a class="join-button"/,'Price and date share one group above the joining button.');
@@ -236,29 +238,45 @@ test('local editor keeps drafts private, validates requests and builds the exact
       assert.ok(!html.includes('autoplay=1') && !html.includes('canvas-video-control'));
       assert.ok(html.includes('--page-bg:#161b2c') && html.includes('data-button-style="outline"'));
       assert.ok(html.indexOf('data-block-id="quote-first"')<html.indexOf('data-block-id="opening"'),'Custom blocks can appear before the introduction.');
-      assert.equal(html.indexOf('data-part="book"')<html.indexOf('data-part="introduction"'),composition==='book-left','Visual and document reading order agree.');
+      assert.ok(html.indexOf('data-part="introduction"')<html.indexOf('data-part="book"') && html.indexOf('data-part="book"')<html.indexOf('data-part="signup"'),'Every composition keeps the mobile document order as heading, book, signup.');
       assert.equal((await fetch(new URL(stagedPath,result.data.preview.url))).status,customized.sections[1].visible?200:404,'Only visible block images are included when the logo uses the original asset.');
       customized.sections[1].visible=false;
     }
     // Exercise the approved source separately from the legacy private draft above.
     const approved=JSON.parse(sourceBefore);
+    const description={blocks:[{type:'paragraph',runs:[{text:'A description written by Olga.',bold:true}]},{type:'bullet',runs:[{text:'A detail to look for.',italic:true}]}]};
+    assert.equal(setCanvasRichText(approved,'opening','book.description',plainText(description),description),true);
+    const benefits={blocks:[{type:'paragraph',runs:[{text:'This month, members receive:',bold:true}]},{type:'number',runs:[{text:'The first weekly video.',italic:true}]},{type:'number',runs:[{text:'The second weekly video.'}]}]};
+    assert.equal(setCanvasRichText(approved,'opening','signupBenefits',plainText(benefits),benefits),true);
     const approvedSaved=await api('/api/save',{content:approved,revision});
     assert.equal(approvedSaved.status,200,JSON.stringify(approvedSaved.data));
     revision=approvedSaved.data.revision;
     const approvedPreview=await api('/api/preview',{revision});
     assert.equal(approvedPreview.status,200,JSON.stringify(approvedPreview.data));
     const approvedHtml=await (await fetch(approvedPreview.data.preview.url)).text();
-    assert.match(approvedHtml,/class="section-lead"[^>]*>Membership fee: \$15 USD per month/);
-    assert.match(approvedHtml,/class="emphasis-paragraph"><strong>We’ll explore the author/);
-    assert.equal((approvedHtml.match(/href="https:\/\/www.patreon.com\/c\/books_olgaruchina\/membership"/g)||[]).length,2);
+    assert.match(approvedHtml,/<p>Membership fee: \$15 USD per month<\/p>/);
+    assert.match(approvedHtml,/<strong>We’ll explore the author/);
+    assert.ok(approvedHtml.includes('<strong>A description written by Olga.</strong>') && approvedHtml.includes('<ul><li><em>A detail to look for.</em></li></ul>'));
+    assert.ok(approvedHtml.includes('<ol><li><em>The first weekly video.</em></li><li>The second weekly video.</li></ol>'));
+    assert.ok(approvedHtml.indexOf('class="signup-benefits')<approvedHtml.indexOf('class="signup-details"'));
+    assert.ok(approvedHtml.indexOf('class="waitlist-note')>approvedHtml.indexOf('class="join-button"'));
+    assert.equal(joinDestinations(approvedHtml).length,2);
     assert.match(approvedHtml,/class="faq-layout"/);
     assert.match(approvedHtml,/href="mailto:olga@ruslitiki.com"/);
     assert.match(approvedHtml,/>Contact us on Instagram<\/a>/);
     const approvedCanvas=await api('/api/canvas',{sequence:50,generation:50,content:approved});
     assert.equal(approvedCanvas.status,200,JSON.stringify(approvedCanvas.data));
     const approvedCanvasHtml=await (await fetch(approvedCanvas.data.url)).text();
+    assert.match(approvedCanvasHtml,/data-edit-id="opening" data-edit-field="book.description" data-rich-text="block"/);
+    for(const field of ['signupHeading','signupBenefits','waitlistNote'])assert.ok(approvedCanvasHtml.includes(`data-edit-field="${field}"`));
     assert.match(approvedCanvasHtml,/data-edit-id="membership" data-edit-field="lead"/);
     assert.match(approvedCanvasHtml,/data-edit-field="buttonLabel"[^>]*>Contact us on Instagram/);
+    const patreonContent={...approved,joinMode:'patreon'};
+    const patreonCanvas=await api('/api/canvas',{sequence:1,generation:1,content:patreonContent});
+    assert.equal(patreonCanvas.status,200);
+    const patreonHtml=await (await fetch(patreonCanvas.data.url)).text();
+    assert.equal(patreonHtml.includes('class="waitlist-note'),false,'The waitlist note stays out of Patreon mode.');
+    assert.deepEqual(joinDestinations(patreonHtml),Array(2).fill(approved.patreonUrl));
     const customMembership=structuredClone(approved);
     Object.assign(customMembership.sections.find(section=>section.id==='membership'),{buttonLabel:'Ask about joining',buttonUrl:'mailto:olga@ruslitiki.com',buttonKind:'text'});
     const customSaved=await api('/api/save',{content:customMembership,revision});
@@ -266,7 +284,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const customPreview=await api('/api/preview',{revision});assert.equal(customPreview.status,200);
     const customHtml=await (await fetch(customPreview.data.preview.url)).text();
     assert.match(customHtml,/>Ask about joining<\/a>/);
-    assert.equal((customHtml.match(/href="https:\/\/www.patreon.com\/c\/books_olgaruchina\/membership"/g)||[]).length,1,'An explicit membership action replaces, rather than duplicates, the default.');
+    assert.equal(joinDestinations(customHtml).length,1,'An explicit membership action replaces, rather than duplicates, the default.');
     const rejected={...customized,design:{...customized.design,background:'#ffffff',ink:'#eeeeee'}};
     assert.equal((await api('/api/save',{content:rejected,revision})).status,422,'Unreadable colours cannot overwrite a saved draft.');
     assert.equal((await (await fetch(origin+'/api/state')).json()).revision,revision);

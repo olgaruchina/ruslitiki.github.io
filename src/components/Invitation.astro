@@ -2,14 +2,15 @@
 import { ctaFor, formatDate, joinModeFor } from '../lib/content.mjs';
 import { labelsFor } from '../lib/labels.mjs';
 import RichText from './RichText.astro';
+import { signupHeadingFor, signupBenefitsFor, waitlistNoteFor } from '../lib/opening.mjs';
 const {content,visualEditing=false}=Astro.props;
 const action=ctaFor(content);
 const labels=labelsFor(content);
 const ctaField=joinModeFor(content)==='waitlist'?'waitlistCta':'patreonCta';
 ---
-<div class="invitation" data-part="introduction">
-  <RichText content={content} id="opening" field="heading" value={content.heading} as="h1" visualEditing={visualEditing} />
-  <RichText content={content} id="opening" field="introduction" value={content.introduction} as="div" mode="block" class="introduction" visualEditing={visualEditing} />
+<section class="invitation signup" aria-label={signupHeadingFor(content) || labels.membership} data-part="signup">
+  {(signupHeadingFor(content) || visualEditing) && <RichText content={content} id="opening" field="signupHeading" value={signupHeadingFor(content)} as="h2" class="signup-heading" visualEditing={visualEditing} data-placeholder="Add a join section heading" />}
+  {(signupBenefitsFor(content) || visualEditing) && <RichText content={content} id="opening" field="signupBenefits" value={signupBenefitsFor(content)} as="div" mode="block" class="signup-benefits" visualEditing={visualEditing} data-placeholder="Describe what members will receive" />}
   <div class="hero-action">
     <div class="signup-details">
       {(content.membershipPrice?.trim() || visualEditing) && <p class="membership-price"><RichText content={content} id="labels" field="membership" value={labels.membership} visualEditing={visualEditing} /><RichText content={content} id="opening" field="membershipPrice" value={content.membershipPrice??''} as="strong" visualEditing={visualEditing} data-placeholder="Add a membership price" /></p>}
@@ -18,5 +19,6 @@ const ctaField=joinModeFor(content)==='waitlist'?'waitlistCta':'patreonCta';
       </dl>
     </div>
     <a class="join-button" href={action.url} target="_blank" rel="noopener" title={labels.opensNewTab}><RichText content={content} id="labels" field={ctaField} value={action.label} class="join-label" visualEditing={visualEditing} /><span aria-hidden="true">↗</span></a>
+    {joinModeFor(content)==='waitlist' && (waitlistNoteFor(content) || visualEditing) && <RichText content={content} id="opening" field="waitlistNote" value={waitlistNoteFor(content)} as="div" mode="block" class="waitlist-note" visualEditing={visualEditing} data-placeholder="Explain what happens after joining the waitlist" />}
   </div>
-</div>
+</section>

@@ -45,6 +45,7 @@ export class VisualCanvas {
     finally{this.sending=false;if(this.pending && !this.deferred)this.timer=setTimeout(()=>this.sendDraft(),180);}
   }
   select(id){this.post('select',{id});}
+  editField(id,field){this.post('edit-field',{id,field});}
   setLocked(locked){this.locked=locked;this.post('lock',{locked:this.editingBlocked});}
   flush(){
     if(!this.rendered)return Promise.resolve();

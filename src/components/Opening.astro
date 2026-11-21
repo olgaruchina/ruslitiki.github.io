@@ -1,9 +1,14 @@
 ---
 import Invitation from './Invitation.astro';
 import BookFeature from './BookFeature.astro';
+import RichText from './RichText.astro';
 const {content,design,visualEditing=false}=Astro.props;
 ---
 <div class:list={['opening',`composition-${design.composition}`]} data-block-id="opening">
-  {design.composition==='book-left' ? <BookFeature content={content} design={design} visualEditing={visualEditing} /> : <Invitation content={content} visualEditing={visualEditing} />}
-  {design.composition==='book-left' ? <Invitation content={content} visualEditing={visualEditing} /> : <BookFeature content={content} design={design} visualEditing={visualEditing} />}
+  <div class="opening-title invitation" data-part="introduction">
+    <RichText content={content} id="opening" field="heading" value={content.heading} as="h1" visualEditing={visualEditing} />
+    {content.introduction?.trim() && <RichText content={content} id="opening" field="introduction" value={content.introduction} as="div" mode="block" class="introduction" visualEditing={visualEditing} />}
+  </div>
+  <BookFeature content={content} design={design} visualEditing={visualEditing} />
+  <Invitation content={content} visualEditing={visualEditing} />
 </div>

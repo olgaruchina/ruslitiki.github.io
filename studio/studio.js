@@ -178,6 +178,10 @@ function showSurface(mode){
 }
 $('#edit-page').addEventListener('click',()=>showSurface('edit'));
 $('#saved-page').addEventListener('click',async()=>{try{await canvas.flush();showSurface('preview');}catch(error){failure(error);}});
+for(const button of document.querySelectorAll('[data-edit-opening-field]'))button.addEventListener('click',()=>{
+  if(button.dataset.editOpeningField==='waitlistNote' && draft.joinMode!=='waitlist'){failure(new Error('Choose Waitlist form in Dates & links to edit this note on the page.'));return;}
+  showSurface('edit');canvas.editField('opening',button.dataset.editOpeningField);
+});
 $('#logo-upload').addEventListener('change',event=>{
   const file=event.target.files[0];if(!file)return;
   operation(async()=>{
@@ -321,7 +325,7 @@ function selectSection(id,field,{focus=false}={}){
   }
   if(id==='opening'){
     const isDate=['openingDate','readingDate'].includes(field);
-    activateTab($(isDate || field==='membershipPrice'?'#tab-details':field?.startsWith('book.')?'#tab-book':field?'#tab-home':'#tab-design'));
+    activateTab($(isDate || field==='membershipPrice'?'#tab-details':field?.startsWith('book.')?'#tab-book':['signupHeading','signupBenefits','waitlistNote'].includes(field)?'#tab-signup':field?'#tab-home':'#tab-design'));
     const input=field?namedInput(field):null;
     if(isDate && input){
       input.scrollIntoView({block:'nearest'});input.focus({preventScroll:true});

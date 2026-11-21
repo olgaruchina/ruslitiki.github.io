@@ -2,11 +2,11 @@
 import BookArtwork from './BookArtwork.astro';
 import RichText from './RichText.astro';
 import { labelsFor } from '../lib/labels.mjs';
-import { bookCoverFor } from '../lib/content.mjs';
+import { bookCoverFor, bookArtworkVisible } from '../lib/content.mjs';
 const {content,design,visualEditing=false}=Astro.props;
 const labels=labelsFor(content);
 const coverImage=bookCoverFor(content.book);
-const showArtwork=content.book.showArtwork!==false && (coverImage || (content.book.title.trim().toLowerCase()==='eugene onegin' && content.book.author.trim().toLowerCase()==='alexander pushkin'));
+const showArtwork=bookArtworkVisible(content.book);
 ---
 <aside class="first-book" aria-labelledby="first-book-title" data-part="book">
   {showArtwork && design.artworkPlacement==='above-title' && <BookArtwork content={content} coverImage={coverImage} visualEditing={visualEditing} />}

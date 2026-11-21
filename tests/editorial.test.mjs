@@ -9,10 +9,10 @@ test('approved content and editable lead survive a content round-trip',()=>{
   const content=editableContent(readContent());
   assert.deepEqual(validateContent(content),[]);
   assert.equal(content.status,'membership-open');
-  assert.equal(ctaFor(content).url,'https://www.patreon.com/c/books_olgaruchina/membership');
+  assert.equal(ctaFor(content).url,content.joinMode==='waitlist'?content.waitlistUrl:content.patreonUrl);
   const membership=content.sections.find(section=>section.id==='membership');
-  assert.equal(membership.lead,'Membership fee: $15 USD per month');
-  assert.ok(!membership.body.includes('Membership fee:'));
+  assert.equal(membership.lead,'');
+  assert.ok(membership.body.includes('Membership fee: $15 USD per month'));
   assert.ok(membership.body.includes('Joining the waitlist is free. Paid membership is a separate step through Patreon.'));
   const lead=fromPlainText('Membership fee: $20 USD per month');lead.blocks[0].runs[0].bold=true;
   assert.equal(setCanvasRichText(content,'membership','lead','Membership fee: $20 USD per month',lead),true);

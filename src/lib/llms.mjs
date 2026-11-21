@@ -1,4 +1,5 @@
-import { ctaFor, formatDate, instagramProfile } from './content.mjs';
+import { ctaFor, formatDate, instagramProfile, joinModeFor, bookArtworkVisible } from './content.mjs';
+import {signupHeadingFor,signupBenefitsFor,waitlistNoteFor,bookDescriptionFor} from './opening.mjs';
 import { designFor, normalizedSections, youtubeVideoId } from './design.mjs';
 import { labelsFor } from './labels.mjs';
 import { publicSectionAnchors } from './anchors.mjs';
@@ -16,7 +17,7 @@ export function renderLlms(content, site) {
     `# ${text(content.brand)}`, '',
     `> ${text(content.description)}`, '',
     text(content.heading), '',
-    text(content.introduction), '',
+    ...(content.introduction?.trim()?[text(content.introduction),'']:[]),
     `Membership opening date: ${formatDate(content.openingDate)}.`,
     '',
     '## Website', '',
@@ -25,7 +26,10 @@ export function renderLlms(content, site) {
   ];
   for (const id of designFor(content).blockOrder) {
     if (id === 'opening') {
-      lines.push(link(labels.bookLabel, absolute('/#first-book-title'), `${content.book.title} ${labels.authorPrefix} ${content.book.author}. ${content.book.note}`));
+      const bookCopy=[...new Set([content.book.note,bookArtworkVisible(content.book)?bookDescriptionFor(content.book):''].filter(Boolean))].join(' ');
+      lines.push(link(labels.bookLabel, absolute('/#first-book-title'), `${content.book.title} ${labels.authorPrefix} ${content.book.author}. ${bookCopy}`));
+      if(signupHeadingFor(content))lines.push('',text(signupHeadingFor(content)));
+      if(signupBenefitsFor(content))lines.push('',text(signupBenefitsFor(content)));
       continue;
     }
     const section = sections.get(id);
@@ -41,6 +45,7 @@ export function renderLlms(content, site) {
   lines.push('', '## Join and contact', '');
   if (content.membershipPrice?.trim()) lines.push(`Membership price: ${text(content.membershipPrice)}.`, '');
   lines.push(link(cta.label, absolute(cta.url)), link('Instagram', absolute(content.instagramUrl)));
+  if(joinModeFor(content)==='waitlist' && waitlistNoteFor(content))lines.push('',text(waitlistNoteFor(content)));
   const hostProfile = instagramProfile(content.hostInstagramUrl);
   if (hostProfile) lines.push(link(hostProfile.handle, hostProfile.url, 'Book club host on Instagram.'));
   if (content.email) lines.push(link(labels.contact, absolute(`mailto:${content.email}`)));

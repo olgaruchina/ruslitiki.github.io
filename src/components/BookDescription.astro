@@ -1,0 +1,11 @@
+---
+import RichText from './RichText.astro';
+import {labelsFor} from '../lib/labels.mjs';
+import {bookDescriptionFor} from '../lib/opening.mjs';
+const {content,visualEditing=false}=Astro.props;
+const labels=labelsFor(content);
+---
+<div id="book-description" class="book-description-back" role="region" aria-labelledby="first-book-title" data-book-description aria-hidden="true" inert>
+  <button type="button" class="book-description-close" data-book-close><span aria-hidden="true">↶</span> {labels.closeBookDescription}</button>
+  <RichText content={content} id="opening" field="book.description" value={bookDescriptionFor(content.book)} as="div" mode="block" class="book-description-copy" tabindex="0" visualEditing={visualEditing} data-placeholder="Write the book description here" />
+</div>

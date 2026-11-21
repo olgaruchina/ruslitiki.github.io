@@ -94,7 +94,7 @@ export function createRichTextEditor({onChange=()=>{}}={}){
   }
   function position(){
     if(!active)return;
-    const rect=active.field.getBoundingClientRect();
+    const rect=(active.field.closest('[data-book-description]') || active.field).getBoundingClientRect();
     toolbar.style.left=Math.max(8,Math.min(rect.left,innerWidth-toolbar.offsetWidth-8))+'px';
     const above=rect.top-toolbar.offsetHeight-8;
     toolbar.style.top=Math.max(8,Math.min(innerHeight-toolbar.offsetHeight-8,above<8?rect.bottom+8:above))+'px';

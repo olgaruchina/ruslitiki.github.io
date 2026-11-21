@@ -79,6 +79,7 @@
     if(editing && !editing.field.contains(document.activeElement) && !richEditor.owns(document.activeElement))finishEditing();
   });});
   document.addEventListener('ruslitiki:navigation-close',finishEditing);
+  document.addEventListener('ruslitiki:book-close',finishEditing);
   document.addEventListener('click',event=>{
     if(event.target.closest('#canvas-tools,#canvas-add-end,#canvas-rich-tools'))return;
     const link=event.target.closest('a');if(link)event.preventDefault();
@@ -110,7 +111,7 @@
     const date=event.target.closest('[data-edit-date]');
     if(date && ['Enter',' '].includes(event.key)){event.preventDefault();send('options',{id:'opening',field:date.dataset.editDate});return;}
     const block=event.target.closest('[data-block-id]');
-    if(block && event.key==='Enter'){select(block.dataset.blockId);toolbar.querySelector('button').focus();event.preventDefault();}
+    if(block && event.key==='Enter' && !event.target.closest('button,a,input,textarea,select,dialog')){select(block.dataset.blockId);toolbar.querySelector('button').focus();event.preventDefault();}
   });
   drag.addEventListener('dragstart',event=>{
     if(locked || !selected){event.preventDefault();return;}finishEditing();event.dataTransfer.setData('text/plain','ruslitiki-move:'+selected);event.dataTransfer.effectAllowed='move';
@@ -165,6 +166,11 @@
     }
     if(data.type==='refresh' && Number.isSafeInteger(data.sequence) && data.sequence>=sequence){pendingRender=data;refresh();}
     if(data.type==='select'){select(data.id,null,false);selectedBlock()?.scrollIntoView({block:'nearest',behavior:'instant'});}
+    if(data.type==='edit-field' && !locked){
+      if(data.field==='book.description')document.querySelector('ruslitiki-book-preview')?.showDescription?.();
+      const field=[...document.querySelectorAll('[data-edit-id][data-edit-field]')].find(node=>node.dataset.editId===data.id && node.dataset.editField===data.field);
+      if(field){field.scrollIntoView({block:'center',behavior:'instant'});beginEditing(field);}
+    }
     if(data.type==='flush'){finishEditing();send('flushed',{requestId:data.requestId});}
     if(data.type==='lock'){locked=data.locked===true;if(locked)finishEditing();document.body.toggleAttribute('data-canvas-locked',locked);positionTools();}
   });

@@ -39,14 +39,15 @@ export function validateContent(data, {draft = false} = {}) {
       if (url.protocol !== 'https:' || url.username || url.password || (hosts.length && !hosts.includes(url.hostname))) throw new Error();
     } catch { errors.push(`${label}: enter a valid HTTPS link${hosts.length ? ` on ${hosts.join(' or ')}` : ''}.`); }
   };
-  if (!keys(data, ['brand','status','joinMode','heading','description','hostInstagramUrl','introduction','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design','labels','richText'], 'Website')) return errors;
+  if (!keys(data, ['brand','status','joinMode','heading','description','hostInstagramUrl','introduction','signupHeading','signupBenefits','waitlistNote','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design','labels','richText'], 'Website')) return errors;
   if (own(data,'labels') && keys(data.labels,Object.keys(LABEL_FIELDS),'Page labels')) {
     for (const [key,field] of Object.entries(LABEL_FIELDS)) if (own(data.labels,key)) string(data.labels[key],field.title,field.max,!draft);
   }
   string(data.brand, 'Club name', 40);
   string(data.heading, 'Main heading', LIMITS.heading);
   string(data.description, 'Club description', LIMITS.description);
-  string(data.introduction, 'Introduction', LIMITS.introduction);
+  string(data.introduction, 'Introduction', LIMITS.introduction, false);
+  for(const [key,label,max] of [['signupHeading','Join section heading',150],['signupBenefits','What members receive',2400],['waitlistNote','Waitlist explanation',600]])if(own(data,key))string(data[key],label,max,false);
   if (own(data, 'membershipPrice')) string(data.membershipPrice, 'Membership price', LIMITS.membershipPrice, false);
   if (!['coming-soon','membership-open','reading'].includes(data.status)) errors.push('Choose a valid membership state.');
   if (own(data,'joinMode') && !['waitlist','patreon'].includes(data.joinMode)) errors.push('Join button: choose the waitlist or Patreon.');
@@ -63,10 +64,11 @@ export function validateContent(data, {draft = false} = {}) {
   if (data.email && !/^[^\s<>@\r\n]+@[^\s<>@\r\n]+\.[^\s<>@\r\n]+$/.test(data.email)) errors.push('Enter a working email address, or leave the field empty.');
   if (typeof data.logo !== 'string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(data.logo)) errors.push('Logo: choose a PNG, JPEG or WebP in the image library.');
   if (!['original-banner','image'].includes(data.logoPresentation)) errors.push('Choose the logo presentation.');
-  if (keys(data.book, ['title','author','note','showArtwork','coverImage','coverWidth','coverHeight'], 'First book')) {
+  if (keys(data.book, ['title','author','note','description','showArtwork','coverImage','coverWidth','coverHeight'], 'First book')) {
     string(data.book.title, 'Book title', 120);
     string(data.book.author, 'Author', 100);
     string(data.book.note, 'Book note', LIMITS.bookNote);
+    if(own(data.book,'description'))string(data.book.description,'Book description',6000,false);
     if (own(data.book,'showArtwork') && typeof data.book.showArtwork !== 'boolean') errors.push('Book illustration: visibility must be on or off.');
     if (own(data.book,'coverImage') && data.book.coverImage !== '' && (typeof data.book.coverImage !== 'string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(data.book.coverImage))) errors.push('Book cover: upload a PNG, JPEG or WebP image.');
     for (const key of ['coverWidth','coverHeight']) if (own(data.book,key) && (!Number.isInteger(data.book[key]) || data.book[key]<1 || data.book[key]>12000)) errors.push('Book cover: choose an image no larger than 12,000 pixels on either side.');
@@ -125,6 +127,10 @@ export function bookCoverFor(book) {
   if (book.coverImage) return book.coverImage;
   if (book.title.trim().toLowerCase()==='dead souls' && book.author.trim().toLowerCase()==='nikolai gogol') return '/images/dead-souls-vintage-cover.jpg';
   return null;
+}
+
+export function bookArtworkVisible(book) {
+  return book.showArtwork!==false && !!(bookCoverFor(book) || (book.title.trim().toLowerCase()==='eugene onegin' && book.author.trim().toLowerCase()==='alexander pushkin'));
 }
 
 export function readContent(file = process.env.RUSLITIKI_CONTENT_FILE || resolve('content/site.json')) {

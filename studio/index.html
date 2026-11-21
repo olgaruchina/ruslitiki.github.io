@@ -22,7 +22,8 @@
       <div class="tabs" role="tablist" aria-label="Editing section">
         <button role="tab" aria-selected="true" aria-controls="panel-home" id="tab-home" data-tab="home">Introduction</button>
         <button role="tab" aria-selected="false" aria-controls="panel-design" id="tab-design" data-tab="design" tabindex="-1">Layout &amp; style</button>
-        <button role="tab" aria-selected="false" aria-controls="panel-book" id="tab-book" data-tab="book" tabindex="-1">First book</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-book" id="tab-book" data-tab="book" tabindex="-1">Monthly book</button>
+        <button role="tab" aria-selected="false" aria-controls="panel-signup" id="tab-signup" data-tab="signup" tabindex="-1">Join section</button>
         <button role="tab" aria-selected="false" aria-controls="panel-details" id="tab-details" data-tab="details" tabindex="-1">Dates & links</button>
         <button role="tab" aria-selected="false" aria-controls="panel-sections" id="tab-sections" data-tab="sections" tabindex="-1">Page blocks</button>
         <button role="tab" aria-selected="false" aria-controls="panel-labels" id="tab-labels" data-tab="labels" tabindex="-1">Labels &amp; menu</button>
@@ -33,7 +34,7 @@
           <label>Main heading<textarea name="heading" rows="3" maxlength="100" required></textarea><small>The big sentence visitors see first.</small></label>
           <label>Club description<input name="description" maxlength="180" required><small>One clear line explaining what Ruslitiki is.</small></label>
           <label>Host Instagram profile<input type="url" name="hostInstagramUrl" placeholder="https://www.instagram.com/books_olgaruchina/"><small>Appears as a linked handle after the description. Leave empty to hide it.</small></label>
-          <label>Introduction<textarea name="introduction" rows="4" maxlength="400" required></textarea></label>
+          <label>Extra introduction (optional)<textarea name="introduction" rows="4" maxlength="400"></textarea><small>Leave empty to go straight from the main heading to the book.</small></label>
           <fieldset class="logo-field"><legend>Wordmark</legend><p>The original Ruslitiki artwork is already in place.</p><label class="file-label">Choose a different image<input id="logo-upload" type="file" accept="image/png,image/jpeg,image/webp"></label><small>PNG, JPEG or WebP, up to 2 MB. Choose an image intended for the public website.</small><button id="original-logo" class="text-button" type="button">Use the original wordmark</button><p id="image-status" role="status"></p></fieldset>
         </div>
         <div role="tabpanel" id="panel-design" aria-labelledby="tab-design" hidden>
@@ -49,8 +50,19 @@
           <label>Book title<input name="book.title" maxlength="120" required></label>
           <label>Author<input name="book.author" maxlength="100" required></label>
           <label>A short invitation to this book<textarea name="book.note" rows="5" maxlength="300" required></textarea></label>
+          <label>Book description<textarea name="book.description" rows="8" maxlength="6000"></textarea><small>Appears on the reverse of the cover when someone taps or clicks it. Long descriptions scroll inside the card. Leave empty to turn the cover flip off.</small></label>
+          <button type="button" data-edit-opening-field="book.description">Edit description with formatting</button>
           <fieldset class="logo-field"><legend>Book cover</legend><p id="book-cover-description">Choose a cover for the current book.</p><img id="book-cover-preview" class="book-cover-preview" alt="Selected book cover" hidden><label class="file-label">Choose a book cover<input id="book-cover-upload" type="file" accept="image/png,image/jpeg,image/webp"></label><small>PNG, JPEG or WebP, up to 2 MB. The complete cover is shown without cropping.</small><button id="remove-book-cover" class="text-button" type="button">Hide book image</button><p id="book-cover-status" role="status"></p></fieldset>
           <label class="artwork-toggle"><input name="book.showArtwork" type="checkbox"> Show book image<small>Changing the book title does not change an uploaded cover. Choose a new cover for each book.</small></label>
+        </div>
+        <div role="tabpanel" id="panel-signup" aria-labelledby="tab-signup" hidden>
+          <p class="panel-help">Visitors see this section after the book on phones. Describe what members receive before the price, date and join button.</p>
+          <label>Join section heading (optional)<input name="signupHeading" maxlength="150"></label>
+          <label>What members receive<textarea name="signupBenefits" rows="8" maxlength="2400"></textarea></label>
+          <button type="button" data-edit-opening-field="signupBenefits">Edit benefits with formatting</button>
+          <label>Note below the waitlist button<textarea name="waitlistNote" rows="5" maxlength="600"></textarea><small>Only shown when the join buttons link to the waitlist. Leave empty to hide it.</small></label>
+          <button type="button" data-edit-opening-field="waitlistNote">Edit waitlist note with formatting</button>
+          <p class="panel-help">Change the price, opening date and join destination in Dates &amp; links.</p>
         </div>
         <div role="tabpanel" id="panel-details" aria-labelledby="tab-details" hidden>
           <label>Join buttons link to<select name="joinMode"><option value="waitlist">Waitlist form</option><option value="patreon">Patreon membership</option></select><small>This changes both join buttons after you save, preview and publish. It does not close Patreon membership itself.</small></label>

@@ -1,0 +1,60 @@
+/* The document order is heading, book, offer on every screen. */
+.opening{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);grid-template-areas:"title title" "signup book";column-gap:clamp(32px,5vw,64px);row-gap:36px;padding-block:32px 56px}
+.opening-title{grid-area:title}
+.opening .opening-title h1{max-width:none;text-wrap:initial;font-size:clamp(1.9rem,3.4vw,var(--heading-size))}
+.opening .first-book{grid-area:book;padding:0 0 0 32px;border:0;border-left:1px solid var(--rule)}
+.opening .signup{grid-area:signup;min-width:0}
+.opening.composition-book-left{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-areas:"title title" "book signup"}
+.opening.composition-book-left .first-book{padding:0 32px 0 0;border-left:0;border-right:1px solid var(--rule)}
+.opening.composition-stacked,.opening.composition-centered{grid-template-columns:minmax(0,1fr);grid-template-areas:"title" "book" "signup"}
+.opening.composition-stacked .first-book,.opening.composition-centered .first-book{border:0;padding:0;max-width:none}
+.opening.composition-centered .signup{max-width:40rem;margin-inline:auto;text-align:center}
+.signup-heading{font:400 28px/1.3 var(--heading-font);letter-spacing:-.02em;margin:0 0 20px;text-wrap:balance}
+.signup-benefits{font:400 var(--copy-size)/1.7 var(--body-font);max-width:52ch}
+.signup-benefits :where(p,ul,ol){margin:0 0 12px}
+.signup-benefits :where(ul,ol){padding-left:1.25em}
+.signup-benefits li+li{margin-top:6px}
+.signup .hero-action{margin-top:24px;align-items:stretch}
+.signup .signup-details{width:100%;padding-top:20px}
+.signup .hero-action .join-button{align-self:flex-start;width:auto;min-width:min(100%,14rem)}
+.waitlist-note{max-width:52ch;margin-top:0;font:400 14px/1.65 var(--body-font);color:var(--muted-ink)}
+.waitlist-note :where(p,ul,ol){margin:0}
+.waitlist-note :where(ul,ol){padding-left:1.25em}
+.waitlist-note>*+*{margin-top:8px}
+.membership-waitlist-note{grid-column:1;grid-row:4;margin-top:16px}
+ruslitiki-book-preview{display:block}
+.book-cover-card{perspective:1000px}
+.book-cover-faces{position:relative;aspect-ratio:var(--cover-ratio);transform-style:preserve-3d;transition:transform .48s cubic-bezier(.2,.7,.2,1)}
+ruslitiki-book-preview[data-flipped] .book-cover-faces{transform:rotateY(180deg)}
+.book-cover-trigger,.book-description-back{position:absolute;inset:0;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.book-cover-trigger{display:block;max-width:100%;padding:0;border:0;background:transparent;color:var(--indigo);font:inherit;text-align:left;transform:rotateY(0)}
+button.book-cover-trigger{cursor:pointer}
+.book-cover-trigger img{display:block;width:100%;height:100%;object-fit:contain}
+.book-cover-trigger:focus-visible{outline:2px solid var(--indigo);outline-offset:6px}
+.book-description-hint{position:absolute;right:8px;top:8px;display:flex;align-items:center;gap:6px;padding:6px 9px;border:1px solid var(--indigo);border-radius:4px;background:var(--page-bg);color:var(--indigo);font:500 13px/1.4 var(--body-font)}
+.book-cover-trigger:hover .book-description-hint{text-decoration:underline;text-underline-offset:.2em}
+.book-description-back{display:flex;flex-direction:column;gap:12px;transform:rotateY(180deg);padding:16px;border:1px solid var(--rule);background:var(--page-bg);color:var(--ink);text-align:left}
+.book-description-close{flex:none;align-self:start;display:flex;align-items:center;gap:6px;padding:2px 0;min-height:32px;background:transparent;border:0;font:400 13px/1.5 var(--body-font);color:var(--indigo);cursor:pointer;text-decoration:underline;text-underline-offset:.2em}
+.book-description-close:focus-visible,.book-description-copy:focus-visible{outline:2px solid var(--indigo);outline-offset:3px}
+.book-description-copy{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;font:400 14px/1.6 var(--body-font);overflow-wrap:anywhere}
+.book-description-copy :where(p,ul,ol){margin:0 0 12px}
+.book-description-copy :where(ul,ol){padding-left:1.25em}
+.book-description-copy>*:last-child{margin-bottom:0}
+@media(prefers-reduced-motion:reduce){.book-cover-faces{transition:none}}
+@media(max-width:899.98px){
+  .opening,.opening.composition-book-left,.opening.composition-stacked,.opening.composition-centered{grid-template-columns:minmax(0,1fr);grid-template-areas:"title" "book" "signup";gap:28px;padding-block:28px 40px}
+  .opening .opening-title h1{font-size:clamp(32px,8.5vw,42px);max-width:21ch}
+  .opening .first-book,.opening.composition-book-left .first-book{padding:0;border:0;max-width:none}
+  .opening .first-book h2{font-size:28px;max-width:24ch}
+  .opening .book-cover{max-width:min(100%,var(--art-width),11.5rem)}
+  .opening .book-label{margin-bottom:8px}
+  .opening .author{margin:8px 0 16px}
+  .opening .book-artwork{margin-bottom:12px}
+  .opening .book-note{font-size:15px}
+  .opening .signup{padding-top:28px;border-top:1px solid var(--rule)}
+  .signup-heading{font-size:25px;margin-bottom:16px}
+  .signup .hero-action{margin-top:20px;gap:18px}
+  .signup .signup-details{padding-top:18px;gap:16px}
+  .signup .hero-action .join-button{font-size:17px}
+  .book-description-back{padding:12px;gap:8px}
+}

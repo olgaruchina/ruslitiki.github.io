@@ -1,4 +1,5 @@
 import { labelsFor } from './labels.mjs';
+import { prepareOpeningFields } from './opening.mjs';
 import { sectionAnchors, publicSectionAnchors, hasHowItWorksVideoBookmark, materializeSectionAnchors } from './anchors.mjs';
 
 export const DESIGN_OPTIONS = {
@@ -88,6 +89,7 @@ export function pageNavigation(content) {
 }
 export function editableContent(content) {
   const draft=structuredClone(content);
+  prepareOpeningFields(draft);
   if(draft.joinMode===undefined)draft.joinMode=draft.status==='coming-soon'?'waitlist':'patreon';
   draft.sections=normalizedSections(draft.sections);
   materializeSectionAnchors(draft);
