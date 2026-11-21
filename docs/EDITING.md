@@ -65,7 +65,7 @@ Each block has width, alignment and plain/bordered/accent-background choices. Te
 
 **Finding a validation error:** Page blocks shows the section number used in error messages, even when blocks have been reordered. If preview preparation fails, the editor opens the first section with an error. An empty Image and text block needs its own image; selecting the monthly book cover does not fill that block. Complete the block, hide it, or remove it if it is unwanted. Hidden unfinished sections do not prevent a preview. Image-size warnings distinguish missing dimensions from images over 12,000 pixels.
 
-The Introduction tab has an optional Introduction heading for Olga's new introductory copy. Leave it empty to start with the monthly book. Old saved drafts do not restore the retired slogan.
+Removed opening headings stay off the page even when they remain in an older saved draft.
 
 **Undo and reset:** Undo/Redo keeps your last 40 changes in the current editor tab, including removed blocks and style changes. Typing in one passage is grouped into one undo step. This history clears when you reload the tab. **Reset page style** restores the original visual settings while keeping your content and block order. **Edit page** shows changes as you work; prepare a new **Saved preview** before publishing them.
 

@@ -29,34 +29,20 @@ test('new opening fields keep owner text and formatting through save and reload'
   assert.equal(restored.book.description,'');assert.equal(restored.signupBenefits,'');assert.equal(restored.waitlistNote,'');
 });
 
-test('an optional introduction heading preserves new owner copy without restoring a retired heading',()=>{
-  const c=editableContent(legacyContent());
-  c.heading='Russian literature, but make it fun';
-  const doc={blocks:[{type:'paragraph',runs:[{text:'An introduction written by Olga',italic:true}]}]};
-  assert.equal(setCanvasRichText(c,'opening','introHeading',plainText(doc),doc),true);
-  assert.deepEqual(validateContent(c),[]);
-  assert.deepEqual(editableContent(JSON.parse(JSON.stringify(c))),c);
-  const overview=renderLlms(c,'https://www.ruslitiki.com/');
-  assert.ok(overview.includes(c.introHeading));
-  assert.ok(!overview.includes(c.heading));
-  c.introHeading='x'.repeat(101);
-  delete c.richText['opening:introHeading'];
-  assert.ok(validateContent(c).some(error=>error.startsWith('Introduction heading:')));
-});
-
-test('updating the editor preserves an owner-written heading in an older local draft',()=>{
+test('older draft headings stay retired without discarding the saved text',()=>{
   const old=legacyContent();
   old.heading='Russian literature, but make it accessible';
-  old.richText={'opening:heading':{blocks:[{type:'paragraph',runs:[{text:old.heading,bold:true}]}]}};
   const before=JSON.stringify(old);
   const migrated=editableContent(old);
   assert.equal(JSON.stringify(old),before);
-  assert.equal(migrated.introHeading,old.heading);
-  assert.deepEqual(migrated.richText['opening:introHeading'],old.richText['opening:heading']);
-  assert.deepEqual(editableContent(migrated),migrated);
-  assert.deepEqual(validateContent(migrated),[]);
-  migrated.introHeading='';delete migrated.richText['opening:introHeading'];
-  assert.equal(editableContent(migrated).introHeading,'','Clearing the new field must keep it empty after reloading.');
+  assert.equal(migrated.introHeading,undefined,'An older heading must not migrate into a new visible field.');
+  old.introHeading=old.heading;
+  old.richText={'opening:introHeading':{blocks:[{type:'paragraph',runs:[{text:old.introHeading,bold:true}]}]}};
+  const restored=editableContent(old);
+  assert.deepEqual(validateContent(restored),[]);
+  assert.equal(restored.introHeading,old.introHeading,'Older local files can still load without losing their saved text.');
+  const overview=renderLlms(restored,'https://www.ruslitiki.com/');
+  assert.ok(!overview.includes(old.heading));
 });
 
 test('the AI overview follows cover visibility and the active join mode',()=>{

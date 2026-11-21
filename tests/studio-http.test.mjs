@@ -69,9 +69,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const headedCanvas=await api('/api/canvas',{sequence:1,generation:1,content:headed});
     assert.equal(headedCanvas.status,200,JSON.stringify(headedCanvas.data));
     const headedHtml=await (await fetch(headedCanvas.data.url)).text();
-    assert.match(headedHtml,/<h1[^>]*data-edit-field="introHeading"[^>]*>An introduction written by Olga<\/h1>/);
-    assert.match(headedHtml,/<h2 id="first-book-title"/);
-    assert.equal((headedHtml.match(/<h1\b/g)??[]).length,1,'An optional introduction heading keeps a single main heading.');
+    assert.ok(!headedHtml.includes(headed.introHeading),'Saved introductory headings must not restore the removed block.');
+    assert.match(headedHtml,/<h1 id="first-book-title"/);
+    assert.equal((headedHtml.match(/<h1\b/g)??[]).length,1,'The monthly book remains the single main heading.');
     assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
     assert.match(canvasHtml,/<span id="section-bb4b953e-a094-43dd-baec-239fd87471e6" class="section-anchor-legacy" tabindex="-1"/,'The original Contact bookmark still has a focusable destination.');
     assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');

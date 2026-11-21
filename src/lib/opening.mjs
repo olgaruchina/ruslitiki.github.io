@@ -6,10 +6,6 @@ export const waitlistNoteFor=content=>content.waitlistNote??DEFAULT_WAITLIST_NOT
 export const bookDescriptionFor=book=>book.description??book.note??'';
 
 export function prepareOpeningFields(draft){
-  if(draft.introHeading===undefined && typeof draft.heading==='string' && draft.heading.trim() && !/^Russian literature, but make it fun[.!]?$/.test(draft.heading.trim())){
-    draft.introHeading=draft.heading;
-    if(draft.richText?.['opening:heading'])draft.richText['opening:introHeading']=structuredClone(draft.richText['opening:heading']);
-  }
   if(draft.signupHeading===undefined){
     const removed='Fall in love with Russian classics, one book at a time. Discover the stories behind the stories.';
     const lines=(draft.introduction??'').split('\n');
