@@ -2,7 +2,7 @@
   "brand": "Ruslitiki",
   "status": "membership-open",
   "joinMode": "waitlist",
-  "description": "An online Russian literature book club with Olga Ruchina",
+  "description": "Educational Book Club on Russian Literature with Olga Ruchina",
   "introduction": "",
   "openingDate": "2026-11-29",
   "readingDate": "2026-12-01",
@@ -14,14 +14,14 @@
   "logo": "/images/ruslitiki-original.png",
   "logoPresentation": "original-banner",
   "book": {
-    "title": "A Hero of Our Time + Princess Ligovskaya ",
+    "title": "A Hero of Our Time ",
     "author": "Mikhail Lermontov",
     "note": "The Caucasus, Love, Destiny",
     "showArtwork": true,
     "coverImage": "/images/logo-6699d0f9-620d-4f14-8967-1946fa87d1a8.jpg",
     "coverWidth": 970,
     "coverHeight": 1500,
-    "description": "The Caucasus, Love, Destiny"
+    "description": "Grigory Pechorin, a young, intelligent but cynical Russian officer serving in the Caucasus.\n\nBored with life and unable to find meaning or happiness, he manipulates people, plays with women's feelings and destroys relationships, often simply for entertainment."
   },
   "sections": [
     {
@@ -42,7 +42,7 @@
       "id": "how-the-club-works",
       "type": "text",
       "heading": "How the club works?",
-      "body": "The book is chosen in advance, so you’ll have plenty of time to get yourself a copy (or a Kindle edition).\n\nEvery Monday, you’ll receive a video that will help you gradually unfold the book, step by step. We’ll explore the author, the historical context, and the details you should pay attention to. Trust Olga: she’ll point out what to focus on and help you notice details that might depend on context, translation, or hidden meanings.\n\nAt the end of the month, we’ll meet for a guided discussion of the book (two time slots available for different timezones). You don’t need to prepare anything for the discussion—your opinion is enough.\n\nYou’ll receive the calendar in advance, so you can plan your reading and make time for our meeting.\n",
+      "body": "The book is chosen in advance, so you’ll have plenty of time to get yourself a copy (or a Kindle edition).\nEvery Monday, you’ll receive a video that will help you gradually unfold the book, step by step. We’ll explore the author, the historical context, and the details you should pay attention to. Trust Olga: she’ll point out what to focus on and help you notice details that might depend on context, translation, or hidden meanings.\nAt the end of the month, we’ll meet for a guided discussion of the book (two time slots available for different timezones). You don’t need to prepare anything for the discussion—your opinion is enough.\nYou’ll receive the calendar in advance, so you can plan your reading and make time for our meeting.\n",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -56,7 +56,7 @@
       "id": "membership",
       "type": "text",
       "heading": "Membership",
-      "body": "Membership fee: $15 USD per month\n\nIt includes:\nWeekly videos\nReading guides and additional materials\nAccess to the member chat\nA guided discussion at the end of the month\n\nJoining the waitlist is free. Paid membership is a separate step through Patreon. The price will be indicated in your local currency (equal to $15 USD). Please join through a browser instead of the app (if you use iPhone) to avoid additional charges by Pateron (you can use the app after joining). \n\nThe book itself is not included. A physical copy is not provided. You can buy it separately, borrow it from a friend or a library, or find a free, legal version online.\n",
+      "body": "Membership fee: $15 USD per month\nIt includes:\nWeekly videos\nReading guides and additional materials\nAccess to the member chat\nA guided discussion at the end of the month\nJoining the waitlist is free. Paid membership is a separate step through Patreon. The price will be indicated in your local currency (equal to $15 USD). Please join through a browser instead of the app (if you use iPhone) to avoid additional charges by Pateron (you can use the app after joining). \nThe book itself is not included. A physical copy is not provided. You can buy it separately, borrow it from a friend or a library, or find a free, legal version online.\n",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -98,7 +98,7 @@
       "id": "faq-read-in-translation",
       "type": "faq",
       "heading": "Do I need to know Russian?",
-      "body": "The book club is conducted entirely in English, but you can read the book in any language or translation you feel most comfortable with.\n\nOlga draws on the original Russian text to explain wordplay, cultural references, and other details that can sometimes get lost in translation. This means you can enjoy the book in the language that works best for you while still getting the deeper context and insights from the original.",
+      "body": "The book club is conducted entirely in English, but you can read the book in any language or translation you feel most comfortable with.\nOlga draws on the original Russian text to explain wordplay, cultural references, and other details that can sometimes get lost in translation. This means you can enjoy the book in the language that works best for you while still getting the deeper context and insights from the original.",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -111,7 +111,7 @@
       "id": "faq-membership-includes",
       "type": "faq",
       "heading": "What will membership include?",
-      "body": "Every week, you’ll get a new video, a reading guide and materials chosen for the book. Olga will highlight what to focus on, including context, translation and hidden meanings. Membership also includes the member chat on Patreon and a guided book discussion at the end of the month.\n\nThe book itself is not included. A physical copy is not provided. You can buy it separately, borrow it from a friend or a library, or find a free, legal version online.",
+      "body": "Every week, you’ll get a new video, a reading guide and materials chosen for the book. Olga will highlight what to focus on, including context, translation and hidden meanings. Membership also includes the member chat on Patreon and a guided book discussion at the end of the month.\nThe book itself is not included. A physical copy is not provided. You can buy it separately, borrow it from a friend or a library, or find a free, legal version online.",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -124,7 +124,7 @@
       "id": "faq-first-read",
       "type": "faq",
       "heading": "What are we reading, and when do we start?",
-      "body": "The book for the next month is chosen in advance, and you’ll find out what it is at least one week before the new month begins. This gives you time to get a copy of the book and decide whether you’d like to stay in the book club for the next month.\n\nIf you decide to stay for another month, you don’t need to do anything or pay again manually. Your membership will renew automatically, and the monthly payment will be charged to your payment method through Patreon. If you decide to leave the book club, please cancel your subscription before the next renewal date.\n\nOn the 25th of every month, membership opens for new Ruslitiki for the following month. It will remain open for five days and then close again.\n\nThe book club month begins on the first Monday of the month.\n\n",
+      "body": "The book for the next month is chosen in advance, and you’ll find out what it is at least one week before the new month begins. This gives you time to get a copy of the book and decide whether you’d like to stay in the book club for the next month.\nIf you decide to stay for another month, you don’t need to do anything or pay again manually. Your membership will renew automatically, and the monthly payment will be charged to your payment method through Patreon. If you decide to leave the book club, please cancel your subscription before the next renewal date.\nOn the 25th of every month, membership opens for new Ruslitiki for the following month. It will remain open for five days and then close again.\nThe book club month begins on the first Monday of the month.",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -150,7 +150,7 @@
       "id": "faq-live-sessions",
       "type": "faq",
       "heading": "What if I’m in a different timezone?",
-      "body": "The book club is open to readers from all around the world. Olga understands that everyone lives in a different time zone—she personally lives in EST/EDT, Toronto/New York time.\n\nYou don’t need to block off any specific time in your calendar for the weekly videos. They’ll be delivered to your email, so you can watch them whenever it’s convenient for you.\n\nThe same goes for reading: you can read at your own pace. The only goal is to finish the book by the end of the month so you’re ready for the final discussion.\n\nThe live discussion will take place on the Saturday closest to the end of the month (for example, November 28th, 2026). There will be two time slots to choose from: 12 PM EST and 7 PM EST. Pick whichever works best for your time zone and schedule.\n",
+      "body": "The book club is open to readers from all around the world. Olga understands that everyone lives in a different time zone—she personally lives in EST/EDT, Toronto/New York time.\nYou don’t need to block off any specific time in your calendar for the weekly videos. They’ll be delivered to your email, so you can watch them whenever it’s convenient for you.\nThe same goes for reading: you can read at your own pace. The only goal is to finish the book by the end of the month so you’re ready for the final discussion.\nThe live discussion will take place on the Saturday closest to the end of the month (for example, December 19th, 2026). There will be two time slots to choose from: 12 PM EST and 7 PM EST. Pick whichever works best for your time zone and schedule.",
       "visible": true,
       "width": "full",
       "align": "left",
@@ -231,7 +231,7 @@
   },
   "hostInstagramUrl": "https://www.instagram.com/books_olgaruchina/",
   "labels": {
-    "bookLabel": "November read",
+    "bookLabel": "December read",
     "firstBookNav": "November's Book"
   },
   "richText": {
@@ -244,10 +244,6 @@
               "text": "The book is chosen in advance, so you’ll have plenty of time to get yourself a copy (or a Kindle edition)."
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         },
         {
           "type": "paragraph",
@@ -273,10 +269,6 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
               "text": "At the end of the month",
@@ -286,10 +278,6 @@
               "text": ", we’ll meet for a guided discussion of the book (two time slots available for different timezones). You don’t need to prepare anything for the discussion—your opinion is enough."
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         },
         {
           "type": "paragraph",
@@ -314,10 +302,6 @@
               "text": "Membership fee: $15 USD per month"
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         },
         {
           "type": "paragraph",
@@ -361,19 +345,11 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
               "text": "Joining the waitlist is free. Paid membership is a separate step through Patreon. The price will be indicated in your local currency (equal to $15 USD). Please join through a browser instead of the app (if you use iPhone) to avoid additional charges by Pateron (you can use the app after joining). "
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         },
         {
           "type": "paragraph",
@@ -436,10 +412,6 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
               "text": "Olga draws on the original Russian text to explain wordplay, cultural references, and other details that can sometimes get lost in translation. This means you can enjoy the book in the language that works best for you while still getting the deeper context and insights from the original."
@@ -457,10 +429,6 @@
               "text": "Every week, you’ll get a new video, a reading guide and materials chosen for the book. Olga will highlight what to focus on, including context, translation and hidden meanings. Membership also includes the member chat on Patreon and a guided book discussion at the end of the month."
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         },
         {
           "type": "paragraph",
@@ -516,10 +484,6 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
               "text": "If you decide to stay for another month, you don’t need to do anything or pay again manually. ",
@@ -536,10 +500,6 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
               "text": "On the 25th of every month",
@@ -552,23 +512,11 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
               "text": "The book club month begins on the first Monday of the month."
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         }
       ]
     },
@@ -600,10 +548,6 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
               "text": "You don’t need to block off any specific time in your calendar for the weekly videos.",
@@ -613,10 +557,6 @@
               "text": " They’ll be delivered to your email, so you can watch them whenever it’s convenient for you."
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         },
         {
           "type": "paragraph",
@@ -635,20 +575,12 @@
         },
         {
           "type": "paragraph",
-          "runs": []
-        },
-        {
-          "type": "paragraph",
           "runs": [
             {
-              "text": "The live discussion will take place on the Saturday closest to the end of the month (for example, November 28th, 2026). There will be two time slots to choose from: 12 PM EST and 7 PM EST. Pick whichever works best for your time zone and schedule.",
+              "text": "The live discussion will take place on the Saturday closest to the end of the month (for example, December 19th, 2026). There will be two time slots to choose from: 12 PM EST and 7 PM EST. Pick whichever works best for your time zone and schedule.",
               "bold": true
             }
           ]
-        },
-        {
-          "type": "paragraph",
-          "runs": []
         }
       ]
     },
@@ -671,10 +603,10 @@
     "opening:signupBenefits": {
       "blocks": [
         {
-          "type": "paragraph",
+          "type": "bullet",
           "runs": [
             {
-              "text": "It includes:"
+              "text": "📹 Video: What you should know before starting A Hero of Our Time"
             }
           ]
         },
@@ -682,7 +614,7 @@
           "type": "bullet",
           "runs": [
             {
-              "text": "Weekly videos"
+              "text": "📹 Video: Historical and Cultural contexts"
             }
           ]
         },
@@ -690,7 +622,7 @@
           "type": "bullet",
           "runs": [
             {
-              "text": "Reading guides and additional materials"
+              "text": "📹 Video: Women, Marriage and Reputation in 19th-Century Russia"
             }
           ]
         },
@@ -698,7 +630,7 @@
           "type": "bullet",
           "runs": [
             {
-              "text": "Access to the member chat"
+              "text": "📹 Bonus Read: What Does Pechorin Hides in Princess Ligovskaya"
             }
           ]
         },
@@ -706,14 +638,15 @@
           "type": "bullet",
           "runs": [
             {
-              "text": "A guided discussion at the end of the month"
+              "text": "A live discussion with fellow Ruslitiki on December 19. It’s a guided discussion, recording will be provided."
             }
           ]
         }
       ]
     }
   },
-  "signupHeading": "JOIN THE WAITLIST FOR OUR DECEMBER READ!",
-  "signupBenefits": "It includes:\nWeekly videos\nReading guides and additional materials\nAccess to the member chat\nA guided discussion at the end of the month",
-  "waitlistNote": "If you join the waitlist, you will receive an email with the link to join the book club as soon as the book club is open for that month."
+  "signupHeading": "What you'll get if you join Ruslitiki in December",
+  "signupBenefits": "📹 Video: What you should know before starting A Hero of Our Time\n📹 Video: Historical and Cultural contexts\n📹 Video: Women, Marriage and Reputation in 19th-Century Russia\n📹 Bonus Read: What Does Pechorin Hides in Princess Ligovskaya\nA live discussion with fellow Ruslitiki on December 19. It’s a guided discussion, recording will be provided.",
+  "waitlistNote": "If you join the waitlist, you will receive an email with the link to join the book club as soon as the book club is open for that month.",
+  "introHeading": "Russian literature, but make it accessible "
 }

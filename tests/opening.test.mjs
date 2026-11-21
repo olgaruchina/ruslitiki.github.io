@@ -29,6 +29,21 @@ test('new opening fields keep owner text and formatting through save and reload'
   assert.equal(restored.book.description,'');assert.equal(restored.signupBenefits,'');assert.equal(restored.waitlistNote,'');
 });
 
+test('an optional introduction heading preserves new owner copy without restoring a retired heading',()=>{
+  const c=editableContent(legacyContent());
+  c.heading='Russian literature, but make it fun';
+  const doc={blocks:[{type:'paragraph',runs:[{text:'An introduction written by Olga',italic:true}]}]};
+  assert.equal(setCanvasRichText(c,'opening','introHeading',plainText(doc),doc),true);
+  assert.deepEqual(validateContent(c),[]);
+  assert.deepEqual(editableContent(JSON.parse(JSON.stringify(c))),c);
+  const overview=renderLlms(c,'https://www.ruslitiki.com/');
+  assert.ok(overview.includes(c.introHeading));
+  assert.ok(!overview.includes(c.heading));
+  c.introHeading='x'.repeat(101);
+  delete c.richText['opening:introHeading'];
+  assert.ok(validateContent(c).some(error=>error.startsWith('Introduction heading:')));
+});
+
 test('the AI overview follows cover visibility and the active join mode',()=>{
   const c=editableContent(legacyContent());c.book.description='An owner-written description.';c.waitlistNote='An owner-written waitlist note.';
   c.joinMode='waitlist';c.book.showArtwork=true;

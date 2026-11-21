@@ -39,12 +39,13 @@ export function validateContent(data, {draft = false} = {}) {
       if (url.protocol !== 'https:' || url.username || url.password || (hosts.length && !hosts.includes(url.hostname))) throw new Error();
     } catch { errors.push(`${label}: enter a valid HTTPS link${hosts.length ? ` on ${hosts.join(' or ')}` : ''}.`); }
   };
-  if (!keys(data, ['brand','status','joinMode','heading','description','hostInstagramUrl','introduction','signupHeading','signupBenefits','waitlistNote','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design','labels','richText'], 'Website')) return errors;
+  if (!keys(data, ['brand','status','joinMode','heading','introHeading','description','hostInstagramUrl','introduction','signupHeading','signupBenefits','waitlistNote','membershipPrice','openingDate','readingDate','waitlistUrl','patreonUrl','email','instagramUrl','logo','logoPresentation','book','sections','seo','design','labels','richText'], 'Website')) return errors;
   if (own(data,'labels') && keys(data.labels,Object.keys(LABEL_FIELDS),'Page labels')) {
     for (const [key,field] of Object.entries(LABEL_FIELDS)) if (own(data.labels,key)) string(data.labels[key],field.title,field.max,!draft);
   }
   string(data.brand, 'Club name', 40);
   if(own(data,'heading'))string(data.heading, 'Legacy main heading', LIMITS.heading, false);
+  if(own(data,'introHeading'))string(data.introHeading, 'Introduction heading', LIMITS.heading, false);
   string(data.description, 'Club description', LIMITS.description);
   string(data.introduction, 'Introduction', LIMITS.introduction, false);
   for(const [key,label,max] of [['signupHeading','Join section heading',150],['signupBenefits','What members receive',2400],['waitlistNote','Waitlist explanation',600]])if(own(data,key))string(data[key],label,max,false);
@@ -77,19 +78,26 @@ export function validateContent(data, {draft = false} = {}) {
   else data.sections.forEach((section, i) => {
     const label = `Section ${i+1}`;
     if (!keys(section, ['id','anchor','type','heading','body','lead','visible','width','align','tone','layout','divider','imageLayout','imageRatio','image','imageAlt','imageWidth','imageHeight','caption','sourceUrl','attribution','buttonLabel','buttonUrl','buttonKind','videoUrl','navLabel'], label)) return;
+    const mustComplete=!draft && section.visible===true;
+    const emptyImageBlock=section.type==='image' && section.image==='' && [section.heading,section.body,section.imageAlt,section.caption??'',section.buttonLabel??'',section.buttonUrl??'',section.sourceUrl??''].every(value=>typeof value==='string' && !value.trim());
+    if(mustComplete && emptyImageBlock)errors.push(`${label}: this Image and text block is empty. Complete it, hide it, or remove it before publishing.`);
+    const required=mustComplete && !emptyImageBlock;
     if (typeof section.type!=='string' || !Object.hasOwn(SECTION_TYPES,section.type)) errors.push(`${label}: choose a supported block type.`);
     if (own(section,'id') && (typeof section.id!=='string' || !/^[a-z][a-z0-9-]{0,60}$/.test(section.id) || ['opening','labels','main','canvas-content','first-book-title'].includes(section.id))) errors.push(`${label}: invalid block identifier.`);
     if(own(section,'navLabel'))string(section.navLabel,`${label} menu label`,32,false);
-    string(section.heading, `${label} heading`, 150, !draft && section.type!=='button');
+    string(section.heading, `${label} heading`, 150, required && section.type!=='button');
     if(own(section,'lead'))string(section.lead,`${label} lead`,150,false);
-    string(section.body, `${label} text`, 1400, !draft && !['text','image','video','button'].includes(section.type));
+    string(section.body, `${label} text`, 1400, required && !['text','image','video','button'].includes(section.type));
     if (typeof section.visible !== 'boolean') errors.push(`${label}: visibility must be on or off.`);
     for(const [key,choices] of Object.entries(SECTION_OPTIONS))if(own(section,key) && (typeof section[key]!=='string' || !Object.hasOwn(choices,section[key])))errors.push(`${label}: choose a supported ${key}.`);
     if(section.type==='image'){
-      const emptyImage=draft && section.image==='';
-      if(!emptyImage && (typeof section.image!=='string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(section.image)))errors.push(`${label}: upload a PNG, JPEG or WebP image.`);
-      string(section.imageAlt,`${label} image description`,300,!draft);
-      for(const key of ['imageWidth','imageHeight'])if(!Number.isInteger(section[key]) || section[key]<(emptyImage?0:1) || section[key]>12000)errors.push(`${label}: choose an image no larger than 12,000 pixels on either side.`);
+      const emptyImage=section.image==='';
+      if(emptyImage){if(required)errors.push(`${label}: choose an image for this Image and text block, or hide it before publishing.`);}
+      else if(typeof section.image!=='string' || !/^\/images\/[a-zA-Z0-9_-]+\.(png|jpe?g|webp)$/.test(section.image))errors.push(`${label}: upload a PNG, JPEG or WebP image.`);
+      string(section.imageAlt,`${label} image description`,300,required);
+      const dimensions=[section.imageWidth,section.imageHeight];
+      if(dimensions.some(value=>Number.isInteger(value) && value>12000))errors.push(`${label}: choose an image no larger than 12,000 pixels on either side.`);
+      else if(dimensions.some(value=>!Number.isInteger(value) || value<(emptyImage?0:1)))errors.push(`${label}: the image size could not be read. Choose the image again.`);
       string(section.caption??'',`${label} caption`,300,false);
       https(section.sourceUrl,`${label} image source`,false);
     }
@@ -99,10 +107,10 @@ export function validateContent(data, {draft = false} = {}) {
       if((value!=='' || (!draft && section.visible)) && !youtubeVideoId(value))errors.push(`${label} video: paste a valid YouTube video link, or keep the section hidden until it is ready.`);
     }
     if(section.type==='button' || own(section,'buttonLabel') || own(section,'buttonUrl')){
-      const required=!draft && (section.type==='button' || !!section.buttonLabel || !!section.buttonUrl);
-      string(section.buttonLabel??'',`${label} button label`,70,required);
+      const buttonRequired=mustComplete && (section.type==='button' || !!section.buttonLabel || !!section.buttonUrl);
+      string(section.buttonLabel??'',`${label} button label`,70,buttonRequired);
       const url=section.buttonUrl??'';
-      if((required || url!=='') && !safeButtonUrl(url))errors.push(`${label} button: enter an HTTPS link, an email link, or a page/section link.`);
+      if((buttonRequired || url!=='') && !safeButtonUrl(url))errors.push(`${label} button: enter an HTTPS link, an email link, or a page/section link.`);
     }
   });
   if(Array.isArray(data.sections) && data.sections.every(record)){

@@ -217,5 +217,8 @@ test('block images require safe paths, descriptions and dimensions; hidden image
   content.sections[0].visible=false;
   assert.ok(!selectedImagePaths(content).includes('/images/reading.png'));
   content.sections[0].image='/images/../../secret.png';content.sections[0].imageAlt='';content.sections[0].imageWidth=Infinity;
-  assert.ok(validateContent(content).length>=3);
+  const hiddenErrors=validateContent(content);
+  assert.ok(hiddenErrors.some(error=>error.includes('upload a PNG')));
+  assert.ok(hiddenErrors.some(error=>error.includes('image size could not be read')));
+  assert.ok(!hiddenErrors.some(error=>error.includes('image description')));
 });

@@ -9,6 +9,7 @@ import { spawn } from 'node:child_process';
 import { designFor, PALETTES } from '../src/lib/design.mjs';
 import { fromPlainText, plainText } from '../src/lib/rich-text.mjs';
 import {setCanvasRichText} from '../src/lib/rich-fields.mjs';
+import {insertSection} from '../src/lib/canvas-model.mjs';
 
 test('local editor keeps drafts private, validates requests and builds the exact selected preview', {timeout:60000}, async()=>{
   const root=await fs.mkdtemp(path.join(os.tmpdir(),'ruslitiki-http-'));
@@ -64,6 +65,13 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="book.title"') && canvasHtml.includes('/__canvas/bridge.js'));
     assert.match(canvasHtml,/<h1 id="first-book-title"/);
     assert.ok(!canvasHtml.includes(olderDraft.heading),'A saved legacy heading does not bring back the removed block.');
+    const headed={...initial.content,introHeading:'An introduction written by Olga'};
+    const headedCanvas=await api('/api/canvas',{sequence:1,generation:1,content:headed});
+    assert.equal(headedCanvas.status,200,JSON.stringify(headedCanvas.data));
+    const headedHtml=await (await fetch(headedCanvas.data.url)).text();
+    assert.match(headedHtml,/<h1[^>]*data-edit-field="introHeading"[^>]*>An introduction written by Olga<\/h1>/);
+    assert.match(headedHtml,/<h2 id="first-book-title"/);
+    assert.equal((headedHtml.match(/<h1\b/g)??[]).length,1,'An optional introduction heading keeps a single main heading.');
     assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
     assert.match(canvasHtml,/<span id="section-bb4b953e-a094-43dd-baec-239fd87471e6" class="section-anchor-legacy" tabindex="-1"/,'The original Contact bookmark still has a focusable destination.');
     assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');
@@ -290,6 +298,18 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const customHtml=await (await fetch(customPreview.data.preview.url)).text();
     assert.match(customHtml,/>Ask about joining<\/a>/);
     assert.equal(joinDestinations(customHtml).length,1,'An explicit membership action replaces, rather than duplicates, the default.');
+    const parked=structuredClone(customMembership);
+    const unfinishedImage=insertSection(parked,'image',null,'section-parked-image');
+    unfinishedImage.visible=false;
+    parked.book.description='A longer description written by Olga.';
+    delete parked.richText['opening:book.description'];
+    const parkedSaved=await api('/api/save',{content:parked,revision});
+    assert.equal(parkedSaved.status,200,JSON.stringify(parkedSaved.data));revision=parkedSaved.data.revision;
+    const parkedPreview=await api('/api/preview',{revision});
+    assert.equal(parkedPreview.status,200,JSON.stringify(parkedPreview.data));
+    const parkedHtml=await (await fetch(parkedPreview.data.preview.url)).text();
+    assert.ok(parkedHtml.includes(parked.book.description),'An updated book description survives preview preparation.');
+    assert.ok(!parkedHtml.includes('data-block-id="section-parked-image"'),'A hidden unfinished image section is excluded from the public artifact.');
     const rejected={...customized,design:{...customized.design,background:'#ffffff',ink:'#eeeeee'}};
     assert.equal((await api('/api/save',{content:rejected,revision})).status,422,'Unreadable colours cannot overwrite a saved draft.');
     assert.equal((await (await fetch(origin+'/api/state')).json()).revision,revision);

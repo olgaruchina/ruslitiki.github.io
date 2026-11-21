@@ -18,7 +18,13 @@ let inspectorBusy=false;
 const canvas=new VisualCanvas({frame:$('#canvas-frame'),status:$('#canvas-status'),request,onIntent:canvasIntent});
 const get=(object,key)=>key.split('.').reduce((value,part)=>value[part],object);
 const set=(object,key,value)=>{const parts=key.split('.');const last=parts.pop();parts.reduce((item,part)=>item[part],object)[last]=value;};
-function failure(error){$('#error').textContent=error.message;$('#error').hidden=false;}
+function failure(error){
+  $('#error').textContent=error.message;$('#error').hidden=false;
+  const number=error.message.match(/^Section (\d+)\b/m)?.[1];
+  const section=number && draft?.sections?.[Number(number)-1];
+  const panel=section && document.getElementById('edit-'+section.id);
+  if(panel){activateTab($('#tab-sections'));panel.open=true;panel.scrollIntoView({block:'nearest'});}
+}
 async function request(path,data){
   const response=await fetch(path,data===undefined ? {cache:'no-store'} : {method:'POST',headers:{'Content-Type':'application/json','X-Studio-Token':token},body:JSON.stringify(data)});
   const result=await response.json();
@@ -417,11 +423,12 @@ function renderSections(){
     $('#page-order').append(row);
     if(!section)continue;
     const wrapper=element('details');wrapper.className='section-item block-editor';wrapper.id='edit-'+id;wrapper.dataset.sectionId=id;wrapper.open=open.has(id) || activeBlockId===id;
-    wrapper.append(element('summary',SECTION_TYPES[section.type]+' · '+(section.heading || 'New block')));
+    const summaryText=()=>`Section ${draft.sections.indexOf(section)+1} · ${SECTION_TYPES[section.type]} · ${section.heading || 'New block'}`;
+    wrapper.append(element('summary',summaryText()));
     const fields=element('div');fields.className='block-fields';
     const textField=(key,label,tag='input',max=150,fallback='')=>{
       const field=element('label',label);const input=element(tag);input.value=section[key]??fallback;input.maxLength=max;input.dataset.sectionField=key;if(tag==='textarea')input.rows=4;
-      input.addEventListener('input',()=>{section[key]=input.value;changed();if(key==='heading'){name.textContent=section.heading || SECTION_TYPES[section.type];wrapper.querySelector('summary').textContent=SECTION_TYPES[section.type]+' · '+(section.heading || 'New block');}});field.append(input);fields.append(field);
+      input.addEventListener('input',()=>{section[key]=input.value;changed();if(key==='heading'){name.textContent=section.heading || SECTION_TYPES[section.type];wrapper.querySelector('summary').textContent=summaryText();}});field.append(input);fields.append(field);
     };
     textField('heading',section.type==='faq'?'Question':section.type==='button'?'Heading (optional)':'Heading');
     textField('navLabel','Menu label (optional)','input',32,navigationLabel(section));

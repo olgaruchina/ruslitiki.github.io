@@ -4,9 +4,10 @@ import BookFeature from './BookFeature.astro';
 import RichText from './RichText.astro';
 const {content,design,visualEditing=false}=Astro.props;
 ---
-<div class:list={['opening',`composition-${design.composition}`,{'has-introduction':content.introduction?.trim()}]} data-block-id="opening">
-  {content.introduction?.trim() && <div class="opening-title invitation" data-part="introduction">
-    <RichText content={content} id="opening" field="introduction" value={content.introduction} as="div" mode="block" class="introduction" visualEditing={visualEditing} />
+<div class:list={['opening',`composition-${design.composition}`,{'has-introduction':content.introHeading?.trim() || content.introduction?.trim()}]} data-block-id="opening">
+  {(content.introHeading?.trim() || content.introduction?.trim()) && <div class="opening-title invitation" data-part="introduction">
+    {content.introHeading?.trim() && <RichText content={content} id="opening" field="introHeading" value={content.introHeading} as="h1" visualEditing={visualEditing} />}
+    {content.introduction?.trim() && <RichText content={content} id="opening" field="introduction" value={content.introduction} as="div" mode="block" class="introduction" visualEditing={visualEditing} />}
   </div>}
   <BookFeature content={content} design={design} visualEditing={visualEditing} />
   <Invitation content={content} visualEditing={visualEditing} />

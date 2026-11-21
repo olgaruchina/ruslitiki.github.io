@@ -22,7 +22,7 @@ assert.ok(!home.match(/<header class="masthead"[\s\S]*?<\/header>/)?.[0].include
 assert.ok(!home.includes('Fall in love with Russian classics, one book at a time.'),'The removed introduction must stay off the page.');
 assert.ok(!home.includes('Russian literature, but make it fun'),'The removed opening heading must stay off the page.');
 assert.ok(home.indexOf('data-part="book"')<home.indexOf('data-part="signup"'),'The document must present the book before signup.');
-assert.match(home,/<h1 id="first-book-title"/,'The monthly book must be the primary page heading.');
+assert.match(home,content.introHeading?.trim()?/<h2 id="first-book-title"/:/<h1 id="first-book-title"/,'The book heading must follow the optional introduction heading.');
 assert.ok(home.includes('Joining the waitlist is free. Paid membership is a separate step through Patreon.'),'The membership explanation is missing or out of date.');
 assert.ok(home.includes('https://www.ruslitiki.com/'),'Canonical origin is missing.');
 assert.ok(!home.includes('mailto:') || Boolean(content.email),'Do not publish an unconfigured mailbox.');

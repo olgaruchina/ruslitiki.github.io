@@ -22,7 +22,7 @@ export function moveSectionBefore(content,id,before) {
 export function editableField(content,id,field) {
   if(id==='labels')return Object.hasOwn(LABEL_FIELDS,field)?{object:labelsFor(content),key:field,max:LABEL_FIELDS[field].max}:null;
   if(id==='opening' || id==='brand'){
-    const limits=id==='brand'?{description:180}:{heading:100,introduction:400,signupHeading:150,signupBenefits:2400,waitlistNote:600,membershipPrice:80,'book.title':120,'book.author':100,'book.note':300,'book.description':6000};
+    const limits=id==='brand'?{description:180}:{heading:100,introHeading:100,introduction:400,signupHeading:150,signupBenefits:2400,waitlistNote:600,membershipPrice:80,'book.title':120,'book.author':100,'book.note':300,'book.description':6000};
     if(!Object.hasOwn(limits,field))return null;
     const parts=field.split('.');return {object:parts.length===2?content.book:content,key:parts.at(-1),max:limits[field]};
   }
