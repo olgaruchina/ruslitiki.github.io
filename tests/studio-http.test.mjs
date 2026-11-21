@@ -20,7 +20,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const bin=path.join(root,'test-bin');await fs.mkdir(bin);
     await fs.writeFile(path.join(bin,'gh'),`#!${process.execPath}\nprocess.stderr.write('GitHub is not connected in this isolated test.');process.exit(1);\n`,{mode:0o700});
     const olderDraft=JSON.parse(await fs.readFile(new URL('./fixtures/legacy-site.json',import.meta.url),'utf8'));
-    olderDraft.email='';olderDraft.heading='Olga’s saved introduction';
+    olderDraft.email='';olderDraft.heading='Russian literature, but make it fun.';
     olderDraft.sections=olderDraft.sections.filter(section=>!['section-bb4b953e-a094-43dd-baec-239fd87471e6','section-6a548e93-39c6-412f-a4fc-b3398c69a58d'].includes(section.id));
     await fs.mkdir(path.join(root,'.studio'));
     await fs.writeFile(path.join(root,'.studio/draft.json'),JSON.stringify(olderDraft));

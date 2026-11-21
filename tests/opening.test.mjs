@@ -44,6 +44,21 @@ test('an optional introduction heading preserves new owner copy without restorin
   assert.ok(validateContent(c).some(error=>error.startsWith('Introduction heading:')));
 });
 
+test('updating the editor preserves an owner-written heading in an older local draft',()=>{
+  const old=legacyContent();
+  old.heading='Russian literature, but make it accessible';
+  old.richText={'opening:heading':{blocks:[{type:'paragraph',runs:[{text:old.heading,bold:true}]}]}};
+  const before=JSON.stringify(old);
+  const migrated=editableContent(old);
+  assert.equal(JSON.stringify(old),before);
+  assert.equal(migrated.introHeading,old.heading);
+  assert.deepEqual(migrated.richText['opening:introHeading'],old.richText['opening:heading']);
+  assert.deepEqual(editableContent(migrated),migrated);
+  assert.deepEqual(validateContent(migrated),[]);
+  migrated.introHeading='';delete migrated.richText['opening:introHeading'];
+  assert.equal(editableContent(migrated).introHeading,'','Clearing the new field must keep it empty after reloading.');
+});
+
 test('the AI overview follows cover visibility and the active join mode',()=>{
   const c=editableContent(legacyContent());c.book.description='An owner-written description.';c.waitlistNote='An owner-written waitlist note.';
   c.joinMode='waitlist';c.book.showArtwork=true;
