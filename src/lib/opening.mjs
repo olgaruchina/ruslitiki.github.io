@@ -1,5 +1,5 @@
 export const DEFAULT_SIGNUP_BENEFITS='Weekly videos\nReading guides and additional materials\nAccess to the member chat\nA guided discussion at the end of the month';
-export const DEFAULT_WAITLIST_NOTE='If you join the waitlist, I will send you an email with the link to join the book club as soon as the book club is open for that month.';
+export const DEFAULT_WAITLIST_NOTE='If you join the waitlist, you will receive an email with the link to join the book club as soon as the book club is open for that month.';
 export const signupHeadingFor=content=>content.signupHeading??'';
 export const signupBenefitsFor=content=>content.signupBenefits??DEFAULT_SIGNUP_BENEFITS;
 export const waitlistNoteFor=content=>content.waitlistNote??DEFAULT_WAITLIST_NOTE;
