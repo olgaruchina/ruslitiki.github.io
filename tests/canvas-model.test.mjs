@@ -26,7 +26,7 @@ test('inline text cannot change arbitrary fields and over-limit pastes are prese
   assert.equal(setCanvasText(content,'opening','__proto__.polluted','yes'),false);
   assert.equal(setCanvasText(content,'opening','waitlistUrl','https://another.example'),false);
   const long='A'.repeat(101);assert.equal(setCanvasText(content,'opening','heading',long),true);
-  assert.equal(content.heading,long);assert.ok(validateContent(content,{draft:true}).some(error=>error.startsWith('Main heading')));
+  assert.equal(content.heading,long);assert.ok(validateContent(content,{draft:true}).some(error=>error.startsWith('Legacy main heading')));
   assert.equal(setCanvasText(content,'opening','heading','Read together.'),true);assert.deepEqual(validateContent(content),[]);
 });
 

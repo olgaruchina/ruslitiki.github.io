@@ -110,7 +110,7 @@ test('invalid content cannot overwrite a valid draft',async()=>{
   const dir=await fs.mkdtemp(path.join(os.tmpdir(),'ruslitiki-valid-'));
   try{
     const content=fresh();await atomicJson(path.join(dir,'draft.json'),content);
-    await assert.rejects(saveDraft(dir,{...content,heading:''},digest(content)),/Main heading/);
+    await assert.rejects(saveDraft(dir,{...content,brand:''},digest(content)),/Club name/);
     assert.equal(JSON.parse(await fs.readFile(path.join(dir,'draft.json'))).heading,content.heading);
   }finally{await fs.rm(dir,{recursive:true,force:true});}
 });

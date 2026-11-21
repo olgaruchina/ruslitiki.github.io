@@ -38,6 +38,8 @@ test('local editor keeps drafts private, validates requests and builds the exact
     }
     assert.ok(ready,log || 'Studio did not start.');
     const html=await (await fetch(origin)).text();
+    assert.match(html,/<script src="\/startup.js" type="module"><\/script>/);
+    assert.equal((await fetch(origin+'/startup.js')).status,200,'The startup loader can report browser module failures.');
     assert.match(html,/<select name="joinMode"><option value="waitlist">Waitlist form<\/option><option value="patreon">Patreon membership<\/option>/);
     assert.equal((await fetch(origin+'/anchors.mjs')).status,200,'The editor can load its shared section-link module.');
     assert.equal((await fetch(origin+'/opening.mjs')).status,200,'The editor can load the shared book and signup defaults.');
@@ -59,7 +61,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     const canvasOne=await api('/api/canvas',{sequence:1,generation:1,content:initial.content});
     assert.equal(canvasOne.status,200,JSON.stringify(canvasOne.data));
     const firstCanvas=await fetch(canvasOne.data.url);assert.equal(firstCanvas.status,200);
-    const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="heading"') && canvasHtml.includes('/__canvas/bridge.js'));
+    const canvasHtml=await firstCanvas.text();assert.ok(canvasHtml.includes('data-edit-field="book.title"') && canvasHtml.includes('/__canvas/bridge.js'));
+    assert.match(canvasHtml,/<h1 id="first-book-title"/);
+    assert.ok(!canvasHtml.includes(olderDraft.heading),'A saved legacy heading does not bring back the removed block.');
     assert.match(canvasHtml,/<section id="contact"[^>]*data-block-id="section-bb4b953e-a094-43dd-baec-239fd87471e6"/);
     assert.match(canvasHtml,/<span id="section-bb4b953e-a094-43dd-baec-239fd87471e6" class="section-anchor-legacy" tabindex="-1"/,'The original Contact bookmark still has a focusable destination.');
     assert.ok(canvasHtml.includes('data-book-imprints="on"'),'The canvas carries the selected background-drawings setting.');
@@ -73,7 +77,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.match(canvasHtml,/<span\b[^>]*data-edit-field="description"[^>]*>[^<]*<\/span>/,'The editable description must not include the host link.');
     assert.ok(canvasHtml.includes('href="https://www.instagram.com/books_olgaruchina/"'));
     const publishedSource=JSON.parse(sourceBefore);
-    const tabTwo={...initial.content,heading:'A different unsaved tab',joinMode:'patreon',patreonUrl:publishedSource.patreonUrl,design:{...initial.content.design,bookImprints:false}};
+    const tabTwo={...initial.content,introduction:'A different unsaved tab',joinMode:'patreon',patreonUrl:publishedSource.patreonUrl,design:{...initial.content.design,bookImprints:false}};
     const canvasTwo=await api('/api/canvas',{sequence:1,generation:1,content:tabTwo});assert.equal(canvasTwo.status,200);
     assert.notEqual(canvasTwo.data.session,canvasOne.data.session);
     const canvasTwoHtml=await (await fetch(canvasTwo.data.url)).text();
@@ -113,9 +117,9 @@ test('local editor keeps drafts private, validates requests and builds the exact
     content.sections.find(section=>section.id==='membership').anchor='joining-details';
     content.sections.find(section=>section.id==='section-bb4b953e-a094-43dd-baec-239fd87471e6').navLabel='Contact';
     content.introduction='Read the classics together.\n\nBring your questions.';
-    const headingFormat=fromPlainText(content.heading);headingFormat.blocks[0].runs[0].bold=true;
+    const headingFormat=fromPlainText(content.book.title);headingFormat.blocks[0].runs[0].bold=true;
     const answer=content.sections.find(section=>section.type==='faq');answer.body='Read in translation\nDiscuss together';
-    content.richText={'opening:heading':headingFormat,[`${answer.id}:body`]:{blocks:[{type:'bullet',runs:[{text:'Read in translation',italic:true}]},{type:'bullet',runs:[{text:'Discuss together'}]}]}};
+    content.richText={'opening:book.title':headingFormat,[`${answer.id}:body`]:{blocks:[{type:'bullet',runs:[{text:'Read in translation',italic:true}]},{type:'bullet',runs:[{text:'Discuss together'}]}]}};
     delete content.book.showArtwork; // Existing saved drafts predate this optional field.
     const saved=await api('/api/save',{content,revision:initial.revision});
     assert.equal(saved.status,200);
@@ -130,6 +134,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.equal(coverUpload.status,200);
     const coverContent=structuredClone(content);
     coverContent.book={...coverContent.book,title:'Dead Souls',author:'Nikolai Gogol',coverImage:coverUpload.data.path,coverWidth:773,coverHeight:1200,showArtwork:true};
+    delete coverContent.richText['opening:book.title'];
     const coverCanvas=await api('/api/canvas',{sequence:1,generation:1,content:coverContent});
     assert.equal(coverCanvas.status,200);
     const coverCanvasHtml=await (await fetch(coverCanvas.data.url)).text();
@@ -155,7 +160,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
     assert.match(previewHtml,/<span id="membership" class="section-anchor-legacy" tabindex="-1"/);
     const pageIds=[...previewHtml.matchAll(/\sid="([^"]+)"/g)].map(match=>match[1]);
     assert.equal(new Set(pageIds).size,pageIds.length,'Public and legacy links must never duplicate an HTML id.');
-    assert.ok(previewHtml.includes('<strong>Read the classics together.</strong>') && previewHtml.includes('<ul><li><em>Read in translation</em></li><li>Discuss together</li></ul>'),'Saved emphasis and lists must render in the reviewed production artifact.');
+    assert.ok(previewHtml.includes(`<strong>${content.book.title}</strong>`) && previewHtml.includes('<ul><li><em>Read in translation</em></li><li>Discuss together</li></ul>'),'Saved emphasis and lists must render in the reviewed production artifact.');
     assert.ok(previewHtml.includes('<p>Read the classics together.</p><p><br></p><p>Bring your questions.</p>'),'Unformatted paragraph breaks must also match the editing canvas.');
     assert.ok(previewHtml.includes('<dialog class="navigation-drawer"') && previewHtml.includes('data-nav-open'),'The public artifact includes the mobile drawer.');
     const imprintAssets=[...previewHtml.matchAll(/--book-mask:url\('([^']+)'\)/g)].map(match=>match[1]);
@@ -238,7 +243,7 @@ test('local editor keeps drafts private, validates requests and builds the exact
       assert.ok(!html.includes('autoplay=1') && !html.includes('canvas-video-control'));
       assert.ok(html.includes('--page-bg:#161b2c') && html.includes('data-button-style="outline"'));
       assert.ok(html.indexOf('data-block-id="quote-first"')<html.indexOf('data-block-id="opening"'),'Custom blocks can appear before the introduction.');
-      assert.ok(html.indexOf('data-part="introduction"')<html.indexOf('data-part="book"') && html.indexOf('data-part="book"')<html.indexOf('data-part="signup"'),'Every composition keeps the mobile document order as heading, book, signup.');
+      assert.ok(html.indexOf('data-part="book"')<html.indexOf('data-part="signup"'),'Every composition keeps the book before signup.');
       assert.equal((await fetch(new URL(stagedPath,result.data.preview.url))).status,customized.sections[1].visible?200:404,'Only visible block images are included when the logo uses the original asset.');
       customized.sections[1].visible=false;
     }

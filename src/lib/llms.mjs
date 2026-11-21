@@ -16,7 +16,6 @@ export function renderLlms(content, site) {
   const lines = [
     `# ${text(content.brand)}`, '',
     `> ${text(content.description)}`, '',
-    text(content.heading), '',
     ...(content.introduction?.trim()?[text(content.introduction),'']:[]),
     `Membership opening date: ${formatDate(content.openingDate)}.`,
     '',

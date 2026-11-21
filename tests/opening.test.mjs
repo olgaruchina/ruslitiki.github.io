@@ -7,6 +7,15 @@ import {setCanvasRichText} from '../src/lib/rich-fields.mjs';
 import {plainText} from '../src/lib/rich-text.mjs';
 import {renderLlms} from '../src/lib/llms.mjs';
 
+test('the retired opening heading is optional and excluded from the public overview',()=>{
+  const c=legacyContent();
+  c.heading='Russian literature, but make it fun';
+  assert.equal(renderLlms(c,'https://www.ruslitiki.com/').includes(c.heading),false);
+  delete c.heading;
+  assert.deepEqual(validateContent(c),[]);
+  assert.equal(editableContent(c).heading,undefined);
+});
+
 test('new opening fields keep owner text and formatting through save and reload',()=>{
   const c=editableContent(legacyContent());
   const doc={blocks:[{type:'paragraph',runs:[{text:'Written by Olga',bold:true,italic:true}]},{type:'bullet',runs:[{text:'A weekly video'}]}]};

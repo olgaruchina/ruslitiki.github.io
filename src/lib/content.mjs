@@ -44,7 +44,7 @@ export function validateContent(data, {draft = false} = {}) {
     for (const [key,field] of Object.entries(LABEL_FIELDS)) if (own(data.labels,key)) string(data.labels[key],field.title,field.max,!draft);
   }
   string(data.brand, 'Club name', 40);
-  string(data.heading, 'Main heading', LIMITS.heading);
+  if(own(data,'heading'))string(data.heading, 'Legacy main heading', LIMITS.heading, false);
   string(data.description, 'Club description', LIMITS.description);
   string(data.introduction, 'Introduction', LIMITS.introduction, false);
   for(const [key,label,max] of [['signupHeading','Join section heading',150],['signupBenefits','What members receive',2400],['waitlistNote','Waitlist explanation',600]])if(own(data,key))string(data[key],label,max,false);

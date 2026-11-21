@@ -238,7 +238,7 @@ function buildDesignControls(){
     choice.append(input,sketch,element('span',label));$('#layout-choices').append(choice);
   }
   const groups={
-    'size-controls':[['width','Page width'],['spacing','Space between sections'],['logoSize','Wordmark size'],['headingSize','Main heading size']],
+    'size-controls':[['width','Page width'],['spacing','Space between sections'],['logoSize','Wordmark size']],
     'type-controls':[['headingFont','Headings'],['bodyFont','Paragraphs']],
     'art-controls':[['artworkPlacement','Illustration placement'],['artworkSize','Illustration size'],['buttonStyle','Button shape']],
   };
@@ -467,7 +467,7 @@ function renderSections(){
   if(working || state?.busy)for(const control of $('#editor').querySelectorAll('input,textarea,select,button'))control.disabled=true;
 }
 window.addEventListener('beforeunload',event=>{if(dirty){event.preventDefault();event.returnValue='';}});
-async function initialize(){try{state=await request('/api/state');draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);renderFields();update();canvas.schedule(draft);}catch(error){failure(error);}}
+async function initialize(){try{state=await request('/api/state');draft=editableContent(state.content);lastSnapshot=JSON.stringify(draft);renderFields();update();canvas.schedule(draft);}catch(error){failure(error);$('#canvas-status').textContent='The visual editor could not start. '+error.message;$('#save-state').textContent='Editor did not start';}}
 buildDesignControls();
 buildLabelControls();
 initialize();

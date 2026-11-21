@@ -1,13 +1,15 @@
-/* The document order is heading, book, offer on every screen. */
-.opening{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);grid-template-areas:"title title" "signup book";column-gap:clamp(32px,5vw,64px);row-gap:36px;padding-block:32px 56px}
+/* The monthly book comes before the offer in the document. */
+.opening{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);grid-template-areas:"signup book";column-gap:clamp(32px,5vw,64px);row-gap:36px;padding-block:32px 56px}
+.opening.has-introduction{grid-template-areas:"title title" "signup book"}
 .opening-title{grid-area:title}
-.opening .opening-title h1{max-width:none;text-wrap:initial;font-size:clamp(1.9rem,3.4vw,var(--heading-size))}
 .opening .first-book{grid-area:book;min-width:0;padding:0 0 0 32px;border:0;border-left:1px solid var(--rule);text-align:center}
-.opening .first-book :is(h2,.book-artwork,.book-note){margin-inline:auto}
+.opening .first-book :is(h1,.book-artwork,.book-note){margin-inline:auto}
 .opening .signup{grid-area:signup;min-width:0}
-.opening.composition-book-left{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-areas:"title title" "book signup"}
+.opening.composition-book-left{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-areas:"book signup"}
+.opening.composition-book-left.has-introduction{grid-template-areas:"title title" "book signup"}
 .opening.composition-book-left .first-book{padding:0 32px 0 0;border-left:0;border-right:1px solid var(--rule)}
-.opening.composition-stacked,.opening.composition-centered{grid-template-columns:minmax(0,1fr);grid-template-areas:"title" "book" "signup"}
+.opening.composition-stacked,.opening.composition-centered{grid-template-columns:minmax(0,1fr);grid-template-areas:"book" "signup"}
+.opening.composition-stacked.has-introduction,.opening.composition-centered.has-introduction{grid-template-areas:"title" "book" "signup"}
 .opening.composition-stacked .first-book,.opening.composition-centered .first-book{border:0;padding:0;max-width:none}
 .opening.composition-centered .signup{max-width:40rem;margin-inline:auto;text-align:center}
 .signup-heading{font:400 28px/1.3 var(--heading-font);letter-spacing:-.02em;margin:0 0 20px;text-wrap:balance}
@@ -43,10 +45,10 @@ button.book-cover-trigger{cursor:pointer}
 .book-description-copy>*:last-child{margin-bottom:0}
 @media(prefers-reduced-motion:reduce){.book-cover-faces{transition:none}}
 @media(max-width:899.98px){
-  .opening,.opening.composition-book-left,.opening.composition-stacked,.opening.composition-centered{grid-template-columns:minmax(0,1fr);grid-template-areas:"title" "book" "signup";gap:28px;padding-block:28px 40px}
-  .opening .opening-title h1{font-size:clamp(32px,8.5vw,42px);max-width:21ch}
+  .opening,.opening.composition-book-left,.opening.composition-stacked,.opening.composition-centered{grid-template-columns:minmax(0,1fr);grid-template-areas:"book" "signup";gap:28px;padding-block:28px 40px}
+  .opening.has-introduction,.opening.composition-book-left.has-introduction,.opening.composition-stacked.has-introduction,.opening.composition-centered.has-introduction{grid-template-areas:"title" "book" "signup"}
   .opening .first-book,.opening.composition-book-left .first-book{padding:0;border:0;max-width:none}
-  .opening .first-book h2{font-size:28px;max-width:24ch}
+  .opening .first-book h1{font-size:28px;max-width:24ch}
   .opening .book-label{margin-bottom:8px}
   .opening .author{margin:8px 0 16px}
   .opening .book-artwork{margin-bottom:12px}

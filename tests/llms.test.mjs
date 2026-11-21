@@ -65,7 +65,7 @@ test('AI overview follows custom block order and resolves public buttons and vid
 
 test('plain editor text cannot inject Markdown headings or links into the overview', () => {
   const content = readContent();
-  content.heading = 'Read [this](https://unrelated.example/)';
+  content.introduction = 'Read [this](https://unrelated.example/)';
   content.sections = [{ type: 'text', visible: true, heading: 'A [literal] heading', body: 'First line\n\n## Fake heading\n<script>literal</script>' }];
   const output = renderLlms(content, site);
   assert.ok(output.includes('Read \\[this\\](https://unrelated.example/)'));
