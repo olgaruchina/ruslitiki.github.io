@@ -2,7 +2,8 @@
 .opening{grid-template-columns:minmax(0,1.08fr) minmax(0,.92fr);grid-template-areas:"title title" "signup book";column-gap:clamp(32px,5vw,64px);row-gap:36px;padding-block:32px 56px}
 .opening-title{grid-area:title}
 .opening .opening-title h1{max-width:none;text-wrap:initial;font-size:clamp(1.9rem,3.4vw,var(--heading-size))}
-.opening .first-book{grid-area:book;padding:0 0 0 32px;border:0;border-left:1px solid var(--rule)}
+.opening .first-book{grid-area:book;min-width:0;padding:0 0 0 32px;border:0;border-left:1px solid var(--rule);text-align:center}
+.opening .first-book :is(h2,.book-artwork,.book-note){margin-inline:auto}
 .opening .signup{grid-area:signup;min-width:0}
 .opening.composition-book-left{grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr);grid-template-areas:"title title" "book signup"}
 .opening.composition-book-left .first-book{padding:0 32px 0 0;border-left:0;border-right:1px solid var(--rule)}
